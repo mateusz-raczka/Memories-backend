@@ -3,7 +3,9 @@ using Memories_backend.Middlewares;
 using Memories_backend.Models.Domain;
 using Memories_backend.Repositories;
 using Memories_backend.Services;
+using Memories_backend.Utilities.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -29,6 +31,16 @@ namespace Memories_backend
             {
                 options.UseSqlServer(connectionString);
             });
+
+            //Authorization
+            services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+            });
+
+            services.AddScoped<IGetClaimsProvider, GetClaimsFromUser>();
 
             //Authentication
             services.AddIdentity<IdentityUser, IdentityRole>()

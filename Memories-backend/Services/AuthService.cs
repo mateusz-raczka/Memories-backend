@@ -2,6 +2,7 @@
 using Memories_backend.Models.DTO.Identity.Roles;
 using Memories_backend.Models.DTO.Login;
 using Memories_backend.Models.DTO.Register;
+using Memories_backend.Utilities.Exceptions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -16,17 +17,20 @@ namespace Memories_backend.Services
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         public AuthService(
             UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager,
             IConfiguration configuration,
-            IMapper mapper
+            IMapper mapper,
+            IHttpContextAccessor httpContextAccessor
             )
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task SeedRolesAsync()

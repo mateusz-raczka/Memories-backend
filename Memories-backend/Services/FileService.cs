@@ -3,6 +3,7 @@ using Memories_backend.Models.Domain;
 using Memories_backend.Models.DTO.File.Request;
 using Memories_backend.Models.DTO.File.Response;
 using Memories_backend.Repositories;
+using Memories_backend.Utilities.Exceptions;
 using System.Linq.Expressions;
 
 namespace Memories_backend.Services
@@ -11,11 +12,10 @@ namespace Memories_backend.Services
     {
         private readonly ISQLRepository<Models.Domain.File> _fileRepository;
         private readonly IMapper _mapper;
-
         public FileService(
-            ISQLRepository<Category> categoryRepository,
             ISQLRepository<Models.Domain.File> fileRepository,
-            IMapper mapper
+            IMapper mapper,
+            IAuthService authService
             )
         {
             _fileRepository = fileRepository;

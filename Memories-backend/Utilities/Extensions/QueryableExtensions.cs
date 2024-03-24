@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
-namespace Memories_backend.Extensions
+namespace Memories_backend.Utilities.Extensions
 {
     /// <summary>
     /// Extension methods for querying collections.
@@ -19,7 +19,7 @@ namespace Memories_backend.Extensions
         /// <returns>A paged result containing items from the collection.</returns>
         public static async Task<PagedResult<T>> GetPageAsync<T>(this IQueryable<T> query, int page, int pageSize) where T : class
         {
-            PagedResult<T> result = InitializeResult<T>(query, page, pageSize);
+            PagedResult<T> result = InitializeResult(query, page, pageSize);
 
             int skip = (page - 1) * pageSize;
             result.Results = await query.Skip(skip).Take(pageSize).ToListAsync();
@@ -37,7 +37,7 @@ namespace Memories_backend.Extensions
         /// <returns>The paged result.</returns>
         public static PagedResult<T> GetPage<T>(this IQueryable<T> query, int page, int pageSize) where T : class
         {
-            PagedResult<T> result = InitializeResult<T>(query, page, pageSize);
+            PagedResult<T> result = InitializeResult(query, page, pageSize);
 
             int skip = (page - 1) * pageSize;
             result.Results = query.Skip(skip).Take(pageSize).ToList();

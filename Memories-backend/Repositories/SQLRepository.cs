@@ -1,6 +1,6 @@
 ﻿using Memories_backend.Contexts;
-using Memories_backend.Extensions;
 using Memories_backend.Models.Pagination;
+using Memories_backend.Utilities.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 

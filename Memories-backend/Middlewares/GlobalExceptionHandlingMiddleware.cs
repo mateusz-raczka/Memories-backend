@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Memories_backend.Utilities.Exceptions;
 using System.Net;
-using System.Text.Json;
 
 namespace Memories_backend.Middlewares
 {
@@ -40,6 +39,7 @@ namespace Memories_backend.Middlewares
                 ApplicationException _ => new ExceptionResponse(HttpStatusCode.BadRequest, "Application exception occurred. Error: " + exception.Message),
                 KeyNotFoundException _ => new ExceptionResponse(HttpStatusCode.NotFound, "The request key not found. Error: " + exception.Message),
                 UnauthorizedAccessException _ => new ExceptionResponse(HttpStatusCode.Unauthorized, "Unauthorized. Error: " + exception.Message),
+                ForbiddenException _ => new ExceptionResponse(HttpStatusCode.Forbidden, "Forbidden. Error: " + exception.Message),
                 _ => new ExceptionResponse(HttpStatusCode.InternalServerError, "Internal server error. Please retry later. Error: " + exception.Message)
             };
 

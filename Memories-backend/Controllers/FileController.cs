@@ -21,7 +21,6 @@ namespace Memories_backend.Controllers
             _fileService = fileService;
         }
 
-        [Authorize]
         [HttpGet]
         public async Task<IEnumerable<FileDtoFetchResponse>> GetAll(
             int pageNumber = 1,
@@ -48,7 +47,6 @@ namespace Memories_backend.Controllers
             return response;
         }
         
-        [Authorize]
         [HttpGet("{id:Guid}")]
         public async Task<FileDtoFetchResponse> GetById(Guid id)
         {
@@ -57,7 +55,6 @@ namespace Memories_backend.Controllers
             return response;
         }
         
-        [Authorize]
         [HttpPost]
         public async Task<FileDtoCreateResponse> Create([FromBody] FileDtoCreateRequest requestBody)
         {
@@ -66,21 +63,18 @@ namespace Memories_backend.Controllers
             return response;
         }
         
-        [Authorize]
         [HttpPut("{id:Guid}")]
         public async Task Update(Guid id, [FromBody] FileDtoUpdateRequest updatedFileDto)
         {
             await _fileService.UpdateFileAsync(id, updatedFileDto);
         }
         
-        [Authorize]
         [HttpDelete("{id:Guid}")]
         public async Task Delete(Guid id)
         {
             await _fileService.DeleteFileAsync(id);
         }
 
-        [Authorize]
         [HttpDelete]
         public async Task Delete(File file)
         {
