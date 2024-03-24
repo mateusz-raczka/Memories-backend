@@ -11,6 +11,9 @@ namespace Memories_backend.AutoMapper
             {
                 x.AddProfile<FileMapperProfiles>();
                 x.AddProfile<AuthMapperProfiles>();
+                x.AddProfile<TagMapperProfiles>();
+                x.AddProfile<FileDetailsMapperProfiles>();
+                x.AddProfile<CategoryMapperProfiles>();
             });
 
             return config;
