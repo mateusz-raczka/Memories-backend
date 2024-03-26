@@ -4,6 +4,5 @@
     {
         string UserId { get; }
         string UserName { get; }
-        string Token { get; }
     }
 }

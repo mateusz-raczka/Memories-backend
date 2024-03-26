@@ -1,5 +1,5 @@
-﻿using Memories_backend.Contexts;
-using Memories_backend.Middlewares;
+﻿global using Memories_backend.Middlewares;
+using Memories_backend.Contexts;
 using Memories_backend.Models.Domain;
 using Memories_backend.Repositories;
 using Memories_backend.Services;
@@ -32,16 +32,6 @@ namespace Memories_backend
                 options.UseSqlServer(connectionString);
             });
 
-            //Authorization
-            services.AddAuthorization(options =>
-            {
-                options.FallbackPolicy = new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build();
-            });
-
-            services.AddScoped<IGetClaimsProvider, GetClaimsFromUser>();
-
             //Authentication
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -59,23 +49,34 @@ namespace Memories_backend
 
             services.AddAuthentication(options =>
             {
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
                 .AddJwtBearer(options =>
                 {
-                    options.SaveToken = true;
                     options.RequireHttpsMetadata = false;
-                    options.TokenValidationParameters = new TokenValidationParameters()
+                    options.SaveToken = true;
+                    options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
                         ValidateAudience = true,
-                        ValidIssuer = Configuration["JWT:ValidIssuer"],
-                        ValidAudience = Configuration["JWT:ValidAudience"],
+                        ValidIssuer = Configuration["JWT:Issuer"],
+                        ValidAudience = Configuration["JWT:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
                     };
                 });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AllowAnonymousAccess", policy =>
+                {
+                    policy.AllowAnonymous();
+                });
+                options.DefaultPolicy = new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                    .RequireAuthenticatedUser()
+                    .Build();
+            });
 
             //Repositories
             services.AddScoped<ISQLRepository<Models.Domain.File>, SQLRepository<Models.Domain.File>>();
@@ -87,9 +88,11 @@ namespace Memories_backend
             //AutoMapper
             services.AddAutoMapper(typeof(Program));
 
-            //My services 
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IGetClaimsProvider, GetClaimsFromUser>();
+            services.AddScoped<JwtSecurityTokenHandlerWrapper>();
+
 
             services.AddLogging();
             services.AddControllers();
@@ -99,13 +102,20 @@ namespace Memories_backend
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseCors("AllowAnyOrigin");
+            app.UseCors(builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            });
 
             if (env.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseMiddleware<JwtMiddleware>();
 
             app.UseHttpsRedirection();
             app.UseRouting();
