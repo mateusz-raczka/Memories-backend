@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using Memories_backend.Utilities.Helpers;
 
 namespace Memories_backend.Utilities.Authorization
 {

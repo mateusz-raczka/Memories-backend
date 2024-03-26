@@ -5,34 +5,30 @@ namespace Memories_backend.Middlewares
 {
     public record ExceptionResponse(HttpStatusCode StatusCode, string Description);
 
-    public class GlobalExceptionHandlingMiddleware
+    public class GlobalExceptionHandlingMiddleware : IMiddleware
     {
         private readonly ILogger<GlobalExceptionHandlingMiddleware> _logger;
-        private readonly RequestDelegate _next;
 
-        public GlobalExceptionHandlingMiddleware(
-            RequestDelegate next, 
-            ILogger<GlobalExceptionHandlingMiddleware> logger
-            )
+        public GlobalExceptionHandlingMiddleware(ILogger<GlobalExceptionHandlingMiddleware> logger)
         {
             _logger = logger;
-            _next = next; 
         }
 
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             try
             {
-                await _next(context);
+                await next(context);
             }
             catch (Exception ex)
             {
                 await HandleExceptionAsync(context, ex);
             }
         }
+
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            _logger.LogError(exception, "An unexpected error occurred.");    
+            _logger.LogError(exception, "An unexpected error occurred.");
 
             ExceptionResponse response = exception switch
             {

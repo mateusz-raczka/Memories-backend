@@ -1,9 +1,10 @@
 ﻿global using Memories_backend.Middlewares;
+global using Memories_backend.Utilities.Authorization;
+
 using Memories_backend.Contexts;
 using Memories_backend.Models.Domain;
 using Memories_backend.Repositories;
 using Memories_backend.Services;
-using Memories_backend.Utilities.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -68,12 +69,7 @@ namespace Memories_backend
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("AllowAnonymousAccess", policy =>
-                {
-                    policy.AllowAnonymous();
-                });
                 options.DefaultPolicy = new AuthorizationPolicyBuilder()
-                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                     .RequireAuthenticatedUser()
                     .Build();
             });
@@ -92,7 +88,8 @@ namespace Memories_backend
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IGetClaimsProvider, GetClaimsFromUser>();
             services.AddScoped<JwtSecurityTokenHandlerWrapper>();
-
+            services.AddScoped<JwtMiddleware>();
+            services.AddScoped<GlobalExceptionHandlingMiddleware>();
 
             services.AddLogging();
             services.AddControllers();
@@ -115,14 +112,13 @@ namespace Memories_backend
                 app.UseSwaggerUI();
             }
 
+            app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
             app.UseMiddleware<JwtMiddleware>();
-
+            
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

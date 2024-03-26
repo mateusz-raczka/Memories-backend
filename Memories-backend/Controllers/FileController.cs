@@ -10,6 +10,7 @@ using Memories_backend.Models.DTO.Identity.Roles;
 
 namespace Memories_backend.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class FileController : ControllerBase

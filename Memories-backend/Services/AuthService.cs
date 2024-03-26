@@ -17,20 +17,20 @@ namespace Memories_backend.Services
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly JwtSecurityTokenHandlerWrapper _jwtSecurityTokenHandlerWrapper;
         public AuthService(
             UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager,
             IConfiguration configuration,
             IMapper mapper,
-            IHttpContextAccessor httpContextAccessor
+            JwtSecurityTokenHandlerWrapper jwtSecurityTokenHandlerWrapper
             )
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
             _mapper = mapper;
-            _httpContextAccessor = httpContextAccessor;
+            _jwtSecurityTokenHandlerWrapper = jwtSecurityTokenHandlerWrapper;
         }
 
         public async Task SeedRolesAsync()
@@ -95,38 +95,7 @@ namespace Memories_backend.Services
             if (!isPasswordCorrect)
                 throw new UnauthorizedAccessException("Invalid credentials");
 
-            IList<string> userRoles = await _userManager.GetRolesAsync(user);
-
-            List<Claim> authClaims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim("JWTID", Guid.NewGuid().ToString()),
-            };
-
-            foreach (var userRole in userRoles)
-            {
-                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-            }
-
-            var token = GenerateNewJsonWebToken(authClaims);
-
-            return token;
-        }
-
-        private string GenerateNewJsonWebToken(List<Claim> claims)
-        {
-            SymmetricSecurityKey authSecret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
-
-            JwtSecurityToken tokenObject = new JwtSecurityToken(
-                    issuer: _configuration["JWT:ValidIssuer"],
-                    audience: _configuration["JWT:ValidAudience"],
-                    expires: DateTime.Now.AddDays(1),
-                    claims: claims,
-                    signingCredentials: new SigningCredentials(authSecret, SecurityAlgorithms.HmacSha256)
-                );
-
-            string token = new JwtSecurityTokenHandler().WriteToken(tokenObject);
+            var token = _jwtSecurityTokenHandlerWrapper.GenerateJwtToken(user.Id, UserRoles.USER);
 
             return token;
         }
