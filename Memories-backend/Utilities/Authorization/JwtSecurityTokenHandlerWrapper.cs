@@ -1,6 +1,9 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Memories_backend.Utilities.Authorization
@@ -52,16 +55,24 @@ namespace Memories_backend.Utilities.Authorization
                 var claimsPrincipal = tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
                     ValidIssuer = _configuration["JWT:Issuer"],
                     ValidAudience = _configuration["JWT:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(key)
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
 
                 return claimsPrincipal;
             }
             catch (SecurityTokenExpiredException)
             {
-                throw new ApplicationException("Token has expired.");
+                throw new UnauthorizedAccessException("Token has expired.");
+            }
+            catch (Exception)
+            {
+                throw new UnauthorizedAccessException("Invalid token.");
             }
         }
     }
