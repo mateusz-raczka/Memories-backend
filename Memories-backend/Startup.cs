@@ -1,5 +1,4 @@
 ﻿global using Memories_backend.Middlewares;
-global using Memories_backend.Utilities.Authorization;
 
 using Memories_backend.Contexts;
 using Memories_backend.Models.Domain;
@@ -87,8 +86,11 @@ namespace Memories_backend
 
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IGetClaimsProvider, GetClaimsFromUser>();
-            services.AddScoped<JwtSecurityTokenHandlerWrapper>();
+            services.AddScoped<IUserClaimsService, UserClaimsService>();
+            services.AddScoped<IJwtSecurityTokenService, JwtSecurityTokenService>();
+            services.AddScoped<IFileSystemService, FileSystemService>();
+
+            //Middlewares that use other services
             services.AddScoped<JwtMiddleware>();
             services.AddScoped<GlobalExceptionHandlingMiddleware>();
 

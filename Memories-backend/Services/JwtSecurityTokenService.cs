@@ -6,14 +6,14 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Memories_backend.Utilities.Authorization
+namespace Memories_backend.Services
 {
-    public class JwtSecurityTokenHandlerWrapper
+    public class JwtSecurityTokenService : IJwtSecurityTokenService
     {
         private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
         private readonly IConfiguration _configuration;
 
-        public JwtSecurityTokenHandlerWrapper(IConfiguration configuration)
+        public JwtSecurityTokenService(IConfiguration configuration)
         {
             _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
             _configuration = configuration;

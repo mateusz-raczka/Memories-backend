@@ -2,12 +2,7 @@
 using Memories_backend.Models.DTO.Identity.Roles;
 using Memories_backend.Models.DTO.Login;
 using Memories_backend.Models.DTO.Register;
-using Memories_backend.Utilities.Exceptions;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace Memories_backend.Services
 {
@@ -15,20 +10,17 @@ namespace Memories_backend.Services
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
-        private readonly JwtSecurityTokenHandlerWrapper _jwtSecurityTokenHandlerWrapper;
+        private readonly IJwtSecurityTokenService _jwtSecurityTokenHandlerWrapper;
         public AuthService(
             UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            IConfiguration configuration,
             IMapper mapper,
-            JwtSecurityTokenHandlerWrapper jwtSecurityTokenHandlerWrapper
+            IJwtSecurityTokenService jwtSecurityTokenHandlerWrapper
             )
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            _configuration = configuration;
             _mapper = mapper;
             _jwtSecurityTokenHandlerWrapper = jwtSecurityTokenHandlerWrapper;
         }

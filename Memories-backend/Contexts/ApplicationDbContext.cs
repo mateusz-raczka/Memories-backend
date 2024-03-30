@@ -1,15 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Memories_backend.Models.Domain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Memories_backend.Utilities.Authorization;
 using Memories_backend.Utilities.Extensions;
-using Memories_backend.Utilities.Authorization.DataAuthorize;
+using Memories_backend.Services;
 
 namespace Memories_backend.Contexts
 {
     public class ApplicationDbContext : IdentityDbContext
     {
-        private readonly string _userId;
+        private readonly Guid _userId;
         public DbSet<ActivityType> ActivityTypes { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<FileActivity> FileActivities { get; set; }
@@ -29,7 +28,7 @@ namespace Memories_backend.Contexts
 
         public ApplicationDbContext(
             DbContextOptions<ApplicationDbContext> options, 
-            IGetClaimsProvider userData
+            IUserClaimsService userData
             ) : base(options)
         {
             _userId = userData.UserId;
@@ -56,7 +55,7 @@ namespace Memories_backend.Contexts
             }
 
             // Check for owner of entities
-            modelBuilder.Entity<Models.Domain.File>().HasQueryFilter(x => x.OwnerId.ToString() == _userId);
+            modelBuilder.Entity<Models.Domain.File>().HasQueryFilter(x => x.OwnerId == _userId);
 
             // Seed data to ActivityType table
             modelBuilder.Entity<ActivityType>().HasData(_activityTypes );

@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
-using Memories_backend.Models.Domain;
 using Memories_backend.Models.DTO.File.Request;
 using Memories_backend.Models.DTO.File.Response;
 using Memories_backend.Repositories;
-using Memories_backend.Utilities.Exceptions;
 using System.Linq.Expressions;
 
 namespace Memories_backend.Services
@@ -11,11 +9,12 @@ namespace Memories_backend.Services
     public class FileService : IFileService
     {
         private readonly ISQLRepository<Models.Domain.File> _fileRepository;
+        private readonly IFileSystemService _fileSystemService;
         private readonly IMapper _mapper;
         public FileService(
             ISQLRepository<Models.Domain.File> fileRepository,
-            IMapper mapper,
-            IAuthService authService
+            IFileSystemService fileSystemService,
+            IMapper mapper
             )
         {
             _fileRepository = fileRepository;
@@ -24,9 +23,13 @@ namespace Memories_backend.Services
 
         public async Task<FileDtoCreateResponse> CreateFileAsync(FileDtoCreateRequest requestBody)
         {
+            Guid path = Guid.NewGuid();
+            await _fileSystemService.UploadFileAsync(requestBody.FileData, path);
             Models.Domain.File fileDomain = _mapper.Map<Models.Domain.File>(requestBody);
+            fileDomain.FileDetails.Path = path;
             Models.Domain.File createdFile = await _fileRepository.Create(fileDomain);
             FileDtoCreateResponse fileDto = _mapper.Map<FileDtoCreateResponse>(createdFile);
+
             await _fileRepository.Save();
 
             return fileDto;
@@ -48,12 +51,16 @@ namespace Memories_backend.Services
 
         public async Task DeleteFileAsync(Guid id)
         {
+            _fileSystemService.DeleteFile(id);
+
             await _fileRepository.Delete(id);
             await _fileRepository.Save();
         }
 
         public async Task DeleteFileAsync(Models.Domain.File file)
         {
+            _fileSystemService.DeleteFile(file.Id);
+
             _fileRepository.Delete(file);
             await _fileRepository.Save();
         }

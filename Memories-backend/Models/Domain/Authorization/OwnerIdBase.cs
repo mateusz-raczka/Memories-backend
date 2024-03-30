@@ -1,16 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Memories_backend.Utilities.Authorization.DataAuthorize
+namespace Memories_backend.Models.Domain
 {
     public class OwnerIdBase : IOwnerId
     {
         [Required]
         [MaxLength(40)]
-        public string OwnerId { get; private set; }
+        public Guid OwnerId { get; private set; }
 
-        public void SetOwnerId(string protectKey)
+        public void SetOwnerId(Guid protectKey)
         {
             OwnerId = protectKey;
         }
     }
+
 }
