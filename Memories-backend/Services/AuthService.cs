@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Memories_backend.Models.DTO.Identity.Roles;
+using Memories_backend.Utilities.Authentication.Roles;
 using Memories_backend.Models.DTO.Login;
 using Memories_backend.Models.DTO.Register;
 using Microsoft.AspNetCore.Identity;
@@ -23,20 +23,6 @@ namespace Memories_backend.Services
             _roleManager = roleManager;
             _mapper = mapper;
             _jwtSecurityTokenHandlerWrapper = jwtSecurityTokenHandlerWrapper;
-        }
-
-        public async Task SeedRolesAsync()
-        {
-            bool isOwnerRoleExists = await _roleManager.RoleExistsAsync(UserRoles.OWNER);
-            bool isAdminRoleExists = await _roleManager.RoleExistsAsync(UserRoles.ADMIN);
-            bool isUserRoleExists = await _roleManager.RoleExistsAsync(UserRoles.USER);
-
-            if (isOwnerRoleExists && isAdminRoleExists && isUserRoleExists)
-                throw new ApplicationException("Role seeding was already done");
-
-            await _roleManager.CreateAsync(new IdentityRole(UserRoles.USER));
-            await _roleManager.CreateAsync(new IdentityRole(UserRoles.ADMIN));
-            await _roleManager.CreateAsync(new IdentityRole(UserRoles.OWNER));
         }
 
         public async Task<string> RegisterAsync(RegisterDto registerDto)
@@ -66,7 +52,7 @@ namespace Memories_backend.Services
                 throw new ApplicationException(errorString);
             }
 
-            await _userManager.AddToRoleAsync(newUser, UserRoles.USER);
+            await _userManager.AddToRoleAsync(newUser, CustomUserRoles.USER);
 
             LoginDto loginDto = _mapper.Map<LoginDto>(registerDto);
 
@@ -87,7 +73,7 @@ namespace Memories_backend.Services
             if (!isPasswordCorrect)
                 throw new UnauthorizedAccessException("Invalid credentials");
 
-            var token = _jwtSecurityTokenHandlerWrapper.GenerateJwtToken(user.Id, UserRoles.USER);
+            var token = _jwtSecurityTokenHandlerWrapper.GenerateJwtToken(user.Id, CustomUserRoles.USER);
 
             return token;
         }

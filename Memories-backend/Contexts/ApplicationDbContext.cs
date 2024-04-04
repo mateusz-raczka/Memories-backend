@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Memories_backend.Models.Domain;
+using Memories_backend.Models.Domain.Folder.File;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Memories_backend.Utilities.Extensions;
 using Memories_backend.Services;
+using Memories_backend.Models.Domain.Authorization;
+using Memories_backend.Models.Domain.Folder;
 
 namespace Memories_backend.Contexts
 {
@@ -12,22 +14,12 @@ namespace Memories_backend.Contexts
         public DbSet<ActivityType> ActivityTypes { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<FileActivity> FileActivities { get; set; }
-        public DbSet<FileDetails> FileDetails { get; set; }
-        public DbSet<Models.Domain.File> Files { get; set; }
+        public DbSet<ComponentDetails> FileDetails { get; set; }
+        public DbSet<Models.Domain.Folder.File.File> Files { get; set; }
         public DbSet<Tag> Tags { get; set; }
 
-        private List<ActivityType> _activityTypes = new List<ActivityType>()
-        {
-            new ActivityType() { Id = Guid.NewGuid(), Name = "Edit"},
-            new ActivityType() { Id = Guid.NewGuid(), Name = "Share"},
-            new ActivityType() { Id = Guid.NewGuid(), Name = "Transfer"},
-            new ActivityType() { Id = Guid.NewGuid(), Name = "Create"},
-            new ActivityType() { Id = Guid.NewGuid(), Name = "Delete"},
-            new ActivityType() { Id = Guid.NewGuid(), Name = "Open"},
-        };
-
         public ApplicationDbContext(
-            DbContextOptions<ApplicationDbContext> options, 
+            DbContextOptions<ApplicationDbContext> options,
             IUserClaimsService userData
             ) : base(options)
         {
@@ -49,27 +41,29 @@ namespace Memories_backend.Contexts
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.SeedRoles();
+            modelBuilder.SeedActivityTypes();
+
             foreach (var entityOwnedBy in modelBuilder.Model.GetEntityTypes().Where(x => x.ClrType.GetInterface(nameof(IOwnerId)) != null))
             {
                 modelBuilder.Entity(entityOwnedBy.ClrType).HasIndex(nameof(IOwnerId.OwnerId));
             }
 
-            // Check for owner of entities
-            modelBuilder.Entity<Models.Domain.File>().HasQueryFilter(x => x.OwnerId == _userId);
+            modelBuilder.Entity<Models.Domain.Folder.File.File>().HasQueryFilter(x => x.OwnerId == _userId); 
 
-            // Seed data to ActivityType table
-            modelBuilder.Entity<ActivityType>().HasData(_activityTypes );
+            modelBuilder.Entity<Models.Domain.Folder.File.File>().Navigation(e => e.Category).AutoInclude();
+            modelBuilder.Entity<Models.Domain.Folder.File.File>().Navigation(e => e.FileDetails).AutoInclude();
+            modelBuilder.Entity<Models.Domain.Folder.File.File>().Navigation(e => e.Tags).AutoInclude();
 
-            // Automatically include tables when fetching
-            modelBuilder.Entity<Models.Domain.File>().Navigation(e => e.Category).AutoInclude();
-            modelBuilder.Entity<Models.Domain.File>().Navigation(e => e.FileDetails).AutoInclude();
-            modelBuilder.Entity<Models.Domain.File>().Navigation(e => e.Tags).AutoInclude();
-
-            // Define 1:1 relationship
-            modelBuilder.Entity<Models.Domain.File>()
+            modelBuilder.Entity<Models.Domain.Folder.File.File>()
             .HasOne(f => f.FileDetails)
             .WithOne(fd => fd.File)
-            .HasForeignKey<FileDetails>(fd => fd.Id);
+            .HasForeignKey<ComponentDetails>(fd => fd.Id);
+
+            modelBuilder.Entity<Folder>()
+            .HasOne(f => f.FolderDetails)
+            .WithOne(fd => fd.Folder)
+            .HasForeignKey<ComponentDetails>(fd => fd.Id);
         }
     }
 }

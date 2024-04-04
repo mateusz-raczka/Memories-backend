@@ -10,16 +10,24 @@ namespace Memories_backend.Services
 
         public UserClaimsService(IHttpContextAccessor httpContextAccessor)
         {
-            IEnumerable<Claim>? Claims = httpContextAccessor.HttpContext?.User.Claims;
-
-            string? userId = Claims.SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-
-            if(userId != null)
+            if (httpContextAccessor?.HttpContext?.User?.Claims != null)
             {
-                UserId = TypeConversion.ConvertStringToGuid(userId);
+                Claim userIdClaim = httpContextAccessor.HttpContext.User.Claims
+                    .SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+
+                if (userIdClaim != null)
+                {
+                    UserId = TypeConversion.ConvertStringToGuid(userIdClaim.Value);
+                }
+
+                Claim userNameClaim = httpContextAccessor.HttpContext.User.Claims
+                    .SingleOrDefault(x => x.Type == ClaimTypes.Name);
+
+                if (userNameClaim != null)
+                {
+                    UserName = userNameClaim.Value;
+                }
             }
-            
-            UserName = Claims.SingleOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
         }
     }
 }

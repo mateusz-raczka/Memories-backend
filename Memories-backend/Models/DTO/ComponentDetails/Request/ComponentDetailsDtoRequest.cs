@@ -1,9 +1,9 @@
 ﻿namespace Memories_backend.Models.DTO.FileDetails.Request
 {
-    public class FileDetailsDtoRequest
+    public class ComponentDetailsDtoRequest
     {
         public string Name { get; set; }
-        public int Size { get; set; }
+        public long Size { get; set; }
         public string Description { get; set; }
         public bool IsStared { get; set; }
         public DateTime CreatedDate { get; set; }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Memoriesbackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240323181023_AddPathToFileDetailsDomainAndOwnerIdToFileDomain")]
-    partial class AddPathToFileDetailsDomainAndOwnerIdToFileDomain
+    [Migration("20240401202019_SeedData")]
+    partial class SeedData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -57,32 +57,32 @@ namespace Memoriesbackend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("624eab2e-c2cb-4106-9dc1-931d6af0e296"),
+                            Id = new Guid("3c096a43-c95d-4959-bde6-1a27554004b2"),
                             Name = "Edit"
                         },
                         new
                         {
-                            Id = new Guid("ed53c997-0600-461f-adcf-43a03fe8d9de"),
+                            Id = new Guid("d7ee145e-0491-47ec-9208-3a31977bc803"),
                             Name = "Share"
                         },
                         new
                         {
-                            Id = new Guid("4f021aa6-5ffa-4276-971b-04b34e6187e3"),
+                            Id = new Guid("fc106407-fdb9-4284-962b-a9bf4423ae0d"),
                             Name = "Transfer"
                         },
                         new
                         {
-                            Id = new Guid("a6bbe172-2685-4544-8650-3fe54d0f26da"),
+                            Id = new Guid("619400fb-d861-4413-8169-fb5fce9eb938"),
                             Name = "Create"
                         },
                         new
                         {
-                            Id = new Guid("b9ca03f8-8c38-4fc5-94d3-334a5d0b14ec"),
+                            Id = new Guid("0e5ffb13-3b3d-40ae-8cb4-f175c7ef1c62"),
                             Name = "Delete"
                         },
                         new
                         {
-                            Id = new Guid("9e100488-4150-4b9e-8133-8e84996c743c"),
+                            Id = new Guid("70d5384a-c52a-458f-a584-4a0d63dd7b43"),
                             Name = "Open"
                         });
                 });
@@ -177,9 +177,8 @@ namespace Memoriesbackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Path")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("Path")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Size")
                         .HasColumnType("int");
@@ -229,6 +228,23 @@ namespace Memoriesbackend.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "8a9ee048-b6eb-4042-b6b2-082a511d359f",
+                            Name = "USER"
+                        },
+                        new
+                        {
+                            Id = "1dff3be2-02b5-4969-87e3-e8d15480d51f",
+                            Name = "OWNER"
+                        },
+                        new
+                        {
+                            Id = "67b066e7-8846-427e-b2f2-69d4f3108eac",
+                            Name = "ADMIN"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

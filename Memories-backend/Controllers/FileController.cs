@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using File = Memories_backend.Models.Domain.File;
+using File = Memories_backend.Models.Domain.Folder.File.File;
 using Memories_backend.Models.DTO.File.Response;
 using Memories_backend.Models.DTO.File.Request;
 using System.Linq.Expressions;

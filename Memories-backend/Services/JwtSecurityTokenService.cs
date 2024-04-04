@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Memories_backend.Utilities.Authentication.Roles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -12,6 +13,11 @@ namespace Memories_backend.Services
     {
         private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
         private readonly IConfiguration _configuration;
+        private readonly string[] _roles = { 
+            CustomUserRoles.OWNER,
+            CustomUserRoles.ADMIN,
+            CustomUserRoles.USER
+        };
 
         public JwtSecurityTokenService(IConfiguration configuration)
         {
@@ -22,6 +28,11 @@ namespace Memories_backend.Services
         public string GenerateJwtToken(string userId, string role)
         {
             var key = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]);
+
+            if(!_roles.Contains(role))
+            {
+                throw new UnauthorizedAccessException("Invalid role.");
+            }
 
             var claims = new List<Claim>
             {

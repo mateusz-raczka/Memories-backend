@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Memories_backend.Models.Domain
+namespace Memories_backend.Models.Domain.Folder.File
 {
     public class ActivityType
     {

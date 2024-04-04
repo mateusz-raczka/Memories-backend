@@ -1,7 +1,7 @@
 ﻿global using Memories_backend.Middlewares;
 
 using Memories_backend.Contexts;
-using Memories_backend.Models.Domain;
+using Memories_backend.Models.Domain.Folder.File;
 using Memories_backend.Repositories;
 using Memories_backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -75,8 +75,8 @@ namespace Memories_backend
             });
 
             //Repositories
-            services.AddScoped<ISQLRepository<Models.Domain.File>, SQLRepository<Models.Domain.File>>();
-            services.AddScoped<ISQLRepository<FileDetails>, SQLRepository<FileDetails>>();
+            services.AddScoped<ISQLRepository<Models.Domain.Folder.File.File>, SQLRepository<Models.Domain.Folder.File.File>>();
+            services.AddScoped<ISQLRepository<ComponentDetails>, SQLRepository<ComponentDetails>>();
             services.AddScoped<ISQLRepository<Category>, SQLRepository<Category>>();
             services.AddScoped<ISQLRepository<Tag>, SQLRepository<Tag>>();
             services.AddScoped<ISQLRepository<FileActivity>, SQLRepository<FileActivity>>();
@@ -88,7 +88,7 @@ namespace Memories_backend
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUserClaimsService, UserClaimsService>();
             services.AddScoped<IJwtSecurityTokenService, JwtSecurityTokenService>();
-            services.AddScoped<IFileSystemService, FileSystemService>();
+            services.AddScoped<IFileStorageService, FileStorageService>();
 
             //Middlewares that use other services
             services.AddScoped<JwtMiddleware>();

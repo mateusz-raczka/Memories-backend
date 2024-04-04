@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Memories_backend.Models.Domain
+namespace Memories_backend.Models.Domain.Authorization
 {
     public class OwnerIdBase : IOwnerId
     {

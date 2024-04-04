@@ -18,12 +18,6 @@ namespace Memories_backend.Controllers
             _authService = authService;
         }
 
-        /*[HttpPost]
-        public async Task SeedRoles()
-        {
-            await _authService.SeedRolesAsync();
-        }*/
-
         [HttpPost]
         public async Task<string> Register([FromBody] RegisterDto registerDto)
         {

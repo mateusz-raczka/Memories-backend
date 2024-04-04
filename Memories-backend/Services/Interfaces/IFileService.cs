@@ -9,13 +9,13 @@ namespace Memories_backend.Services
         Task<FileDtoCreateResponse> CreateFileAsync(FileDtoCreateRequest requestBody);
         Task UpdateFileAsync(Guid id, FileDtoUpdateRequest requestBody);
         Task DeleteFileAsync(Guid id);
-        Task DeleteFileAsync(Models.Domain.File file);
+        Task DeleteFileAsync(Models.Domain.Folder.File.File file);
         Task<FileDtoFetchResponse> GetFileByIdAsync(Guid id);
         Task<IEnumerable<FileDtoFetchResponse>> GetAllFiles(
             int pageNumber,
             int pageSize,
-            Expression<Func<Models.Domain.File, bool>> filter = null,
-            Func<IQueryable<Models.Domain.File>, IOrderedQueryable<Models.Domain.File>> orderBy = null
+            Expression<Func<Models.Domain.Folder.File.File, bool>> filter = null,
+            Func<IQueryable<Models.Domain.Folder.File.File>, IOrderedQueryable<Models.Domain.Folder.File.File>> orderBy = null
             );
     }
 }

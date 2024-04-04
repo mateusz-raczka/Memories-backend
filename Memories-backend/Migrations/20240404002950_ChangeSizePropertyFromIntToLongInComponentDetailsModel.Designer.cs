@@ -4,6 +4,7 @@ using Memories_backend.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Memoriesbackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class MemoriesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240404002950_ChangeSizePropertyFromIntToLongInComponentDetailsModel")]
+    partial class ChangeSizePropertyFromIntToLongInComponentDetailsModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

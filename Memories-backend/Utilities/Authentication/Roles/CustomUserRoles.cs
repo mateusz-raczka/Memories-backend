@@ -1,6 +1,6 @@
-﻿namespace Memories_backend.Models.DTO.Identity.Roles
+﻿namespace Memories_backend.Utilities.Authentication.Roles
 {
-    public static class UserRoles
+    public static class CustomUserRoles
     {
         public const string OWNER = "OWNER";
         public const string ADMIN = "ADMIN";

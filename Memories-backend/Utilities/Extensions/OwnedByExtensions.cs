@@ -1,4 +1,4 @@
-﻿using Memories_backend.Models.Domain;
+﻿using Memories_backend.Models.Domain.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Memories_backend.Utilities.Extensions
