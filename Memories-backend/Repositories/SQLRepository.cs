@@ -8,8 +8,8 @@ namespace Memories_backend.Repositories
 {
     public class SQLRepository<TEntity> : ISQLRepository<TEntity> where TEntity : class
     {
-        private readonly ApplicationDbContext _context;
-        private readonly DbSet<TEntity> _dbSet;
+        protected readonly ApplicationDbContext _context;
+        protected readonly DbSet<TEntity> _dbSet;
 
         public SQLRepository(ApplicationDbContext context)
         {

@@ -1,4 +1,4 @@
-﻿using Memories_backend.Utilities.Authorization.DataAuthorize;
+﻿using Memories_backend.Models.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Memories_backend.Utilities.Extensions
@@ -11,7 +11,7 @@ namespace Memories_backend.Utilities.Extensions
         /// </summary>
         /// <param name="context"></param>
         /// <param name="userId"></param>
-        public static void MarkCreatedItemAsOwnedBy(this DbContext context, string userId)
+        public static void MarkCreatedItemAsOwnedBy(this DbContext context, Guid userId)
         {
             foreach (var entityEntry in context.ChangeTracker.Entries()
                 .Where(e => e.State == EntityState.Added))

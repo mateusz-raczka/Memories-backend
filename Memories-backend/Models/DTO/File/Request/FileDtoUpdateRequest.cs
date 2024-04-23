@@ -9,6 +9,6 @@ namespace Memories_backend.Models.DTO.File.Request
         public Guid? FolderId { get; set; }
         public List<TagDtoRequest>? Tags { get; set; }
         public CategoryDtoRequest? Category { get; set; }
-        public FileDetailsDtoRequest? FileDetails { get; set; }
+        public ComponentDetailsDtoRequest? FileDetails { get; set; }
     }
 }

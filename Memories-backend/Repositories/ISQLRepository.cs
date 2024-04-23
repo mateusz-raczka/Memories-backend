@@ -4,7 +4,7 @@ namespace Memories_backend.Repositories
 {
     public interface ISQLRepository<TEntity> : IDisposable where TEntity: class
     {
-        Task<TEntity?> GetById(Guid id);
+        Task<TEntity> GetById(Guid id);
         Task<IEnumerable<TEntity>> GetAll(
             int? pageNumber = null,
             int? pageSize = null,

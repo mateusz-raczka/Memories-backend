@@ -1,9 +1,10 @@
 ﻿global using Memories_backend.Middlewares;
+
 using Memories_backend.Contexts;
 using Memories_backend.Models.Domain;
 using Memories_backend.Repositories;
 using Memories_backend.Services;
-using Memories_backend.Utilities.Authorization;
+using Memories_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -68,10 +69,6 @@ namespace Memories_backend
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("AllowAnonymousAccess", policy =>
-                {
-                    policy.AllowAnonymous();
-                });
                 options.DefaultPolicy = new AuthorizationPolicyBuilder()
                     .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                     .RequireAuthenticatedUser()
@@ -84,15 +81,27 @@ namespace Memories_backend
             services.AddScoped<ISQLRepository<Category>, SQLRepository<Category>>();
             services.AddScoped<ISQLRepository<Tag>, SQLRepository<Tag>>();
             services.AddScoped<ISQLRepository<FileActivity>, SQLRepository<FileActivity>>();
-
+            services.AddScoped<ISQLRepository<Folder>,  SQLRepository<Folder>>();
+            services.AddScoped<IFolderRepository, FolderRepository>();
+            
             //AutoMapper
             services.AddAutoMapper(typeof(Program));
 
-            services.AddScoped<IFileService, FileService>();
+            //Services
+            services.AddScoped<IFileDatabaseService, FileDatabaseService>();
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IGetClaimsProvider, GetClaimsFromUser>();
-            services.AddScoped<JwtSecurityTokenHandlerWrapper>();
+            services.AddScoped<IUserClaimsService, UserClaimsService>();
+            services.AddScoped<IJwtSecurityTokenService, JwtSecurityTokenService>();
+            services.AddScoped<IFileStorageService, FileStorageService>();
+            services.AddScoped<IFileManagementService, FileManagementService>();
+            services.AddScoped<IPathService, PathService>();
+            services.AddScoped<IFolderDatabaseService, FolderDatabaseService>();
+            services.AddScoped<IInitializeUserService, InitializeUserService>();
+            services.AddScoped<IRegisterService, RegisterService>();
 
+            //Middlewares that use other services
+            services.AddScoped<JwtMiddleware>();
+            services.AddScoped<GlobalExceptionHandlingMiddleware>();
 
             services.AddLogging();
             services.AddControllers();
@@ -115,18 +124,17 @@ namespace Memories_backend
                 app.UseSwaggerUI();
             }
 
+            app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
             app.UseMiddleware<JwtMiddleware>();
-
+            
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
-
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllers().RequireAuthorization();
             });
         }
     }
