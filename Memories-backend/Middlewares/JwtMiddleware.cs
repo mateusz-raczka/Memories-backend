@@ -1,4 +1,4 @@
-﻿using Memories_backend.Services;
+﻿using Memories_backend.Services.Interfaces;
 
 namespace Memories_backend.Middlewares
 {

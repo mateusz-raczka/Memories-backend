@@ -1,33 +1,38 @@
-﻿using System.Security.Claims;
-using Memories_backend.Utilities.Helpers;
+﻿using Memories_backend.Models.Authentication;
+using Memories_backend.Services.Interfaces;
+using System.Security.Claims;
 
-namespace Memories_backend.Services
+public class UserClaimsService : IUserClaimsService
 {
-    public class UserClaimsService : IUserClaimsService
+    private readonly IJwtSecurityTokenService _jwtSecurityTokenService;
+
+    public UserClaimsValues UserClaimsValues { get; private set; }
+
+    public UserClaimsService(
+        IHttpContextAccessor httpContextAccessor, 
+        IJwtSecurityTokenService jwtSecurityTokenService
+        )
     {
-        public Guid UserId { get; }
-        public string UserName { get; }
+        _jwtSecurityTokenService = jwtSecurityTokenService;
 
-        public UserClaimsService(IHttpContextAccessor httpContextAccessor)
+        UserClaimsValues = GetUserClaimsFromHttpContextAccessor(httpContextAccessor);
+    }
+    public void UpdateUserClaims(string token)
+    {
+        ClaimsPrincipal userClaims = _jwtSecurityTokenService.ValidateJwtToken(token);
+
+        UserClaimsValues = new UserClaimsValues(userClaims);
+    }
+
+    private UserClaimsValues GetUserClaimsFromHttpContextAccessor(IHttpContextAccessor httpContextAccessor)
+    {
+        var userHttpContextClaims = httpContextAccessor?.HttpContext?.User;
+
+        if (userHttpContextClaims != null)
         {
-            if (httpContextAccessor?.HttpContext?.User?.Claims != null)
-            {
-                Claim userIdClaim = httpContextAccessor.HttpContext.User.Claims
-                    .SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
-
-                if (userIdClaim != null)
-                {
-                    UserId = TypeConversion.ConvertStringToGuid(userIdClaim.Value);
-                }
-
-                Claim userNameClaim = httpContextAccessor.HttpContext.User.Claims
-                    .SingleOrDefault(x => x.Type == ClaimTypes.Name);
-
-                if (userNameClaim != null)
-                {
-                    UserName = userNameClaim.Value;
-                }
-            }
+            return new UserClaimsValues(userHttpContextClaims);
         }
+
+        return new UserClaimsValues();
     }
 }

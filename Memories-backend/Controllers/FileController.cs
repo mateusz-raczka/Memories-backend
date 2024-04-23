@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using File = Memories_backend.Models.Domain.Folder.File.File;
+using Memories_backend.Models.Domain;
 using Memories_backend.Models.DTO.File.Response;
 using Memories_backend.Models.DTO.File.Request;
 using System.Linq.Expressions;
-using Memories_backend.Services;
 using Microsoft.AspNetCore.Authorization;
+using Memories_backend.Services.Interfaces;
+using Memories_backend.Services;
 
 namespace Memories_backend.Controllers
 {
@@ -13,11 +14,16 @@ namespace Memories_backend.Controllers
     [AllowAnonymous]
     public class FileController : ControllerBase
     {
-        private readonly IFileService _fileService;
+        private readonly IFileDatabaseService _fileDatabaseService;
+        private readonly IFileManagementService _fileManagementService;
 
-        public FileController(IFileService fileService)
+        public FileController(
+            IFileDatabaseService fileDatabaseService,
+            IFileManagementService fileManagementService
+            )
         {
-            _fileService = fileService;
+            _fileDatabaseService = fileDatabaseService;
+            _fileManagementService = fileManagementService;
         }
 
         [HttpGet]
@@ -27,16 +33,16 @@ namespace Memories_backend.Controllers
             string? filterName = null
             )
         {
-            Expression<Func<File, bool>> filter = null;
+            Expression<Func<Models.Domain.File, bool>> filter = null;
 
             if (filterName != null)
             {
                 filter = entity => entity.FileDetails.Name.Contains(filterName);
             }
 
-            Func<IQueryable<File>, IOrderedQueryable<File>> orderBy = query => query.OrderBy(entity => entity.FileDetails.Name);
+            Func<IQueryable<Models.Domain.File>, IOrderedQueryable<Models.Domain.File>> orderBy = query => query.OrderBy(entity => entity.FileDetails.Name);
 
-            IEnumerable<FileDtoFetchResponse> response = await _fileService.GetAllFiles(
+            IEnumerable<FileDtoFetchResponse> response = await _fileDatabaseService.GetAllFiles(
                 pageNumber, 
                 pageSize, 
                 filter, 
@@ -49,15 +55,15 @@ namespace Memories_backend.Controllers
         [HttpGet("{id:Guid}")]
         public async Task<FileDtoFetchResponse> GetById(Guid id)
         {
-            FileDtoFetchResponse response = await _fileService.GetFileByIdAsync(id);
+            FileDtoFetchResponse response = await _fileDatabaseService.GetFileByIdAsync(id);
 
             return response;
         }
         
-        [HttpPost]
-        public async Task<FileDtoCreateResponse> Create([FromBody] FileDtoCreateRequest requestBody)
+        [HttpPost("{folderId:Guid}")]
+        public async Task<FileDtoCreateResponse> Add(IFormFile fileData, Guid folderId)
         {
-            FileDtoCreateResponse response = await _fileService.CreateFileAsync(requestBody);
+            FileDtoCreateResponse response = await _fileManagementService.AddFileToDatabaseAndStorageAsync(fileData, folderId);
 
             return response;
         }
@@ -65,19 +71,13 @@ namespace Memories_backend.Controllers
         [HttpPut("{id:Guid}")]
         public async Task Update(Guid id, [FromBody] FileDtoUpdateRequest updatedFileDto)
         {
-            await _fileService.UpdateFileAsync(id, updatedFileDto);
+            await _fileDatabaseService.UpdateFileAsync(id, updatedFileDto);
         }
         
         [HttpDelete("{id:Guid}")]
         public async Task Delete(Guid id)
         {
-            await _fileService.DeleteFileAsync(id);
-        }
-
-        [HttpDelete]
-        public async Task Delete(File file)
-        {
-            await _fileService.DeleteFileAsync(file);
+            await _fileDatabaseService.DeleteFileAsync(id);
         }
     }
 }

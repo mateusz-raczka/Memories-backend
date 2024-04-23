@@ -1,4 +1,4 @@
-﻿using Memories_backend.Models.Domain.Folder.File;
+﻿using Memories_backend.Models.Domain;
 using Memories_backend.Utilities.Authentication.Roles;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

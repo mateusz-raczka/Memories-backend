@@ -1,39 +1,41 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Memories_backend.Models.Domain.Folder.File;
+using Memories_backend.Models.Domain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Memories_backend.Utilities.Extensions;
-using Memories_backend.Services;
-using Memories_backend.Models.Domain.Authorization;
-using Memories_backend.Models.Domain.Folder;
+using Memories_backend.Models.Authorization;
+using Memories_backend.Services.Interfaces;
 
 namespace Memories_backend.Contexts
 {
     public class ApplicationDbContext : IdentityDbContext
     {
-        private readonly Guid _userId;
+        private readonly IUserClaimsService _userClaimsService;
         public DbSet<ActivityType> ActivityTypes { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<FileActivity> FileActivities { get; set; }
-        public DbSet<ComponentDetails> FileDetails { get; set; }
-        public DbSet<Models.Domain.Folder.File.File> Files { get; set; }
+        public DbSet<FileDetails> FileDetails { get; set; }
+        public DbSet<FolderDetails> FolderDetails { get; set; }
+        public DbSet<Models.Domain.File> Files { get; set; }
+        public DbSet<Folder> Folders { get; set; }
         public DbSet<Tag> Tags { get; set; }
 
         public ApplicationDbContext(
             DbContextOptions<ApplicationDbContext> options,
-            IUserClaimsService userData
+            IUserClaimsService userClaimsService
             ) : base(options)
         {
-            _userId = userData.UserId;
+            _userClaimsService = userClaimsService;
         }
+
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
-            this.MarkCreatedItemAsOwnedBy(_userId);
+            this.MarkCreatedItemAsOwnedBy(_userClaimsService.UserClaimsValues.UserId);
             return base.SaveChanges(acceptAllChangesOnSuccess);
         }
 
         public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
         {
-            this.MarkCreatedItemAsOwnedBy(_userId);
+            this.MarkCreatedItemAsOwnedBy(_userClaimsService.UserClaimsValues.UserId);
             return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
 
@@ -49,21 +51,23 @@ namespace Memories_backend.Contexts
                 modelBuilder.Entity(entityOwnedBy.ClrType).HasIndex(nameof(IOwnerId.OwnerId));
             }
 
-            modelBuilder.Entity<Models.Domain.Folder.File.File>().HasQueryFilter(x => x.OwnerId == _userId); 
+            modelBuilder.Entity<Models.Domain.File>().HasQueryFilter(x => x.OwnerId == _userClaimsService.UserClaimsValues.UserId);
+            modelBuilder.Entity<Folder>().HasQueryFilter(x => x.OwnerId == _userClaimsService.UserClaimsValues.UserId);
 
-            modelBuilder.Entity<Models.Domain.Folder.File.File>().Navigation(e => e.Category).AutoInclude();
-            modelBuilder.Entity<Models.Domain.Folder.File.File>().Navigation(e => e.FileDetails).AutoInclude();
-            modelBuilder.Entity<Models.Domain.Folder.File.File>().Navigation(e => e.Tags).AutoInclude();
 
-            modelBuilder.Entity<Models.Domain.Folder.File.File>()
+            modelBuilder.Entity<Models.Domain.File>().Navigation(e => e.Category).AutoInclude();
+            modelBuilder.Entity<Models.Domain.File>().Navigation(e => e.FileDetails).AutoInclude();
+            modelBuilder.Entity<Models.Domain.File>().Navigation(e => e.Tags).AutoInclude();
+
+            modelBuilder.Entity<Models.Domain.File>()
             .HasOne(f => f.FileDetails)
             .WithOne(fd => fd.File)
-            .HasForeignKey<ComponentDetails>(fd => fd.Id);
+            .HasForeignKey<FileDetails>(fd => fd.Id);
 
             modelBuilder.Entity<Folder>()
             .HasOne(f => f.FolderDetails)
             .WithOne(fd => fd.Folder)
-            .HasForeignKey<ComponentDetails>(fd => fd.Id);
+            .HasForeignKey<FolderDetails>(fd => fd.Id);
         }
     }
 }

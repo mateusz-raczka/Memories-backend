@@ -1,8 +1,10 @@
-﻿namespace Memories_backend.Services
+﻿using Memories_backend.Models.Authentication;
+
+namespace Memories_backend.Services.Interfaces
 {
     public interface IUserClaimsService
     {
-        Guid UserId { get; }
-        string UserName { get; }
+        UserClaimsValues UserClaimsValues { get; }
+        void UpdateUserClaims(string token);
     }
 }

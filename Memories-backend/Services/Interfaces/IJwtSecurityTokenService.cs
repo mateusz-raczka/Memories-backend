@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace Memories_backend.Services
+namespace Memories_backend.Services.Interfaces
 {
     public interface IJwtSecurityTokenService
     {
