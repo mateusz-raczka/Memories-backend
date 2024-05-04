@@ -4,6 +4,7 @@ using Memories_backend.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Memories_backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240504184925_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,32 +57,32 @@ namespace Memories_backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("42a406fb-a415-4340-b49a-33861e42d044"),
+                            Id = new Guid("15d691db-86bb-46f2-9342-6f84408cbe17"),
                             Name = "Edit"
                         },
                         new
                         {
-                            Id = new Guid("b13dded5-1caa-49f6-9dcb-55bf3f71b49c"),
+                            Id = new Guid("47f75580-28a1-43ac-be66-da04619dd5bd"),
                             Name = "Share"
                         },
                         new
                         {
-                            Id = new Guid("b0c49cf8-c4b4-42c1-b64e-562338d4387d"),
+                            Id = new Guid("1fc7b969-c114-417c-a579-258dd95878ce"),
                             Name = "Transfer"
                         },
                         new
                         {
-                            Id = new Guid("a143657b-c498-4989-8de7-0cf5420b64f0"),
+                            Id = new Guid("0acb9266-d9cf-41e0-aee3-38f620fddc8c"),
                             Name = "Create"
                         },
                         new
                         {
-                            Id = new Guid("1448367d-46dc-46ac-9bf1-07f9226adfd1"),
+                            Id = new Guid("c327213f-460a-4eb8-ae39-ed6de2a4e496"),
                             Name = "Delete"
                         },
                         new
                         {
-                            Id = new Guid("1d1d3aa5-24a0-48f9-8bdd-4b8f2778c57c"),
+                            Id = new Guid("b68658fc-d348-4cc0-b9bb-6fc5b93beabe"),
                             Name = "Open"
                         });
                 });
@@ -274,19 +277,19 @@ namespace Memories_backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "740d466c-cc67-4d9a-b25d-cf1bc6d58417",
+                            Id = "6222ecf4-8620-4f27-bd72-656429b6cb2d",
                             Name = "USER",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "a2181b12-fe0e-4c71-90f2-6266262145d0",
+                            Id = "4b325d50-07fb-4640-9666-3a5fa3a5a905",
                             Name = "OWNER",
                             NormalizedName = "OWNER"
                         },
                         new
                         {
-                            Id = "cceb6f1e-c8cd-467e-bbf8-1e62101a0552",
+                            Id = "51b819ea-838a-44b5-995c-8c120cf34627",
                             Name = "ADMIN",
                             NormalizedName = "ADMIN"
                         });

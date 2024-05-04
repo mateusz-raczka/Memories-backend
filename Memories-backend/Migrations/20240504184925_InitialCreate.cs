@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace Memoriesbackend.Migrations
+namespace Memories_backend.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -219,7 +219,6 @@ namespace Memoriesbackend.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FolderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    StorageFileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -338,12 +337,12 @@ namespace Memoriesbackend.Migrations
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("78d1eb0f-68b9-48f6-a45f-83dae906a865"), "Share" },
-                    { new Guid("a625f733-7637-419b-a1d3-76185d46d775"), "Open" },
-                    { new Guid("ceb27461-05bd-47cb-a64e-ac4387d91f42"), "Transfer" },
-                    { new Guid("d05708b5-25c7-49af-bd01-d9d8a4fb79bf"), "Delete" },
-                    { new Guid("d4b0bd92-1d89-4489-ad9d-3ed8deac34c0"), "Create" },
-                    { new Guid("f3bbeb2a-454f-40a4-8974-f413b62f7536"), "Edit" }
+                    { new Guid("0acb9266-d9cf-41e0-aee3-38f620fddc8c"), "Create" },
+                    { new Guid("15d691db-86bb-46f2-9342-6f84408cbe17"), "Edit" },
+                    { new Guid("1fc7b969-c114-417c-a579-258dd95878ce"), "Transfer" },
+                    { new Guid("47f75580-28a1-43ac-be66-da04619dd5bd"), "Share" },
+                    { new Guid("b68658fc-d348-4cc0-b9bb-6fc5b93beabe"), "Open" },
+                    { new Guid("c327213f-460a-4eb8-ae39-ed6de2a4e496"), "Delete" }
                 });
 
             migrationBuilder.InsertData(
@@ -351,9 +350,9 @@ namespace Memoriesbackend.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "029510b8-3a52-49da-94e5-b4bffe8a71b4", null, "USER", "USER" },
-                    { "6314e5b8-fb9c-4aa4-8504-30f81672756c", null, "OWNER", "OWNER" },
-                    { "9288eb4a-3e99-4324-b1b7-eed7f4ef09d5", null, "ADMIN", "ADMIN" }
+                    { "4b325d50-07fb-4640-9666-3a5fa3a5a905", null, "OWNER", "OWNER" },
+                    { "51b819ea-838a-44b5-995c-8c120cf34627", null, "ADMIN", "ADMIN" },
+                    { "6222ecf4-8620-4f27-bd72-656429b6cb2d", null, "USER", "USER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -416,6 +415,11 @@ namespace Memoriesbackend.Migrations
                 column: "FolderId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Files_OwnerId",
+                table: "Files",
+                column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_FileTag_TagsId",
                 table: "FileTag",
                 column: "TagsId");
@@ -424,6 +428,11 @@ namespace Memoriesbackend.Migrations
                 name: "IX_Folders_FolderId",
                 table: "Folders",
                 column: "FolderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Folders_OwnerId",
+                table: "Folders",
+                column: "OwnerId");
         }
 
         /// <inheritdoc />

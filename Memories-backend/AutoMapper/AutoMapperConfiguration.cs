@@ -15,6 +15,7 @@ namespace Memories_backend.AutoMapper
                 x.AddProfile<FileDetailsMapperProfiles>();
                 x.AddProfile<CategoryMapperProfiles>();
                 x.AddProfile<FolderMapperProfiles>();
+                x.AddProfile<FolderDetailsMapperProfiles>();
             });
 
             return config;

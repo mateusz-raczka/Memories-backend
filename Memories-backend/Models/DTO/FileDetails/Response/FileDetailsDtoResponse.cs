@@ -1,6 +1,6 @@
 ﻿namespace Memories_backend.Models.DTO.FileDetails.Response
 {
-    public class ComponentDetailsDtoResponse
+    public class FileDetailsDtoResponse
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

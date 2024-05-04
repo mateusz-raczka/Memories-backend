@@ -9,8 +9,8 @@ namespace Memories_backend.AutoMapper.Profiles
     {
         public FileDetailsMapperProfiles() 
         {
-            CreateMap<FileDetails, ComponentDetailsDtoResponse>().ReverseMap();
-            CreateMap<FileDetails, ComponentDetailsDtoRequest>().ReverseMap();
+            CreateMap<FileDetails, FileDetailsDtoResponse>().ReverseMap();
+            CreateMap<FileDetails, FileDetailsDtoRequest>().ReverseMap();
         }
     }
 }

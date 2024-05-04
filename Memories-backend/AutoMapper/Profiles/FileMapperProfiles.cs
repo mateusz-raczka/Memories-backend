@@ -15,11 +15,10 @@ namespace Memories_backend.AutoMapper.Profiles
             CreateMap<Models.Domain.File, FileDtoCreateResponse>().ReverseMap();
             CreateMap<FileDtoCreateRequest, FileDtoCreateResponse>().ReverseMap();
             CreateMap<IFormFile, FileDtoCreateRequest>()
-                .ForMember(dest => dest.FileDetails, opt => opt.MapFrom(src => new ComponentDetailsDtoRequest
+                .ForMember(dest => dest.FileDetails, opt => opt.MapFrom(src => new FileDetailsDtoRequest
                 {
                     Name = src.FileName,
-                    Size = src.Length,
-                    CreatedDate = DateTime.UtcNow
+                    Size = src.Length
                 }));
         }
     }

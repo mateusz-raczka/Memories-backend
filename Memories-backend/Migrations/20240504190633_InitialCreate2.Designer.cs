@@ -9,18 +9,18 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Memoriesbackend.Migrations
+namespace Memories_backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240418202429_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240504190633_InitialCreate2")]
+    partial class InitialCreate2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0")
+                .HasAnnotation("ProductVersion", "8.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -57,32 +57,32 @@ namespace Memoriesbackend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("f3bbeb2a-454f-40a4-8974-f413b62f7536"),
+                            Id = new Guid("42a406fb-a415-4340-b49a-33861e42d044"),
                             Name = "Edit"
                         },
                         new
                         {
-                            Id = new Guid("78d1eb0f-68b9-48f6-a45f-83dae906a865"),
+                            Id = new Guid("b13dded5-1caa-49f6-9dcb-55bf3f71b49c"),
                             Name = "Share"
                         },
                         new
                         {
-                            Id = new Guid("ceb27461-05bd-47cb-a64e-ac4387d91f42"),
+                            Id = new Guid("b0c49cf8-c4b4-42c1-b64e-562338d4387d"),
                             Name = "Transfer"
                         },
                         new
                         {
-                            Id = new Guid("d4b0bd92-1d89-4489-ad9d-3ed8deac34c0"),
+                            Id = new Guid("a143657b-c498-4989-8de7-0cf5420b64f0"),
                             Name = "Create"
                         },
                         new
                         {
-                            Id = new Guid("d05708b5-25c7-49af-bd01-d9d8a4fb79bf"),
+                            Id = new Guid("1448367d-46dc-46ac-9bf1-07f9226adfd1"),
                             Name = "Delete"
                         },
                         new
                         {
-                            Id = new Guid("a625f733-7637-419b-a1d3-76185d46d775"),
+                            Id = new Guid("1d1d3aa5-24a0-48f9-8bdd-4b8f2778c57c"),
                             Name = "Open"
                         });
                 });
@@ -117,14 +117,13 @@ namespace Memoriesbackend.Migrations
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("StorageFileId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("FolderId");
+
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Files");
                 });
@@ -202,6 +201,8 @@ namespace Memoriesbackend.Migrations
 
                     b.HasIndex("FolderId");
 
+                    b.HasIndex("OwnerId");
+
                     b.ToTable("Folders");
                 });
 
@@ -276,19 +277,19 @@ namespace Memoriesbackend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "029510b8-3a52-49da-94e5-b4bffe8a71b4",
+                            Id = "740d466c-cc67-4d9a-b25d-cf1bc6d58417",
                             Name = "USER",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "6314e5b8-fb9c-4aa4-8504-30f81672756c",
+                            Id = "a2181b12-fe0e-4c71-90f2-6266262145d0",
                             Name = "OWNER",
                             NormalizedName = "OWNER"
                         },
                         new
                         {
-                            Id = "9288eb4a-3e99-4324-b1b7-eed7f4ef09d5",
+                            Id = "cceb6f1e-c8cd-467e-bbf8-1e62101a0552",
                             Name = "ADMIN",
                             NormalizedName = "ADMIN"
                         });

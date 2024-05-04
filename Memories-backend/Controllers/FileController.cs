@@ -16,33 +16,37 @@ namespace Memories_backend.Controllers
     {
         private readonly IFileDatabaseService _fileDatabaseService;
         private readonly IFileManagementService _fileManagementService;
+        private readonly IFileStorageService _fileStorageService;
 
         public FileController(
             IFileDatabaseService fileDatabaseService,
-            IFileManagementService fileManagementService
+            IFileManagementService fileManagementService,
+            IFileStorageService fileStorageService
             )
         {
             _fileDatabaseService = fileDatabaseService;
             _fileManagementService = fileManagementService;
+            _fileStorageService = fileStorageService;
         }
 
         [HttpGet]
         public async Task<IEnumerable<FileDtoFetchResponse>> GetAll(
-            int pageNumber = 1,
-            int pageSize = 10,
+            int? pageNumber,
+            int? pageSize,
             string? filterName = null
             )
         {
             Expression<Func<Models.Domain.File, bool>> filter = null;
 
-            if (filterName != null)
+            if (!string.IsNullOrEmpty(filterName))
             {
                 filter = entity => entity.FileDetails.Name.Contains(filterName);
             }
 
+            // Hardcoded orderby name
             Func<IQueryable<Models.Domain.File>, IOrderedQueryable<Models.Domain.File>> orderBy = query => query.OrderBy(entity => entity.FileDetails.Name);
 
-            IEnumerable<FileDtoFetchResponse> response = await _fileDatabaseService.GetAllFiles(
+            IEnumerable<FileDtoFetchResponse> response = await _fileDatabaseService.GetAllFilesAsync(
                 pageNumber, 
                 pageSize, 
                 filter, 
@@ -61,7 +65,7 @@ namespace Memories_backend.Controllers
         }
         
         [HttpPost("{folderId:Guid}")]
-        public async Task<FileDtoCreateResponse> Add(IFormFile fileData, Guid folderId)
+        public async Task<FileDtoCreateResponse> Add([FromForm] IFormFile fileData, Guid folderId)
         {
             FileDtoCreateResponse response = await _fileManagementService.AddFileToDatabaseAndStorageAsync(fileData, folderId);
 
@@ -69,15 +73,21 @@ namespace Memories_backend.Controllers
         }
         
         [HttpPut("{id:Guid}")]
-        public async Task Update(Guid id, [FromBody] FileDtoUpdateRequest updatedFileDto)
+        public async Task Update(Guid id, [FromBody] FileDtoUpdateRequest updateModel)
         {
-            await _fileDatabaseService.UpdateFileAsync(id, updatedFileDto);
+            await _fileDatabaseService.UpdateFileAsync(id, updateModel);
         }
         
         [HttpDelete("{id:Guid}")]
         public async Task Delete(Guid id)
         {
             await _fileDatabaseService.DeleteFileAsync(id);
+        }
+
+        [HttpGet("Download/{id:Guid}")]
+        public async Task<FileContentResult> Download(Guid id)
+        {
+            return await _fileStorageService.DownloadFileAsync(id);
         }
     }
 }

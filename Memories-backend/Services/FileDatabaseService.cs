@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Memories_backend.Models.Domain;
 using Memories_backend.Models.DTO.File.Request;
 using Memories_backend.Models.DTO.File.Response;
 using Memories_backend.Repositories;
@@ -20,9 +21,9 @@ namespace Memories_backend.Services
             _mapper = mapper;
         }
 
-        public async Task<FileDtoCreateResponse> CreateFileAsync(FileDtoCreateRequest requestBody)
+        public async Task<FileDtoCreateResponse> CreateFileAsync(FileDtoCreateRequest createModel)
         {
-            Models.Domain.File fileDomain = _mapper.Map<Models.Domain.File>(requestBody);
+            Models.Domain.File fileDomain = _mapper.Map<Models.Domain.File>(createModel);
 
             Models.Domain.File createdFile = await _fileRepository.Create(fileDomain);
 
@@ -34,7 +35,7 @@ namespace Memories_backend.Services
         }
 
 
-        public async Task UpdateFileAsync(Guid id, FileDtoUpdateRequest requestBody)
+        public async Task UpdateFileAsync(Guid id, FileDtoUpdateRequest updateModel)
         {
             Models.Domain.File file = await _fileRepository.GetById(id);
 
@@ -43,7 +44,7 @@ namespace Memories_backend.Services
                 throw new KeyNotFoundException("Invalid FileId.");
             }
 
-            _mapper.Map(requestBody, file);
+            _mapper.Map(updateModel, file);
             _fileRepository.Update(file);
             await _fileRepository.Save();
         }
@@ -74,11 +75,11 @@ namespace Memories_backend.Services
             return fileDto;
         }
 
-        public async Task<IEnumerable<FileDtoFetchResponse>> GetAllFiles(
-            int pageNumber,
-            int pageSize,
-            Expression<Func<Models.Domain.File, bool>> filter = null,
-            Func<IQueryable<Models.Domain.File>, IOrderedQueryable<Models.Domain.File>> orderBy = null
+        public async Task<IEnumerable<FileDtoFetchResponse>> GetAllFilesAsync(
+            int? pageNumber,
+            int? pageSize,
+            Expression<Func<Models.Domain.File, bool>>? filter = null,
+            Func<IQueryable<Models.Domain.File>, IOrderedQueryable<Models.Domain.File>>? orderBy = null
             )
         {
             IEnumerable<Models.Domain.File> files = await _fileRepository.GetAll(
@@ -87,9 +88,22 @@ namespace Memories_backend.Services
                 filter,
                 orderBy
                 );
+
             IEnumerable<FileDtoFetchResponse> filesDto = _mapper.Map<IEnumerable<FileDtoFetchResponse>>(files);
 
             return filesDto;
+        }
+
+        public async Task<bool> FileExistsAsync(Guid id)
+        {
+            Models.Domain.File folder = await _fileRepository.GetById(id);
+
+            if (folder == null)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }
