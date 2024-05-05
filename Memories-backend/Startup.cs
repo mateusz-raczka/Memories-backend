@@ -30,10 +30,7 @@ namespace Memories_backend
             //Database context
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer(
-                    connectionString,
-                    x => x.UseHierarchyId()
-                    );
+                options.UseSqlServer(connectionString);
             });
 
             //Authentication
