@@ -132,7 +132,6 @@ namespace Memories_backend
             app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
             app.UseMiddleware<JwtMiddleware>();
             
-            app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
