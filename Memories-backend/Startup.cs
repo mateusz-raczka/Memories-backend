@@ -12,7 +12,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using DotNetEnv;
 
 
 namespace Memories_backend
@@ -24,7 +23,6 @@ namespace Memories_backend
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            Env.Load();
         }
 
         public void ConfigureServices(IServiceCollection services)
