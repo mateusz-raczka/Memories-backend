@@ -32,31 +32,36 @@ namespace Memories_backend.Controllers
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var jwtToken = tokenHandler.ReadJwtToken(token);
-            var expiration = jwtToken.ValidTo;
+
 
             Response.Cookies.Append("jwt", token, new CookieOptions
             {
-                Expires = expiration,
+                MaxAge = TimeSpan.FromDays(3),
                 HttpOnly = true,
                 SameSite = SameSiteMode.Strict,
+                Secure = false,
+                Path = "/"
             });
         }
 
         [HttpPost]
         public async Task Login([FromBody] LoginDto loginDto)
         {
-           string token = await _authService.LoginAsync(loginDto);
-           
-           var tokenHandler = new JwtSecurityTokenHandler();
-           var jwtToken = tokenHandler.ReadJwtToken(token);
-           var expiration = jwtToken.ValidTo;
+            string token = await _authService.LoginAsync(loginDto);
 
-           Response.Cookies.Append("jwt", token, new CookieOptions
-           {
-               Expires = expiration,
-               HttpOnly = true,
-               SameSite = SameSiteMode.Strict,
-           });
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jwtToken = tokenHandler.ReadJwtToken(token);
+
+            var expiration = DateTime.UtcNow.AddDays(3);
+
+            Response.Cookies.Append("jwt", token, new CookieOptions
+            {
+                MaxAge = TimeSpan.FromDays(3),
+                HttpOnly = true,
+                SameSite = SameSiteMode.Strict,
+                Secure = false,
+                Path = "/",
+            });
         }
     }
 }
