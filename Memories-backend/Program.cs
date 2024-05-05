@@ -1,9 +1,10 @@
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Hosting;
-
+using Microsoft.Extensions.Configuration;
+using System;
 
 namespace Memories_backend
-
 {
     public class Program
     {
@@ -14,8 +15,12 @@ namespace Memories_backend
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-            .UseWindowsService()
-                .ConfigureLogging((hostingContext, logging) =>
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                          .AddEnvironmentVariables();
+                })
+                .ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();
                     logging.AddConsole();
@@ -25,10 +30,10 @@ namespace Memories_backend
                 {
                     webBuilder.UseStartup<Startup>();
                     webBuilder.UseUrls("http://127.0.0.1:8887");
-                    
+
                     webBuilder.ConfigureKestrel((context, options) =>
                     {
-                        // 5GB limit
+                        // Set the maximum request body size to 5GB
                         options.Limits.MaxRequestBodySize = 5000L * 1024 * 1024;
                     });
                 });
