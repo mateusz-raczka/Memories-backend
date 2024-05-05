@@ -12,6 +12,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using DotNetEnv;
+
 
 namespace Memories_backend
 {
@@ -22,6 +24,7 @@ namespace Memories_backend
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            Env.Load();
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -49,7 +52,10 @@ namespace Memories_backend
                 options.SignIn.RequireConfirmedEmail = false;
             });
 
-            services.AddAuthentication(options =>
+            string jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET");
+
+       
+        services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -64,7 +70,7 @@ namespace Memories_backend
                         ValidateAudience = true,
                         ValidIssuer = Configuration["JWT:Issuer"],
                         ValidAudience = Configuration["JWT:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET")))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
                     };
                 });
 
