@@ -118,9 +118,10 @@ namespace Memories_backend
         {
             app.UseCors(builder =>
             {
-                builder.AllowAnyOrigin()
-                       .AllowAnyMethod()
-                       .AllowAnyHeader();
+                builder.WithOrigins("http://localhost:3000", "https://memories.maszaweb.pl")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
             });
 
             if (env.IsDevelopment())
