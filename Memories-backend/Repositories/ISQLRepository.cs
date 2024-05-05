@@ -8,8 +8,8 @@ namespace Memories_backend.Repositories
         Task<IEnumerable<TEntity>> GetAll(
             int? pageNumber = null,
             int? pageSize = null,
-            Expression<Func<TEntity, bool>>? filter = null,
-            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null
+            Expression<Func<TEntity, bool>> filter = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null
             );
         Task<TEntity> Create(TEntity entity);
         Task Delete(Guid id);

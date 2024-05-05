@@ -30,10 +30,7 @@ namespace Memories_backend
             //Database context
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer(
-                    connectionString,
-                    x => x.UseHierarchyId()
-                    );
+                options.UseSqlServer(connectionString);
             });
 
             //Authentication
@@ -97,10 +94,10 @@ namespace Memories_backend
             services.AddScoped<IJwtSecurityTokenService, JwtSecurityTokenService>();
             services.AddScoped<IFileStorageService, FileStorageService>();
             services.AddScoped<IFileManagementService, FileManagementService>();
+            services.AddScoped<IPathService, PathService>();
             services.AddScoped<IFolderDatabaseService, FolderDatabaseService>();
             services.AddScoped<IInitializeUserService, InitializeUserService>();
             services.AddScoped<IRegisterService, RegisterService>();
-            services.AddScoped<IFolderStorageService, FolderStorageService>();
 
             //Middlewares that use other services
             services.AddScoped<JwtMiddleware>();

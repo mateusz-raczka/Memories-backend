@@ -11,6 +11,6 @@ namespace Memories_backend.Models.Domain
 
         // Navigation properties
         [JsonIgnore]
-        public IEnumerable<File> Files { get; set; }
+        public List<File> Files { get; set; }
     }
 }
