@@ -2,7 +2,6 @@
 using Memories_backend.Models.DTO.Folder.Request;
 using Memories_backend.Models.DTO.Folder.Response;
 using Memories_backend.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
 
@@ -10,7 +9,6 @@ namespace Memories_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AllowAnonymous]
     public class FolderController : ControllerBase
     {
         private readonly IFolderDatabaseService _folderDatabaseService;

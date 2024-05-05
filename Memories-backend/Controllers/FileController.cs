@@ -1,17 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Memories_backend.Models.Domain;
 using Memories_backend.Models.DTO.File.Response;
 using Memories_backend.Models.DTO.File.Request;
 using System.Linq.Expressions;
-using Microsoft.AspNetCore.Authorization;
 using Memories_backend.Services.Interfaces;
-using Memories_backend.Services;
 
 namespace Memories_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AllowAnonymous]
     public class FileController : ControllerBase
     {
         private readonly IFileDatabaseService _fileDatabaseService;
