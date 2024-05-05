@@ -39,8 +39,9 @@ namespace Memories_backend.Controllers
                 MaxAge = TimeSpan.FromDays(3),
                 HttpOnly = true,
                 SameSite = SameSiteMode.Strict,
-                Secure = false,
-                Path = "/"
+                Secure = true,
+                Path = "/",
+                Domain = "memories.maszaweb.pl"
             });
         }
 
@@ -52,15 +53,15 @@ namespace Memories_backend.Controllers
             var tokenHandler = new JwtSecurityTokenHandler();
             var jwtToken = tokenHandler.ReadJwtToken(token);
 
-            var expiration = DateTime.UtcNow.AddDays(3);
 
             Response.Cookies.Append("jwt", token, new CookieOptions
             {
                 MaxAge = TimeSpan.FromDays(3),
                 HttpOnly = true,
                 SameSite = SameSiteMode.Strict,
-                Secure = false,
+                Secure = true,
                 Path = "/",
+                Domain = "memories.maszaweb.pl"
             });
         }
     }
