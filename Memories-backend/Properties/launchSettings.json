@@ -1,23 +1,20 @@
-﻿{
-  "$schema": "https://json.schemastore.org/launchsettings.json",
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:40679",
-      "sslPort": 44370
-    }
-  },
+{
   "profiles": {
     "http": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "http://localhost:5267",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DB_SERVER": "147.185.221.19",
+        "DB_PORT": "34413",
+        "DB_NAME": "memories",
+        "DB_USER": "sa",
+        "DB_PASSWORD": "PicklePie2022!",
+        "JWT_SECRET": "w8HTVYh98VdQ5a9MVrtByeVUO6NjPxrL4SxMZg6uJJpeNDIhFR"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:5267"
     },
     "IIS Express": {
       "commandName": "IISExpress",
@@ -26,6 +23,15 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
+    }
+  },
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:40679",
+      "sslPort": 44370
     }
   }
 }

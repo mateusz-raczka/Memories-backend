@@ -24,8 +24,9 @@ namespace Memories_backend.Services
         }
 
         public string GenerateJwtToken(string userId, string role)
+
         {
-            var key = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]);
+            var key = Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET"));
 
             if(!_roles.Contains(role))
             {

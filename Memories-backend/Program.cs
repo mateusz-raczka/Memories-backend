@@ -15,7 +15,7 @@ namespace Memories_backend
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-            .UseWindowsService()
+                .UseWindowsService()
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -38,5 +38,6 @@ namespace Memories_backend
                         options.Limits.MaxRequestBodySize = 5000L * 1024 * 1024;
                     });
                 });
+
     }
 }
