@@ -41,7 +41,7 @@ namespace Memories_backend.Controllers
                 SameSite = SameSiteMode.Strict,
                 Secure = true,
                 Path = "/",
-                Domain = "memories.maszaweb.pl"
+                Domain = ".maszaweb.pl"
             });
         }
 
@@ -61,7 +61,7 @@ namespace Memories_backend.Controllers
                 SameSite = SameSiteMode.Strict,
                 Secure = true,
                 Path = "/",
-                Domain = "memories.maszaweb.pl"
+                Domain = ".maszaweb.pl"
             });
         }
     }
