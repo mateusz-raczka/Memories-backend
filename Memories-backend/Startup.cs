@@ -25,13 +25,7 @@ namespace Memories_backend
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var dbServer = Environment.GetEnvironmentVariable("DB_SERVER");
-            var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
-            var dbName = Environment.GetEnvironmentVariable("DB_NAME");
-            var dbUser = Environment.GetEnvironmentVariable("DB_USER");
-            var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
-
-            var connectionString = $"Server={dbServer},{dbPort};Database={dbName};User Id={dbUser};Password={dbPassword};TrustServerCertificate=True;";
+            var connectionString = $"Server={Environment.GetEnvironmentVariable("DB_SERVER")},{Environment.GetEnvironmentVariable("DB_PORT")};Database={Environment.GetEnvironmentVariable("DB_NAME")};User Id={Environment.GetEnvironmentVariable("DB_USER")};Password={Environment.GetEnvironmentVariable("DB_PASSWORD")};TrustServerCertificate=True;";
 
             //Database context
             services.AddDbContext<ApplicationDbContext>(options =>

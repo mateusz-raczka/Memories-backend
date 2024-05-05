@@ -57,7 +57,7 @@ namespace Memories_backend.Services
 
         public ClaimsPrincipal ValidateJwtToken(string token)
         {
-            var key = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]);
+            var key = Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET"));
 
             try
             {
