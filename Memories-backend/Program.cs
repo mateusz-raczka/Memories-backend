@@ -24,7 +24,7 @@ namespace Memories_backend
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.UseUrls("http://127.0.0.1:8887");
+                    webBuilder.UseUrls("http://127.0.0.1:8889");
 
                     webBuilder.ConfigureKestrel((context, options) =>
                     {
