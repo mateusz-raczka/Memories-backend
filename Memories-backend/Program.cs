@@ -13,7 +13,6 @@ namespace Memories_backend
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-            .UseWindowsService()
                 .ConfigureLogging((hostingContext, logging) =>
                 {
                     logging.ClearProviders();
