@@ -1,4 +1,8 @@
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Hosting;
+
 namespace Memories_backend
+
 {
     public class Program
     {
@@ -9,6 +13,7 @@ namespace Memories_backend
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+            .UseWindowsService()
                 .ConfigureLogging((hostingContext, logging) =>
                 {
                     logging.ClearProviders();
@@ -18,6 +23,8 @@ namespace Memories_backend
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    webBuilder.UseUrls("http://127.0.0.1:8887");
+                    
                     webBuilder.ConfigureKestrel((context, options) =>
                     {
                         // 5GB limit
