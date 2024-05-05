@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using System;
+using DotNetEnv;
 
 namespace Memories_backend
 {
@@ -10,6 +11,7 @@ namespace Memories_backend
     {
         public static void Main(string[] args)
         {
+            DotNetEnv.Env.Load();
             CreateHostBuilder(args).Build().Run();
         }
 
