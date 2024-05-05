@@ -55,6 +55,11 @@ namespace Memories_backend.Utilities.Extensions
         /// <returns>The initialized paged result.</returns>
         private static PagedResult<T> InitializeResult<T>(IQueryable<T> query, int page, int pageSize) where T : class
         {
+            if (page <= 0 || pageSize <= 0)
+            {
+                throw new ApplicationException("Neither pageNumber or pageSize can be negative or zero");
+            }
+
             PagedResult<T> result = new PagedResult<T>();
             result.CurrentPage = page;
             result.PageSize = pageSize;

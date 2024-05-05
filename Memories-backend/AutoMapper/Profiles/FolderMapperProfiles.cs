@@ -11,7 +11,8 @@ namespace Memories_backend.AutoMapper.Profiles
         {
             CreateMap<Folder, FolderDtoCreateResponse>().ReverseMap();
             CreateMap<Folder, FolderDtoCreateRequest>().ReverseMap();
-            CreateMap<Folder, FolderDtoFetchResponse>().ReverseMap();
+            CreateMap<Folder, FolderDtoFetchAllResponse>().ReverseMap();
+            CreateMap<Folder, FolderDtoFetchByIdResponse>().ReverseMap();
         }
     }
 }

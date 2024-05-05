@@ -9,6 +9,6 @@ namespace Memories_backend.Models.Domain
         public string Name { get; set; }
 
         // Navigation properties
-        public List<File> Files { get; set; }
+        public IEnumerable<File> Files { get; set; }
     }
 }

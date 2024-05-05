@@ -5,7 +5,6 @@ namespace Memories_backend.Models.Domain
 {
     public class File : IOwnerId
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
         public Guid FolderId { get; set; }
         public Guid? CategoryId { get; set; }
