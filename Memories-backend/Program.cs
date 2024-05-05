@@ -1,29 +1,21 @@
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using System;
-using DotNetEnv;
+
 
 namespace Memories_backend
+
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            DotNetEnv.Env.Load();
             CreateHostBuilder(args).Build().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .UseWindowsService()
-                .ConfigureAppConfiguration((hostingContext, config) =>
-                {
-                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                          .AddEnvironmentVariables();
-                })
-                .ConfigureLogging(logging =>
+            .UseWindowsService()
+                .ConfigureLogging((hostingContext, logging) =>
                 {
                     logging.ClearProviders();
                     logging.AddConsole();
@@ -36,10 +28,9 @@ namespace Memories_backend
 
                     webBuilder.ConfigureKestrel((context, options) =>
                     {
-                        // Set the maximum request body size to 5GB
+                        // 5GB limit
                         options.Limits.MaxRequestBodySize = 5000L * 1024 * 1024;
                     });
                 });
-
     }
 }
