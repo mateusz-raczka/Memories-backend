@@ -9,19 +9,16 @@ namespace Memories_backend.Services
     {
         private readonly IFileStorageService _fileStorageService;
         private readonly IFileDatabaseService _fileDatabaseService;
-        private readonly IFolderDatabaseService _folderDatabaseService;
         private readonly IMapper _mapper;
 
         public FileManagementService(
             IFileStorageService fileStorageService,
             IFileDatabaseService fileDatabaseService,
-            IFolderDatabaseService folderDatabaseService,
             IMapper mapper
             )
         {
             _fileDatabaseService = fileDatabaseService;
             _fileStorageService = fileStorageService;
-            _folderDatabaseService = folderDatabaseService;
             _mapper = mapper;
         }
 
@@ -29,26 +26,23 @@ namespace Memories_backend.Services
         {
             Guid fileId = Guid.Empty;
 
-            bool folderExists = await _folderDatabaseService.FolderExistsAsync(folderId);
-            if (!folderExists)
-            {
-                throw new ArgumentException("Folder with the given ID does not exist.", nameof(folderId));
-            }
+            FileDtoCreateResponse fileDtoCreateResponse;
 
-            using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 try
                 {
                     fileId = await _fileStorageService.UploadFileAsync(fileData, folderId);
 
-                    var fileDtoCreateRequest = _mapper.Map<FileDtoCreateRequest>(fileData);
+                    FileDtoCreateRequest fileDtoCreateRequest = _mapper.Map<FileDtoCreateRequest>(fileData);
 
-                    fileDtoCreateRequest.Id = fileId;
+                    fileDtoCreateRequest.StorageFileId = fileId;
+
                     fileDtoCreateRequest.FolderId = folderId;
 
-                    var fileDtoCreateResponse = await _fileDatabaseService.CreateFileAsync(fileDtoCreateRequest);
+                    fileDtoCreateResponse = await _fileDatabaseService.CreateFileAsync(fileDtoCreateRequest);
 
-                    transactionScope.Complete();
+                    transaction.Complete();
 
                     return fileDtoCreateResponse;
                 }
@@ -56,13 +50,12 @@ namespace Memories_backend.Services
                 {
                     if (fileId != Guid.Empty)
                     {
-                        await _fileStorageService.DeleteFileAsync(fileId);
+                        await _fileStorageService.DeleteFileAsync(fileId, folderId);
                     }
 
                     throw new ApplicationException("An error occurred while creating the file.", ex);
                 }
             }
         }
-
     }
 }

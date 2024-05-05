@@ -9,14 +9,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Memories_backend.Migrations
+namespace Memoriesbackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-<<<<<<<< HEAD:Memories-backend/Migrations/20240418202429_InitialCreate.Designer.cs
     [Migration("20240418202429_InitialCreate")]
-========
-    [Migration("20240504184925_InitialCreate")]
->>>>>>>> 2-add-file-transfer-functionality-to-fileservice-2:Memories-backend/Migrations/20240504184925_InitialCreate.Designer.cs
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -24,7 +20,7 @@ namespace Memories_backend.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.4")
+                .HasAnnotation("ProductVersion", "7.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -61,56 +57,32 @@ namespace Memories_backend.Migrations
                     b.HasData(
                         new
                         {
-<<<<<<<< HEAD:Memories-backend/Migrations/20240418202429_InitialCreate.Designer.cs
                             Id = new Guid("f3bbeb2a-454f-40a4-8974-f413b62f7536"),
-========
-                            Id = new Guid("15d691db-86bb-46f2-9342-6f84408cbe17"),
->>>>>>>> 2-add-file-transfer-functionality-to-fileservice-2:Memories-backend/Migrations/20240504184925_InitialCreate.Designer.cs
                             Name = "Edit"
                         },
                         new
                         {
-<<<<<<<< HEAD:Memories-backend/Migrations/20240418202429_InitialCreate.Designer.cs
                             Id = new Guid("78d1eb0f-68b9-48f6-a45f-83dae906a865"),
-========
-                            Id = new Guid("47f75580-28a1-43ac-be66-da04619dd5bd"),
->>>>>>>> 2-add-file-transfer-functionality-to-fileservice-2:Memories-backend/Migrations/20240504184925_InitialCreate.Designer.cs
                             Name = "Share"
                         },
                         new
                         {
-<<<<<<<< HEAD:Memories-backend/Migrations/20240418202429_InitialCreate.Designer.cs
                             Id = new Guid("ceb27461-05bd-47cb-a64e-ac4387d91f42"),
-========
-                            Id = new Guid("1fc7b969-c114-417c-a579-258dd95878ce"),
->>>>>>>> 2-add-file-transfer-functionality-to-fileservice-2:Memories-backend/Migrations/20240504184925_InitialCreate.Designer.cs
                             Name = "Transfer"
                         },
                         new
                         {
-<<<<<<<< HEAD:Memories-backend/Migrations/20240418202429_InitialCreate.Designer.cs
                             Id = new Guid("d4b0bd92-1d89-4489-ad9d-3ed8deac34c0"),
-========
-                            Id = new Guid("0acb9266-d9cf-41e0-aee3-38f620fddc8c"),
->>>>>>>> 2-add-file-transfer-functionality-to-fileservice-2:Memories-backend/Migrations/20240504184925_InitialCreate.Designer.cs
                             Name = "Create"
                         },
                         new
                         {
-<<<<<<<< HEAD:Memories-backend/Migrations/20240418202429_InitialCreate.Designer.cs
                             Id = new Guid("d05708b5-25c7-49af-bd01-d9d8a4fb79bf"),
-========
-                            Id = new Guid("c327213f-460a-4eb8-ae39-ed6de2a4e496"),
->>>>>>>> 2-add-file-transfer-functionality-to-fileservice-2:Memories-backend/Migrations/20240504184925_InitialCreate.Designer.cs
                             Name = "Delete"
                         },
                         new
                         {
-<<<<<<<< HEAD:Memories-backend/Migrations/20240418202429_InitialCreate.Designer.cs
                             Id = new Guid("a625f733-7637-419b-a1d3-76185d46d775"),
-========
-                            Id = new Guid("b68658fc-d348-4cc0-b9bb-6fc5b93beabe"),
->>>>>>>> 2-add-file-transfer-functionality-to-fileservice-2:Memories-backend/Migrations/20240504184925_InitialCreate.Designer.cs
                             Name = "Open"
                         });
                 });
@@ -145,23 +117,15 @@ namespace Memories_backend.Migrations
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uniqueidentifier");
 
-<<<<<<<< HEAD:Memories-backend/Migrations/20240418202429_InitialCreate.Designer.cs
                     b.Property<Guid>("StorageFileId")
                         .HasColumnType("uniqueidentifier");
 
-========
->>>>>>>> 2-add-file-transfer-functionality-to-fileservice-2:Memories-backend/Migrations/20240504184925_InitialCreate.Designer.cs
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("FolderId");
 
-<<<<<<<< HEAD:Memories-backend/Migrations/20240418202429_InitialCreate.Designer.cs
-========
-                    b.HasIndex("OwnerId");
-
->>>>>>>> 2-add-file-transfer-functionality-to-fileservice-2:Memories-backend/Migrations/20240504184925_InitialCreate.Designer.cs
                     b.ToTable("Files");
                 });
 
@@ -238,11 +202,6 @@ namespace Memories_backend.Migrations
 
                     b.HasIndex("FolderId");
 
-<<<<<<<< HEAD:Memories-backend/Migrations/20240418202429_InitialCreate.Designer.cs
-========
-                    b.HasIndex("OwnerId");
-
->>>>>>>> 2-add-file-transfer-functionality-to-fileservice-2:Memories-backend/Migrations/20240504184925_InitialCreate.Designer.cs
                     b.ToTable("Folders");
                 });
 
@@ -317,31 +276,19 @@ namespace Memories_backend.Migrations
                     b.HasData(
                         new
                         {
-<<<<<<<< HEAD:Memories-backend/Migrations/20240418202429_InitialCreate.Designer.cs
                             Id = "029510b8-3a52-49da-94e5-b4bffe8a71b4",
-========
-                            Id = "6222ecf4-8620-4f27-bd72-656429b6cb2d",
->>>>>>>> 2-add-file-transfer-functionality-to-fileservice-2:Memories-backend/Migrations/20240504184925_InitialCreate.Designer.cs
                             Name = "USER",
                             NormalizedName = "USER"
                         },
                         new
                         {
-<<<<<<<< HEAD:Memories-backend/Migrations/20240418202429_InitialCreate.Designer.cs
                             Id = "6314e5b8-fb9c-4aa4-8504-30f81672756c",
-========
-                            Id = "4b325d50-07fb-4640-9666-3a5fa3a5a905",
->>>>>>>> 2-add-file-transfer-functionality-to-fileservice-2:Memories-backend/Migrations/20240504184925_InitialCreate.Designer.cs
                             Name = "OWNER",
                             NormalizedName = "OWNER"
                         },
                         new
                         {
-<<<<<<<< HEAD:Memories-backend/Migrations/20240418202429_InitialCreate.Designer.cs
                             Id = "9288eb4a-3e99-4324-b1b7-eed7f4ef09d5",
-========
-                            Id = "51b819ea-838a-44b5-995c-8c120cf34627",
->>>>>>>> 2-add-file-transfer-functionality-to-fileservice-2:Memories-backend/Migrations/20240504184925_InitialCreate.Designer.cs
                             Name = "ADMIN",
                             NormalizedName = "ADMIN"
                         });

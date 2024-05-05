@@ -59,9 +59,6 @@ namespace Memories_backend.Contexts
             modelBuilder.Entity<Models.Domain.File>().Navigation(e => e.FileDetails).AutoInclude();
             modelBuilder.Entity<Models.Domain.File>().Navigation(e => e.Tags).AutoInclude();
 
-            modelBuilder.Entity<Folder>().Navigation(e => e.FolderDetails).AutoInclude();
-            modelBuilder.Entity<Folder>().Navigation(e => e.Files).AutoInclude();
-
             modelBuilder.Entity<Models.Domain.File>()
             .HasOne(f => f.FileDetails)
             .WithOne(fd => fd.File)

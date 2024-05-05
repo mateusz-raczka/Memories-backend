@@ -15,7 +15,7 @@ public class UserClaimsService : IUserClaimsService
     {
         _jwtSecurityTokenService = jwtSecurityTokenService;
 
-        UserClaimsValues = GetUserClaimsFromHttpRequest(httpContextAccessor);
+        UserClaimsValues = GetUserClaimsFromHttpContextAccessor(httpContextAccessor);
     }
     public void UpdateUserClaims(string token)
     {
@@ -24,7 +24,7 @@ public class UserClaimsService : IUserClaimsService
         UserClaimsValues = new UserClaimsValues(userClaims);
     }
 
-    private UserClaimsValues GetUserClaimsFromHttpRequest(IHttpContextAccessor httpContextAccessor)
+    private UserClaimsValues GetUserClaimsFromHttpContextAccessor(IHttpContextAccessor httpContextAccessor)
     {
         var userHttpContextClaims = httpContextAccessor?.HttpContext?.User;
 

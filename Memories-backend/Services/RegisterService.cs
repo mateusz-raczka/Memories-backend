@@ -11,17 +11,23 @@ namespace Memories_backend.Services
 
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IJwtSecurityTokenService _jwtSecurityTokenHandlerWrapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IInitializeUserService _initializeUserService;
+        private readonly IUserClaimsService _userClaimsService;
 
         public RegisterService(
             UserManager<IdentityUser> userManager,
             IJwtSecurityTokenService jwtSecurityTokenHandlerWrapper,
-            IInitializeUserService initializeUserService
+            IHttpContextAccessor httpContextAccessor,
+            IInitializeUserService initializeUserService,
+            IUserClaimsService userClaimsService
             )
         {
             _userManager = userManager;
             _jwtSecurityTokenHandlerWrapper = jwtSecurityTokenHandlerWrapper;
+            _httpContextAccessor = httpContextAccessor;
             _initializeUserService = initializeUserService;
+            _userClaimsService = userClaimsService;
         }
 
         public async Task<string> RegisterAsync(RegisterDto registerDto)

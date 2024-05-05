@@ -6,6 +6,7 @@ namespace Memories_backend.Models.DTO.File.Request
     {
         public Guid Id { get; set; }
         public Guid FolderId { get; set; }
-        public FileDetailsDtoResponse FileDetails { get; set; }
+        public Guid StorageFileId { get; set; }
+        public ComponentDetailsDtoResponse FileDetails { get; set; }
     }
 }
