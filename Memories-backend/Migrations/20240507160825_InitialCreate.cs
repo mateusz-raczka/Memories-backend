@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.SqlServer.Types;
 
 #nullable disable
 
@@ -82,7 +83,9 @@ namespace Memories_backend.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FolderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    HierarchyId = table.Column<SqlHierarchyId>(type: "hierarchyid", nullable: false),
+                    OldHierarchyId = table.Column<SqlHierarchyId>(type: "hierarchyid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -337,12 +340,12 @@ namespace Memories_backend.Migrations
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("0acb9266-d9cf-41e0-aee3-38f620fddc8c"), "Create" },
-                    { new Guid("15d691db-86bb-46f2-9342-6f84408cbe17"), "Edit" },
-                    { new Guid("1fc7b969-c114-417c-a579-258dd95878ce"), "Transfer" },
-                    { new Guid("47f75580-28a1-43ac-be66-da04619dd5bd"), "Share" },
-                    { new Guid("b68658fc-d348-4cc0-b9bb-6fc5b93beabe"), "Open" },
-                    { new Guid("c327213f-460a-4eb8-ae39-ed6de2a4e496"), "Delete" }
+                    { new Guid("184e8a09-e79b-4527-919e-4fc5e4481bef"), "Delete" },
+                    { new Guid("50f1919a-feba-405f-bd91-c069ced41538"), "Transfer" },
+                    { new Guid("52f0d47c-6ecf-4c99-a14d-5ca41c5b5f82"), "Share" },
+                    { new Guid("8196a7bf-27cc-40bf-b50d-73ffc61f36d7"), "Create" },
+                    { new Guid("ba49cf41-b861-4edd-8d74-cd3dba245627"), "Open" },
+                    { new Guid("bed76e49-763a-4bf2-898b-76e05b5e3b85"), "Edit" }
                 });
 
             migrationBuilder.InsertData(
@@ -350,9 +353,9 @@ namespace Memories_backend.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "4b325d50-07fb-4640-9666-3a5fa3a5a905", null, "OWNER", "OWNER" },
-                    { "51b819ea-838a-44b5-995c-8c120cf34627", null, "ADMIN", "ADMIN" },
-                    { "6222ecf4-8620-4f27-bd72-656429b6cb2d", null, "USER", "USER" }
+                    { "4697f6a8-d7d4-420d-9ff2-645ff9ff7261", null, "ADMIN", "ADMIN" },
+                    { "cb9ec7a8-cf4c-4d37-9402-bf3c622b7cea", null, "USER", "USER" },
+                    { "ce8e854f-e5fd-410a-a763-eb139d07b2bd", null, "OWNER", "OWNER" }
                 });
 
             migrationBuilder.CreateIndex(

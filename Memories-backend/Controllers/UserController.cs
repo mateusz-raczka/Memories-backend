@@ -1,5 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using Memories_backend.Models.DTO.Login;
+﻿using Memories_backend.Models.DTO.Login;
 using Memories_backend.Models.DTO.Register;
 using Memories_backend.Services;
 using Memories_backend.Services.Interfaces;
@@ -26,43 +25,19 @@ namespace Memories_backend.Controllers
         }
 
         [HttpPost]
-        public async Task Register([FromBody] RegisterDto registerDto)
+        public async Task<string> Register([FromBody] RegisterDto registerDto)
         {
             string token = await _registerService.RegisterAsync(registerDto);
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var jwtToken = tokenHandler.ReadJwtToken(token);
-
-
-            Response.Cookies.Append("jwt", token, new CookieOptions
-            {
-                MaxAge = TimeSpan.FromDays(3),
-                HttpOnly = true,
-                SameSite = SameSiteMode.Strict,
-                Secure = true,
-                Path = "/",
-                Domain = ".maszaweb.pl"
-            });
+            return token;
         }
 
         [HttpPost]
-        public async Task Login([FromBody] LoginDto loginDto)
+        public async Task<string> Login([FromBody] LoginDto loginDto)
         {
             string token = await _authService.LoginAsync(loginDto);
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var jwtToken = tokenHandler.ReadJwtToken(token);
-
-
-            Response.Cookies.Append("jwt", token, new CookieOptions
-            {
-                MaxAge = TimeSpan.FromDays(3),
-                HttpOnly = true,
-                SameSite = SameSiteMode.Strict,
-                Secure = true,
-                Path = "/",
-                Domain = ".maszaweb.pl"
-            });
+            return token;
         }
     }
 }

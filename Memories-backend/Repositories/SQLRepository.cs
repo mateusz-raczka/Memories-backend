@@ -3,6 +3,7 @@ using Memories_backend.Models.Pagination;
 using Memories_backend.Utilities.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using Memories_backend.Models.Domain.Interfaces;
 
 namespace Memories_backend.Repositories
 {
