@@ -2,8 +2,8 @@
 using Memories_backend.Models.Domain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Memories_backend.Utilities.Extensions;
-using Memories_backend.Models.Authorization;
 using Memories_backend.Services.Interfaces;
+using Memories_backend.Models.Domain.Interfaces;
 
 namespace Memories_backend.Contexts
 {
@@ -54,23 +54,31 @@ namespace Memories_backend.Contexts
             modelBuilder.Entity<Models.Domain.File>().HasQueryFilter(x => x.OwnerId == _userClaimsService.UserClaimsValues.UserId);
             modelBuilder.Entity<Folder>().HasQueryFilter(x => x.OwnerId == _userClaimsService.UserClaimsValues.UserId);
 
-
             modelBuilder.Entity<Models.Domain.File>().Navigation(e => e.Category).AutoInclude();
-            modelBuilder.Entity<Models.Domain.File>().Navigation(e => e.FileDetails).AutoInclude();
-            modelBuilder.Entity<Models.Domain.File>().Navigation(e => e.Tags).AutoInclude();
-
-            modelBuilder.Entity<Folder>().Navigation(e => e.FolderDetails).AutoInclude();
-            modelBuilder.Entity<Folder>().Navigation(e => e.Files).AutoInclude();
-
             modelBuilder.Entity<Models.Domain.File>()
-            .HasOne(f => f.FileDetails)
-            .WithOne(fd => fd.File)
-            .HasForeignKey<FileDetails>(fd => fd.Id);
+                .Navigation(e => e.FileDetails)
+                .AutoInclude();
+            modelBuilder.Entity<Models.Domain.File>()
+                .Navigation(e => e.Tags)
+                .AutoInclude();
 
             modelBuilder.Entity<Folder>()
-            .HasOne(f => f.FolderDetails)
-            .WithOne(fd => fd.Folder)
-            .HasForeignKey<FolderDetails>(fd => fd.Id);
+                .Navigation(e => e.FolderDetails)
+                .AutoInclude();
+            modelBuilder.Entity<Folder>()
+                .Navigation(e => e.Files)
+                .AutoInclude();
+
+            modelBuilder.Entity<Models.Domain.File>()
+                .HasOne(f => f.FileDetails)
+                .WithOne(fd => fd.File)
+                .HasForeignKey<FileDetails>(fd => fd.Id);
+
+            modelBuilder.Entity<Folder>()
+                .HasOne(f => f.FolderDetails)
+                .WithOne(fd => fd.Folder)
+                .HasForeignKey<FolderDetails>(fd => fd.Id);
+
         }
     }
 }

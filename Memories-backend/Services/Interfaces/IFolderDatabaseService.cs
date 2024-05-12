@@ -8,7 +8,6 @@ namespace Memories_backend.Services.Interfaces
     public interface IFolderDatabaseService
     {
         Task<FolderDtoCreateResponse> CreateRootFolderAsync();
-        Task<Folder> FindRootFolderAsync();
         Task<IEnumerable<FolderDtoFetchAllResponse>> GetAllFoldersAsync(
             int? pageNumber = null,
             int? pageSize = null,
@@ -18,8 +17,6 @@ namespace Memories_backend.Services.Interfaces
         Task<FolderDtoFetchByIdResponse> GetFolderByIdAsync(Guid folderId);
         Task<bool> FolderExistsAsync(Guid folderId);
         Task<FolderDtoCreateResponse> CreateFolderAsync(FolderDtoCreateRequest createModel);
-        Task<IEnumerable<FolderDtoFetchAllResponse>> GetSubFoldersAsync(Guid folderId);
         Task<string> GetFolderRelativePathAsync(Guid folderId);
-        Task<IEnumerable<Guid>> GetFolderAncestorsIdsAsync(Guid folderId);
     }
 }

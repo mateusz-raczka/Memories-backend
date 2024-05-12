@@ -1,4 +1,4 @@
-﻿namespace Memories_backend.Models.Authorization
+﻿namespace Memories_backend.Models.Domain.Interfaces
 {
     public interface IOwnerId
     {
