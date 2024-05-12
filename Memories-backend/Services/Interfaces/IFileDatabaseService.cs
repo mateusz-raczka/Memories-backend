@@ -18,6 +18,5 @@ namespace Memories_backend.Services.Interfaces
             Expression<Func<File, bool>>? filter = null,
             Func<IQueryable<File>, IOrderedQueryable<File>>? orderBy = null
             );
-        Task<bool> FileExistsAsync(Guid id);
     }
 }
