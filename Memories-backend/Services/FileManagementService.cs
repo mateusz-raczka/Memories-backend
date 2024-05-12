@@ -29,8 +29,8 @@ namespace Memories_backend.Services
         {
             Guid fileId = Guid.Empty;
 
-            bool folderExists = await _folderDatabaseService.FolderExistsAsync(folderId);
-            if (!folderExists)
+            var folder = await _folderDatabaseService.GetFolderByIdAsync(folderId);
+            if (folder == null)
             {
                 throw new ArgumentException("Folder with the given ID does not exist.", nameof(folderId));
             }

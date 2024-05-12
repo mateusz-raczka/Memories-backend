@@ -93,17 +93,5 @@ namespace Memories_backend.Services
 
             return filesDto;
         }
-
-        public async Task<bool> FileExistsAsync(Guid id)
-        {
-            File folder = await _fileRepository.GetById(id);
-
-            if (folder == null)
-            {
-                return false;
-            }
-
-            return true;
-        }
     }
 }

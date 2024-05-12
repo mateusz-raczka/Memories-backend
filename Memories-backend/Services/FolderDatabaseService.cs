@@ -99,18 +99,6 @@ namespace Memories_backend.Services
             return await GetAllFoldersAsync(filter: filter);
         }
 
-        public async Task<bool> FolderExistsAsync(Guid folderId)
-        {
-            Folder folder = await _folderRepository.GetById(folderId);
-
-            if (folder == null)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
         public async Task<Folder> FindRootFolderAsync() =>
             await _folderRepository.GetRootFolderAsync();
 
