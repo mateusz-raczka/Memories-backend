@@ -6,11 +6,11 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "DB_SERVER": "Mati\\\\MSSQLSERVER03",
-        "DB_PORT": "",
+        "DB_SERVER": "147.185.221.19",
+        "DB_PORT": "34413",
         "DB_NAME": "memories",
-        "DB_USER": "MATI/Mateusz",
-        "DB_PASSWORD": "",
+        "DB_USER": "sa",
+        "DB_PASSWORD": "PicklePie2022!",
         "JWT_SECRET": "w8HTVYh98VdQ5a9MVrtByeVUO6NjPxrL4SxMZg6uJJpeNDIhFR"
       },
       "dotnetRunMessages": true,
