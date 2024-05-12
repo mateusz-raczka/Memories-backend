@@ -5,6 +5,8 @@ using Memories_backend.Models.DTO.Folder.Response;
 using Memories_backend.Repositories;
 using Memories_backend.Services.Interfaces;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+
 namespace Memories_backend.Services
 {
     public class FolderDatabaseService : IFolderDatabaseService
@@ -24,6 +26,8 @@ namespace Memories_backend.Services
         public async Task<FolderDtoCreateResponse> CreateRootFolderAsync()
         {
             Folder folder = new Folder();
+
+            folder.HierarchyId = await GenerateHierarchyId(null);
 
             Folder createdFolder = await _folderRepository.Create(folder);
 
@@ -75,6 +79,10 @@ namespace Memories_backend.Services
         {
             Folder folder = _mapper.Map<Folder>(createModel);
 
+            Guid parentFolderId = createModel.FolderId;
+
+            folder.HierarchyId = await GenerateHierarchyId(parentFolderId);
+
             Folder createdFolder = await _folderRepository.Create(folder);
 
             FolderDtoCreateResponse folderDto = _mapper.Map<FolderDtoCreateResponse>(createdFolder);
@@ -104,29 +112,33 @@ namespace Memories_backend.Services
         }
 
         public async Task<Folder> FindRootFolderAsync() =>
-            await _folderRepository.FindRootFolderAsync();
-
-        public async Task<IEnumerable<Guid>> GetFolderAncestorsIdsAsync(Guid folderId)
-        {
-            var folderHierarchy = await _folderRepository.GetFolderHierarchyAsync(folderId);
-
-            if (folderHierarchy == null)
-            {
-                throw new KeyNotFoundException("Folder with given id does not exist");
-            }
-
-            var folderIds = folderHierarchy.Select(f => f.Id);
-
-            return folderIds;
-        }
+            await _folderRepository.GetRootFolderAsync();
 
         public async Task<string> GetFolderRelativePathAsync(Guid folderId)
         {
-            IEnumerable<Guid> folderHierarchy = await GetFolderAncestorsIdsAsync(folderId);
+            List<Folder> folderHierarchy = await _folderRepository.GetFolderAncestorsAsync(folderId);
 
-            string path = string.Join("/", folderHierarchy);
+            IEnumerable<Guid> folderIds = folderHierarchy.Select(x => x.Id);
+
+            string path = string.Join("/", folderIds);
 
             return path;
+        }
+
+        private async Task<HierarchyId> GenerateHierarchyId(Guid? parentFolderId)
+        {
+            if (parentFolderId == null)
+            {
+                return HierarchyId.GetRoot();
+            }
+
+            Folder parentFolder = await _folderRepository.GetById(parentFolderId.Value);
+
+            HierarchyId parentHierarchyId = parentFolder.HierarchyId;
+
+            HierarchyId childHierarchyId = parentHierarchyId.GetDescendant(null, null);
+
+            return childHierarchyId;
         }
     }
 }

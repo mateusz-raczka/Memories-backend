@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Memories_backend.Models.Domain.Interfaces;
 
 namespace Memories_backend.Models.Authorization
 {

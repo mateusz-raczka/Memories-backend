@@ -1,4 +1,4 @@
-﻿using Memories_backend.Models.Authorization;
+﻿using Memories_backend.Models.Domain.Interfaces;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Memories_backend.Models.Domain

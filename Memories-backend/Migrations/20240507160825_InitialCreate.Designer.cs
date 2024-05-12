@@ -6,14 +6,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.SqlServer.Types;
 
 #nullable disable
 
 namespace Memories_backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240504190633_InitialCreate2")]
-    partial class InitialCreate2
+    [Migration("20240507160825_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -57,32 +58,32 @@ namespace Memories_backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("42a406fb-a415-4340-b49a-33861e42d044"),
+                            Id = new Guid("bed76e49-763a-4bf2-898b-76e05b5e3b85"),
                             Name = "Edit"
                         },
                         new
                         {
-                            Id = new Guid("b13dded5-1caa-49f6-9dcb-55bf3f71b49c"),
+                            Id = new Guid("52f0d47c-6ecf-4c99-a14d-5ca41c5b5f82"),
                             Name = "Share"
                         },
                         new
                         {
-                            Id = new Guid("b0c49cf8-c4b4-42c1-b64e-562338d4387d"),
+                            Id = new Guid("50f1919a-feba-405f-bd91-c069ced41538"),
                             Name = "Transfer"
                         },
                         new
                         {
-                            Id = new Guid("a143657b-c498-4989-8de7-0cf5420b64f0"),
+                            Id = new Guid("8196a7bf-27cc-40bf-b50d-73ffc61f36d7"),
                             Name = "Create"
                         },
                         new
                         {
-                            Id = new Guid("1448367d-46dc-46ac-9bf1-07f9226adfd1"),
+                            Id = new Guid("184e8a09-e79b-4527-919e-4fc5e4481bef"),
                             Name = "Delete"
                         },
                         new
                         {
-                            Id = new Guid("1d1d3aa5-24a0-48f9-8bdd-4b8f2778c57c"),
+                            Id = new Guid("ba49cf41-b861-4edd-8d74-cd3dba245627"),
                             Name = "Open"
                         });
                 });
@@ -194,6 +195,12 @@ namespace Memories_backend.Migrations
                     b.Property<Guid?>("FolderId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<SqlHierarchyId>("HierarchyId")
+                        .HasColumnType("hierarchyid");
+
+                    b.Property<SqlHierarchyId?>("OldHierarchyId")
+                        .HasColumnType("hierarchyid");
+
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uniqueidentifier");
 
@@ -277,19 +284,19 @@ namespace Memories_backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "740d466c-cc67-4d9a-b25d-cf1bc6d58417",
+                            Id = "cb9ec7a8-cf4c-4d37-9402-bf3c622b7cea",
                             Name = "USER",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "a2181b12-fe0e-4c71-90f2-6266262145d0",
+                            Id = "ce8e854f-e5fd-410a-a763-eb139d07b2bd",
                             Name = "OWNER",
                             NormalizedName = "OWNER"
                         },
                         new
                         {
-                            Id = "cceb6f1e-c8cd-467e-bbf8-1e62101a0552",
+                            Id = "4697f6a8-d7d4-420d-9ff2-645ff9ff7261",
                             Name = "ADMIN",
                             NormalizedName = "ADMIN"
                         });

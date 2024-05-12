@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -27,12 +26,15 @@ namespace Memories_backend
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = $"Server={Environment.GetEnvironmentVariable("DB_SERVER")},{Environment.GetEnvironmentVariable("DB_PORT")};Database={Environment.GetEnvironmentVariable("DB_NAME")};User Id={Environment.GetEnvironmentVariable("DB_USER")};Password={Environment.GetEnvironmentVariable("DB_PASSWORD")};TrustServerCertificate=True;";
+            var connectionString = $"Server=MATI\\MSSQLSERVER03;Database=memories;Trusted_Connection=True;TrustServerCertificate=True;";
 
             //Database context
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer(connectionString);
+                options.UseSqlServer(connectionString, options =>
+                {
+                    options.UseHierarchyId();
+                });
             });
 
             //Authentication
@@ -49,9 +51,6 @@ namespace Memories_backend
                 options.Password.RequireNonAlphanumeric = false;
                 options.SignIn.RequireConfirmedEmail = false;
             });
-
-            string jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET");
-
        
         services.AddAuthentication(options =>
             {
@@ -68,7 +67,7 @@ namespace Memories_backend
                         ValidateAudience = true,
                         ValidIssuer = Configuration["JWT:Issuer"],
                         ValidAudience = Configuration["JWT:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET")))
                     };
                 });
 

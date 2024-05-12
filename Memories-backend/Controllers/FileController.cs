@@ -25,7 +25,7 @@ namespace Memories_backend.Controllers
             _fileStorageService = fileStorageService;
         }
 
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<IEnumerable<FileDtoFetchResponse>> GetAll(
             int? pageNumber,
             int? pageSize,
