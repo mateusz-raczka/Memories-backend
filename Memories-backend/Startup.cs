@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using File = Memories_backend.Models.Domain.File;
 
 
 namespace Memories_backend
@@ -80,7 +81,7 @@ namespace Memories_backend
             });
 
             //Repositories
-            services.AddScoped<ISQLRepository<Models.Domain.File>, SQLRepository<Models.Domain.File>>();
+            services.AddScoped<ISQLRepository<File>, SQLRepository<File>>();
             services.AddScoped<ISQLRepository<FileDetails>, SQLRepository<FileDetails>>();
             services.AddScoped<ISQLRepository<Category>, SQLRepository<Category>>();
             services.AddScoped<ISQLRepository<Tag>, SQLRepository<Tag>>();
