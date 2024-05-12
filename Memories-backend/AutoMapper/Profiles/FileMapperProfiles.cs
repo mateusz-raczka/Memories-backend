@@ -2,6 +2,7 @@
 using Memories_backend.Models.DTO.File.Response;
 using Memories_backend.Models.DTO.File.Request;
 using Memories_backend.Models.DTO.FileDetails.Request;
+using File = Memories_backend.Models.Domain.File;
 
 namespace Memories_backend.AutoMapper.Profiles
 {
@@ -9,10 +10,10 @@ namespace Memories_backend.AutoMapper.Profiles
     {
         public FileMapperProfiles()
         {
-            CreateMap<Models.Domain.File, FileDtoFetchResponse>().ReverseMap();
-            CreateMap<Models.Domain.File, FileDtoUpdateRequest>().ReverseMap();
-            CreateMap<Models.Domain.File, FileDtoCreateRequest>().ReverseMap();
-            CreateMap<Models.Domain.File, FileDtoCreateResponse>().ReverseMap();
+            CreateMap<File, FileDtoFetchResponse>().ReverseMap();
+            CreateMap<File, FileDtoUpdateRequest>().ReverseMap();
+            CreateMap<File, FileDtoCreateRequest>().ReverseMap();
+            CreateMap<File, FileDtoCreateResponse>().ReverseMap();
             CreateMap<FileDtoCreateRequest, FileDtoCreateResponse>().ReverseMap();
             CreateMap<IFormFile, FileDtoCreateRequest>()
                 .ForMember(dest => dest.FileDetails, opt => opt.MapFrom(src => new FileDetailsDtoRequest

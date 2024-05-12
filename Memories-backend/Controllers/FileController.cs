@@ -3,6 +3,7 @@ using Memories_backend.Models.DTO.File.Response;
 using Memories_backend.Models.DTO.File.Request;
 using System.Linq.Expressions;
 using Memories_backend.Services.Interfaces;
+using File = Memories_backend.Models.Domain.File;
 
 namespace Memories_backend.Controllers
 {
@@ -32,7 +33,7 @@ namespace Memories_backend.Controllers
             string? filterName = null
             )
         {
-            Expression<Func<Models.Domain.File, bool>> filter = null;
+            Expression<Func<File, bool>> filter = null;
 
             if (!string.IsNullOrEmpty(filterName))
             {
@@ -40,7 +41,7 @@ namespace Memories_backend.Controllers
             }
 
             // Hardcoded orderby name
-            Func<IQueryable<Models.Domain.File>, IOrderedQueryable<Models.Domain.File>> orderBy = query => query.OrderBy(entity => entity.FileDetails.Name);
+            Func<IQueryable<File>, IOrderedQueryable<File>> orderBy = query => query.OrderBy(entity => entity.FileDetails.Name);
 
             IEnumerable<FileDtoFetchResponse> response = await _fileDatabaseService.GetAllFilesAsync(
                 pageNumber, 

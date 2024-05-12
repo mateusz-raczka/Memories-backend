@@ -1,19 +1,19 @@
 ﻿using AutoMapper;
-using Memories_backend.Models.Domain;
 using Memories_backend.Models.DTO.File.Request;
 using Memories_backend.Models.DTO.File.Response;
 using Memories_backend.Repositories;
 using Memories_backend.Services.Interfaces;
 using System.Linq.Expressions;
+using File = Memories_backend.Models.Domain.File;
 
 namespace Memories_backend.Services
 {
     public class FileDatabaseService : IFileDatabaseService
     {
-        private readonly ISQLRepository<Models.Domain.File> _fileRepository;
+        private readonly ISQLRepository<File> _fileRepository;
         private readonly IMapper _mapper;
         public FileDatabaseService(
-            ISQLRepository<Models.Domain.File> fileRepository,
+            ISQLRepository<File> fileRepository,
             IMapper mapper
             )
         {
@@ -23,9 +23,9 @@ namespace Memories_backend.Services
 
         public async Task<FileDtoCreateResponse> CreateFileAsync(FileDtoCreateRequest createModel)
         {
-            Models.Domain.File fileDomain = _mapper.Map<Models.Domain.File>(createModel);
+            File fileDomain = _mapper.Map<File>(createModel);
 
-            Models.Domain.File createdFile = await _fileRepository.Create(fileDomain);
+            File createdFile = await _fileRepository.Create(fileDomain);
 
             FileDtoCreateResponse fileDto = _mapper.Map<FileDtoCreateResponse>(createdFile);
 
@@ -37,7 +37,7 @@ namespace Memories_backend.Services
 
         public async Task UpdateFileAsync(Guid id, FileDtoUpdateRequest updateModel)
         {
-            Models.Domain.File file = await _fileRepository.GetById(id);
+            File file = await _fileRepository.GetById(id);
 
             if (file == null)
             {
@@ -55,7 +55,7 @@ namespace Memories_backend.Services
             await _fileRepository.Save();
         }
 
-        public async Task DeleteFileAsync(Models.Domain.File file)
+        public async Task DeleteFileAsync(File file)
         {
             _fileRepository.Delete(file);
             await _fileRepository.Save();
@@ -63,7 +63,7 @@ namespace Memories_backend.Services
 
         public async Task<FileDtoFetchResponse> GetFileByIdAsync(Guid id)
         {
-            Models.Domain.File file = await _fileRepository.GetById(id);
+            File file = await _fileRepository.GetById(id);
 
             if(file == null)
             {
@@ -78,11 +78,11 @@ namespace Memories_backend.Services
         public async Task<IEnumerable<FileDtoFetchResponse>> GetAllFilesAsync(
             int? pageNumber,
             int? pageSize,
-            Expression<Func<Models.Domain.File, bool>>? filter = null,
-            Func<IQueryable<Models.Domain.File>, IOrderedQueryable<Models.Domain.File>>? orderBy = null
+            Expression<Func<File, bool>>? filter = null,
+            Func<IQueryable<File>, IOrderedQueryable<File>>? orderBy = null
             )
         {
-            IEnumerable<Models.Domain.File> files = await _fileRepository.GetAll(
+            IEnumerable<File> files = await _fileRepository.GetAll(
                 pageNumber,
                 pageSize,
                 filter,
@@ -96,7 +96,7 @@ namespace Memories_backend.Services
 
         public async Task<bool> FileExistsAsync(Guid id)
         {
-            Models.Domain.File folder = await _fileRepository.GetById(id);
+            File folder = await _fileRepository.GetById(id);
 
             if (folder == null)
             {
