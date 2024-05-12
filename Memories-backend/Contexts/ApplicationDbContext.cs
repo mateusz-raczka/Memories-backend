@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Memories_backend.Utilities.Extensions;
 using Memories_backend.Services.Interfaces;
 using Memories_backend.Models.Domain.Interfaces;
+using File = Memories_backend.Models.Domain.File;
 
 namespace Memories_backend.Contexts
 {
@@ -15,7 +16,7 @@ namespace Memories_backend.Contexts
         public DbSet<FileActivity> FileActivities { get; set; }
         public DbSet<FileDetails> FileDetails { get; set; }
         public DbSet<FolderDetails> FolderDetails { get; set; }
-        public DbSet<Models.Domain.File> Files { get; set; }
+        public DbSet<File> Files { get; set; }
         public DbSet<Folder> Folders { get; set; }
         public DbSet<Tag> Tags { get; set; }
 
@@ -51,14 +52,14 @@ namespace Memories_backend.Contexts
                 modelBuilder.Entity(entityOwnedBy.ClrType).HasIndex(nameof(IOwnerId.OwnerId));
             }
 
-            modelBuilder.Entity<Models.Domain.File>().HasQueryFilter(x => x.OwnerId == _userClaimsService.UserClaimsValues.UserId);
+            modelBuilder.Entity<File>().HasQueryFilter(x => x.OwnerId == _userClaimsService.UserClaimsValues.UserId);
             modelBuilder.Entity<Folder>().HasQueryFilter(x => x.OwnerId == _userClaimsService.UserClaimsValues.UserId);
 
-            modelBuilder.Entity<Models.Domain.File>().Navigation(e => e.Category).AutoInclude();
-            modelBuilder.Entity<Models.Domain.File>()
+            modelBuilder.Entity<File>().Navigation(e => e.Category).AutoInclude();
+            modelBuilder.Entity<File>()
                 .Navigation(e => e.FileDetails)
                 .AutoInclude();
-            modelBuilder.Entity<Models.Domain.File>()
+            modelBuilder.Entity<File>()
                 .Navigation(e => e.Tags)
                 .AutoInclude();
 
@@ -69,7 +70,7 @@ namespace Memories_backend.Contexts
                 .Navigation(e => e.Files)
                 .AutoInclude();
 
-            modelBuilder.Entity<Models.Domain.File>()
+            modelBuilder.Entity<File>()
                 .HasOne(f => f.FileDetails)
                 .WithOne(fd => fd.File)
                 .HasForeignKey<FileDetails>(fd => fd.Id);
