@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "MemoriesBackend.Infrastructure": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "dsa": ""
+      }
+    }
+  }
+}

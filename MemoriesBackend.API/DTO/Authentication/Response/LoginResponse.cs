@@ -1,0 +1,12 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MemoriesBackend.API.DTO.Authentication.Response
+{
+    public class LoginResponse
+    {
+        [Required(ErrorMessage = "Username is required")]
+        public string UserName { get; set; }
+        [Required(ErrorMessage = "Password is required")]
+        public string Password { get; set; }
+    }
+}
