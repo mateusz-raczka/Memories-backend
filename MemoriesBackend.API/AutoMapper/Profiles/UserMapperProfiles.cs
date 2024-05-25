@@ -6,7 +6,7 @@ namespace MemoriesBackend.API.AutoMapper.Profiles
 {
     public class UserMapperProfiles : Profile
     {
-        public UserMapperProfiles() 
+        public UserMapperProfiles()
         {
             CreateMap<UserData, UserDataResponse>().ReverseMap();
         }

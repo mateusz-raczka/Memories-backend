@@ -6,7 +6,7 @@ namespace MemoriesBackend.API.AutoMapper.Profiles
 {
     public class CategoryMapperProfiles : Profile
     {
-        public CategoryMapperProfiles() 
+        public CategoryMapperProfiles()
         {
             CreateMap<Category, CategoryResponse>().ReverseMap();
         }

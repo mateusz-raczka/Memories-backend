@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
-using MemoriesBackend.Domain.Entities;
 using MemoriesBackend.API.DTO.Tag.Request;
 using MemoriesBackend.API.DTO.Tag.Response;
+using MemoriesBackend.Domain.Entities;
 
 namespace MemoriesBackend.API.AutoMapper.Profiles
 {
     public class TagMapperProfiles : Profile
     {
-        public TagMapperProfiles() 
+        public TagMapperProfiles()
         {
             CreateMap<Tag, TagResponse>().ReverseMap();
             CreateMap<Tag, TagRequest>().ReverseMap();

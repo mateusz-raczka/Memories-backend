@@ -34,10 +34,6 @@ namespace MemoriesBackend.API
                         // 5GB limit
                         options.Limits.MaxRequestBodySize = 5000L * 1024 * 1024;
                     });
-                })
-                .ConfigureServices((context, services) =>
-                {
-                    services.AddInfrastructure();
                 });
     }
 }

@@ -1,10 +1,9 @@
-﻿using MemoriesBackend.API.DTO.Authorization.Response;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using AutoMapper;
+﻿using AutoMapper;
+using MemoriesBackend.API.DTO.Authorization.Response;
 using MemoriesBackend.API.DTO.Tokens.Request;
 using MemoriesBackend.Application.Interfaces.Services;
 using MemoriesBackend.Domain.Models.Tokens;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MemoriesBackend.Controllers
 {

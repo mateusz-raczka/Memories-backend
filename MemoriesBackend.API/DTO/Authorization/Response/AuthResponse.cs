@@ -1,6 +1,5 @@
 ﻿using MemoriesBackend.API.DTO.Tokens.Response;
 using MemoriesBackend.API.DTO.User;
-using MemoriesBackend.Domain.Models.Authorization;
 
 namespace MemoriesBackend.API.DTO.Authorization.Response
 {

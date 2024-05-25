@@ -1,17 +1,24 @@
-﻿using MemoriesBackend.Application.Interfaces.Transactions;
+using System.Text;
+using MemoriesBackend.Application.Interfaces.Transactions;
 using MemoriesBackend.Domain.Entities;
+using MemoriesBackend.Domain.Entities.Authorization;
 using MemoriesBackend.Infrastructure.Contexts;
 using MemoriesBackend.Infrastructure.Repositories;
 using MemoriesBackend.Infrastructure.Transactions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using File = MemoriesBackend.Domain.Entities.File;
 
 namespace MemoriesBackend.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         var dbServer = Environment.GetEnvironmentVariable("DB_SERVER");
         var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
@@ -28,6 +35,17 @@ public static class DependencyInjection
                     options.UseSqlServer(connectionString, options => { options.UseHierarchyId();
                     options.EnableRetryOnFailure(3);
                 });
+        });
+
+        services.Configure<IdentityOptions>(options =>
+        {
+            options.Password.RequiredLength = 8;
+            options.Password.RequireDigit = false;
+            options.Password.RequireLowercase = false;
+            options.Password.RequireUppercase = false;
+            options.User.RequireUniqueEmail = false;
+            options.Password.RequireNonAlphanumeric = false;
+            options.SignIn.RequireConfirmedEmail = false;
         });
 
         //Repositories

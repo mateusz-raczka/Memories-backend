@@ -1,5 +1,4 @@
-﻿using System.Text;
-using MemoriesBackend.API.Middlewares;
+﻿using MemoriesBackend.API.Middlewares;
 using MemoriesBackend.Core;
 using MemoriesBackend.Domain.Entities.Authorization;
 using MemoriesBackend.Infrastructure;
@@ -8,6 +7,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace MemoriesBackend.API;
 
@@ -29,10 +30,10 @@ public class Startup
             .AddDefaultTokenProviders();
 
         services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
             .AddJwtBearer(options =>
             {
                 options.RequireHttpsMetadata = false;
@@ -64,22 +65,17 @@ public class Startup
 
         services.AddAuthorization(o => o.DefaultPolicy = authorizationPolicy);
 
-        services.Configure<IdentityOptions>(options =>
+        services.Configure<FormOptions>(o =>
         {
-            options.Password.RequiredLength = 8;
-            options.Password.RequireDigit = false;
-            options.Password.RequireLowercase = false;
-            options.Password.RequireUppercase = false;
-            options.User.RequireUniqueEmail = false;
-            options.Password.RequireNonAlphanumeric = false;
-            options.SignIn.RequireConfirmedEmail = false;
+            o.MultipartBodyLengthLimit = 5000000000;
+            o.BufferBodyLengthLimit = 5000000000;
         });
 
         //AutoMapper
         services.AddAutoMapper(typeof(Program));
 
         //Add layers' services
-        services.AddInfrastructure();
+        services.AddInfrastructure(Configuration);
         services.AddCore();
 
         //Middlewares

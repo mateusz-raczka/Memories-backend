@@ -9,6 +9,6 @@ namespace MemoriesBackend.API.AutoMapper.Profiles
         public RegisterMapperProfiles()
         {
             CreateMap<Register, RegisterRequest>().ReverseMap();
-        } 
+        }
     }
 }
