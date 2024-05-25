@@ -29,10 +29,10 @@ public class Startup
             .AddDefaultTokenProviders();
 
         services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
             .AddJwtBearer(options =>
             {
                 options.RequireHttpsMetadata = false;
@@ -50,7 +50,7 @@ public class Startup
                     OnMessageReceived = ctx =>
                     {
                         ctx.Request.Cookies.TryGetValue("accessToken", out var accessToken);
-                        if(!string.IsNullOrEmpty(accessToken))
+                        if (!string.IsNullOrEmpty(accessToken))
                             ctx.Token = accessToken;
 
                         return Task.CompletedTask;

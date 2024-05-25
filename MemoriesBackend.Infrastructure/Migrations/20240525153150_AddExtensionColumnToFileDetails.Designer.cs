@@ -13,8 +13,8 @@ using Microsoft.SqlServer.Types;
 namespace MemoriesBackend.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240519184729_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240525153150_AddExtensionColumnToFileDetails")]
+    partial class AddExtensionColumnToFileDetails
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -58,32 +58,32 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("6e530d70-5480-4bc1-b6c2-07a85015d1f5"),
+                            Id = new Guid("803057a3-3d8e-4b3d-96b2-a75583a61cbf"),
                             Name = "Edit"
                         },
                         new
                         {
-                            Id = new Guid("8a2b9e9c-729a-451a-8cb0-25f6720a2edd"),
+                            Id = new Guid("693e4946-385a-45dc-a654-2ef223abff11"),
                             Name = "Share"
                         },
                         new
                         {
-                            Id = new Guid("ee860561-b54d-45b7-a24a-175c946c5a69"),
+                            Id = new Guid("786e920b-6bd7-4d1e-b0c8-4317ede4f68e"),
                             Name = "Transfer"
                         },
                         new
                         {
-                            Id = new Guid("6348cc74-a794-460f-98a6-b203f7d1a17a"),
+                            Id = new Guid("4581b755-b0e0-4d0f-bb2e-eaee92118d67"),
                             Name = "Create"
                         },
                         new
                         {
-                            Id = new Guid("1fcbf23b-55e0-481a-b777-a9b7c121d563"),
+                            Id = new Guid("9d82aa93-e8b0-43c0-b2ba-b5fea24abf1e"),
                             Name = "Delete"
                         },
                         new
                         {
-                            Id = new Guid("3089eff0-aa96-422a-984e-8fede67c006c"),
+                            Id = new Guid("21c3a581-6296-4079-af68-b92dd125b13d"),
                             Name = "Open"
                         });
                 });
@@ -163,6 +163,10 @@ namespace MemoriesBackend.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Extension")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool?>("IsStared")
@@ -284,19 +288,19 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "35005db5-ec4c-46ad-9798-16e6608d84d2",
+                            Id = "2f242ee9-9ad0-4fa2-b8b5-7f9ca9b55c90",
                             Name = "USER",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "524ef031-3d79-469c-a8ac-8d3ecaf72a34",
+                            Id = "d836e159-97d7-4a37-bccc-4e4bb26d2455",
                             Name = "OWNER",
                             NormalizedName = "OWNER"
                         },
                         new
                         {
-                            Id = "e438a135-47b5-4844-a703-9036d4951588",
+                            Id = "0c6c8009-483b-4453-97a6-fa82472a0ef8",
                             Name = "ADMIN",
                             NormalizedName = "ADMIN"
                         });
@@ -487,6 +491,7 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
                     b.Property<string>("RefreshToken")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("RefreshTokenExpiry")

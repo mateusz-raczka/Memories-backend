@@ -3,7 +3,12 @@
     "MemoriesBackend.Infrastructure": {
       "commandName": "Project",
       "environmentVariables": {
-        "dsa": ""
+        "DB_SERVER": "147.185.221.19",
+        "DB_PORT": "34413",
+        "DB_NAME": "memories",
+        "DB_USER": "sa",
+        "DB_PASSWORD": "PicklePie2022",
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
   }

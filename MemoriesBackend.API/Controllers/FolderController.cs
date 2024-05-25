@@ -25,28 +25,11 @@ public class FolderController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IEnumerable<FolderGetAllResponse>> GetAll(
-        int? pageNumber,
-        int? pageSize,
-        string? filterName = null
-    )
+    public async Task<FolderGetByIdResponse> GetRootFolder()
     {
-        Expression<Func<Folder, bool>> filter = null;
+        var folderDomain = await _folderDatabaseService.FindRootFolderAsync();
 
-        if (!string.IsNullOrEmpty(filterName)) filter = entity => entity.FolderDetails.Name.Contains(filterName);
-
-        // Hardcoded order by name
-        Func<IQueryable<Folder>, IOrderedQueryable<Folder>> orderBy = query =>
-            query.OrderBy(entity => entity.FolderDetails.Name);
-
-        var foldersDomain = await _folderDatabaseService.GetAllFoldersAsync(
-            pageNumber,
-            pageSize,
-            filter,
-            orderBy
-        );
-
-        var response = _mapper.Map<IEnumerable<FolderGetAllResponse>>(foldersDomain);
+        var response = _mapper.Map<FolderGetByIdResponse>(folderDomain);
 
         return response;
     }

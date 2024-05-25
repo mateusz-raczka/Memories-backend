@@ -25,25 +25,21 @@ public class FolderRepository : GenericRepository<Folder>, IFolderRepository
         return await _context.Folders.FirstOrDefaultAsync(f => f.ParentFolderId == null);
     }
 
-    public async Task<List<Folder>> GetFolderAncestorsAsync(Folder parentFolder)
+    public async Task<List<Folder>> GetFolderAncestorsAsync(Folder folder)
     {
-        var parentHierarchyId = parentFolder.HierarchyId;
-
         var ancestors = await _dbSet
-            .Where(node => parentHierarchyId.IsDescendantOf(node.HierarchyId))
+            .Where(node => folder.HierarchyId.IsDescendantOf(node.HierarchyId))
             .ToListAsync();
 
         return ancestors;
     }
 
-    public async Task<List<Folder>> GetFolderAncestorsAsync(Guid parentFolderId)
+    public async Task<List<Folder>> GetFolderAncestorsAsync(Guid folderId)
     {
-        var parentFolder = await GetById(parentFolderId);
-
-        var parentHierarchyId = parentFolder.HierarchyId;
+        var folder = await GetById(folderId);
 
         var ancestors = await _dbSet
-            .Where(node => parentHierarchyId.IsDescendantOf(node.HierarchyId))
+            .Where(node => folder.HierarchyId.IsDescendantOf(node.HierarchyId))
             .ToListAsync();
 
         return ancestors;

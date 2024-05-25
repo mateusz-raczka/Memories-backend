@@ -15,5 +15,6 @@ namespace MemoriesBackend.Application.Interfaces.Services
         Task<Folder> GetFolderByIdAsync(Guid folderId);
         Task<Folder> CreateFolderAsync(Folder createModel);
         Task<string> GetFolderRelativePathAsync(Guid folderId);
+        Task<Folder> FindRootFolderAsync();
     }
 }

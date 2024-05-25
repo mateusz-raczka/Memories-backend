@@ -343,12 +343,12 @@ namespace MemoriesBackend.Infrastructure.Migrations
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("1fcbf23b-55e0-481a-b777-a9b7c121d563"), "Delete" },
-                    { new Guid("3089eff0-aa96-422a-984e-8fede67c006c"), "Open" },
-                    { new Guid("6348cc74-a794-460f-98a6-b203f7d1a17a"), "Create" },
-                    { new Guid("6e530d70-5480-4bc1-b6c2-07a85015d1f5"), "Edit" },
-                    { new Guid("8a2b9e9c-729a-451a-8cb0-25f6720a2edd"), "Share" },
-                    { new Guid("ee860561-b54d-45b7-a24a-175c946c5a69"), "Transfer" }
+                    { new Guid("12501170-30da-42eb-a529-a174d16e519c"), "Transfer" },
+                    { new Guid("7234c4e8-1cfb-487e-be3e-6772a6b63d4e"), "Open" },
+                    { new Guid("76ae3981-7ea8-42e6-aca2-573f73a8f944"), "Share" },
+                    { new Guid("7d323da7-dc83-4251-8af7-a7a5f3db87fb"), "Edit" },
+                    { new Guid("a8360ec2-1a70-4709-81ea-2fa9c4f36766"), "Delete" },
+                    { new Guid("e6a4bbb3-8378-454f-b110-429f6fcb6e14"), "Create" }
                 });
 
             migrationBuilder.InsertData(
@@ -356,9 +356,9 @@ namespace MemoriesBackend.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "35005db5-ec4c-46ad-9798-16e6608d84d2", null, "USER", "USER" },
-                    { "524ef031-3d79-469c-a8ac-8d3ecaf72a34", null, "OWNER", "OWNER" },
-                    { "e438a135-47b5-4844-a703-9036d4951588", null, "ADMIN", "ADMIN" }
+                    { "148089b3-e395-44cc-b2d5-01b90f526ac0", null, "USER", "USER" },
+                    { "191e9849-fe92-4300-a570-21659b6a28e4", null, "ADMIN", "ADMIN" },
+                    { "8a0c1404-f382-4f7b-835f-028adf9d65d4", null, "OWNER", "OWNER" }
                 });
 
             migrationBuilder.CreateIndex(
