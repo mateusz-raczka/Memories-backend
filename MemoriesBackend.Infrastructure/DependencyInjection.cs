@@ -1,4 +1,4 @@
-﻿using MemoriesBackend.Domain.Entities;
+using MemoriesBackend.Domain.Entities;
 using MemoriesBackend.Infrastructure.Contexts;
 using MemoriesBackend.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +16,7 @@ public static class DependencyInjection
         var dbName = Environment.GetEnvironmentVariable("DB_NAME");
         var dbUser = Environment.GetEnvironmentVariable("DB_USER");
         var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
-        var connectionString = $"Server={dbServer},{dbPort};Database={dbName};User Id={dbUser};Password={dbPassword};TrustServerCertificate=True;";
+        var connectionString = $"Server={dbServer}, {dbPort};Database={dbName};User Id={dbUser};Password={dbPassword};TrustServerCertificate=True;";
         //var connectionString = "Server=Mati\\MSSQLSERVER03;Database=memories;Trusted_Connection=True;TrustServerCertificate=True;";
 
         //Database context
