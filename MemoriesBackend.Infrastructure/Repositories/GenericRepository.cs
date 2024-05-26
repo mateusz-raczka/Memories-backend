@@ -50,7 +50,7 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     {
         var entity = await _dbSet.FindAsync(id);
 
-        if (entity == null) throw new ApplicationException("Failed to fetch - entity was not found");
+        if (entity == null) throw new ApplicationException("Entity was not found");
 
         return entity;
     }
@@ -65,8 +65,6 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     public virtual async Task Delete(Guid id)
     {
         var entityToDelete = await GetById(id);
-
-        if (entityToDelete == null) throw new ApplicationException("Failed to delete - entity was not found");
 
         Delete(entityToDelete);
     }

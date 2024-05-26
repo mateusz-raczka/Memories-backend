@@ -34,6 +34,10 @@ public class Startup
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
+            .AddCookie(options =>
+            {
+                options.Cookie.Name = "accessToken";
+            })
             .AddJwtBearer(options =>
             {
                 options.RequireHttpsMetadata = false;

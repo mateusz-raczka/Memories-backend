@@ -1,7 +1,6 @@
 ﻿using MemoriesBackend.Application.Interfaces.Services;
 using MemoriesBackend.Domain.Entities.Authorization;
 using MemoriesBackend.Domain.Models.Authentication;
-using MemoriesBackend.Domain.Models.Authorization;
 using MemoriesBackend.Domain.Models.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -72,8 +71,7 @@ public class AuthService : IAuthService
         {
             Id = Guid.Parse(user.Id),
             Name = user.UserName,
-            Email = user.Email,
-            Role = ApplicationRoles.USER
+            Email = user.Email
         };
 
         var auth = new Auth()

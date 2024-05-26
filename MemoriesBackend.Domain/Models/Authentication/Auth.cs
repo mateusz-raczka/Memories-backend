@@ -1,7 +1,7 @@
 ﻿using MemoriesBackend.Domain.Models.Tokens;
 using MemoriesBackend.Domain.Models.User;
 
-namespace MemoriesBackend.Domain.Models.Authorization
+namespace MemoriesBackend.Domain.Models.Authentication
 {
     public class Auth
     {

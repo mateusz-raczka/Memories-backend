@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using MemoriesBackend.Application.Interfaces.Services;
 using MemoriesBackend.Domain.Entities.Authorization;
-using MemoriesBackend.Domain.Models.Authorization;
+using MemoriesBackend.Domain.Models.Authentication;
 using MemoriesBackend.Domain.Models.Tokens;
 using MemoriesBackend.Domain.Models.User;
 using Microsoft.AspNetCore.Identity;
@@ -139,13 +139,18 @@ namespace MemoriesBackend.Application.Services
             return refreshToken;
         }
 
-        public async Task<Auth> RefreshToken(RefreshToken oldRefreshToken)
+        public async Task<Auth> RefreshToken(string refreshToken, string token)
         {
-            var userContext = _userContextService.Current;
+            var userPrincipal = GetPrincipalFromExpiredToken(token);
 
-            var user = await _userManager.FindByIdAsync(userContext.UserData.Id.ToString());
+            var userIdClaim = userPrincipal.FindFirst(ClaimTypes.NameIdentifier);
 
-            if (user is null || user.RefreshToken != oldRefreshToken.Value || user.RefreshTokenExpiry < DateTime.UtcNow)
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+                throw new ApplicationException("Invalid or missing user ID in access token");
+
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+
+            if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiry < DateTime.UtcNow)
                 throw new ApplicationException("Refresh token is not valid");
 
             var accessToken = GenerateJwtToken(user);
@@ -154,20 +159,51 @@ namespace MemoriesBackend.Application.Services
             user.RefreshToken = newRefreshToken.Value;
             user.RefreshTokenExpiry = newRefreshToken.ExpireDate;
 
-            var updateResult = await _userManager.UpdateAsync(user);
-            if (!updateResult.Succeeded)
+            var userUpdateResult = await _userManager.UpdateAsync(user);
+
+            if (!userUpdateResult.Succeeded)
             {
                 throw new ApplicationException("Failed to update user with new refresh token");
             }
+
+            var userData = new UserData()
+            {
+                Id = Guid.Parse(user.Id),
+                Email = user.Email,
+                Name = user.UserName
+            };
 
             var auth = new Auth()
             {
                 AccessToken = accessToken,
                 RefreshToken = newRefreshToken,
-                User = userContext.UserData
+                User = userData
             };
 
             return auth;
+        }
+
+        public ClaimsPrincipal GetPrincipalFromExpiredToken(string? token)
+        {
+            var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET");
+
+            try
+            {
+                var claimsPrincipal = _jwtSecurityTokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidIssuer = _configuration["JWT:Issuer"],
+                    ValidAudience = _configuration["JWT:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
+                }, out SecurityToken validatedToken);
+
+                return claimsPrincipal;
+            }
+            catch (Exception)
+            {
+                throw new UnauthorizedAccessException("Invalid token.");
+            }
         }
     }
 }

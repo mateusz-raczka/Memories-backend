@@ -5,6 +5,7 @@ namespace MemoriesBackend.Application.Interfaces.Services
 {
     public interface IFileManagementService
     {
-        Task<File> AddFileToDatabaseAndStorageAsync(IFormFile fileData, Guid folderId);
+        Task<File> AddFileAsync(IFormFile fileData, Guid folderId);
+        Task DeleteFileAsync(Guid fileId);
     }
 }

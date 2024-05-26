@@ -1,10 +1,10 @@
 ﻿using MemoriesBackend.Domain.Models.Authentication;
-using MemoriesBackend.Domain.Models.Authorization;
+using MemoriesBackend.Domain.Models.User;
 
 namespace MemoriesBackend.Application.Interfaces.Services
 {
     public interface IRegisterService
     {
-        Task<Auth> RegisterAsync(Register register);
+        Task<UserData> RegisterAsync(Register register);
     }
 }

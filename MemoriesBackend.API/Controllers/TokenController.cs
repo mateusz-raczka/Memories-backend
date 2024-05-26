@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using MemoriesBackend.API.DTO.Authorization.Response;
+using MemoriesBackend.API.DTO.Authentication.Response;
 using MemoriesBackend.API.DTO.Tokens.Request;
 using MemoriesBackend.Application.Interfaces.Services;
 using MemoriesBackend.Domain.Models.Tokens;
@@ -26,11 +26,13 @@ namespace MemoriesBackend.Controllers
         }
 
         [HttpPost("refresh")]
-        public async Task<AuthResponse> Refresh(RefreshTokenRequest refreshToken)
+        public async Task<AuthResponse> Refresh()
         {
-            var refreshTokenDomain = _mapper.Map<RefreshToken>(refreshToken);
+            var refreshToken = _cookieService.GetRefreshTokenFromCookie();
 
-            var authDomain = await _tokenService.RefreshToken(refreshTokenDomain);
+            var accessToken = _cookieService.GetAccessTokenFromCookie();
+
+            var authDomain = await _tokenService.RefreshToken(refreshToken, accessToken);
 
             var response = _mapper.Map<AuthResponse>(authDomain);
 

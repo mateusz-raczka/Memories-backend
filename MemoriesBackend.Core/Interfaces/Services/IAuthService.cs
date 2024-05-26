@@ -1,5 +1,4 @@
 ﻿using MemoriesBackend.Domain.Models.Authentication;
-using MemoriesBackend.Domain.Models.Authorization;
 
 namespace MemoriesBackend.Application.Interfaces.Services
 {

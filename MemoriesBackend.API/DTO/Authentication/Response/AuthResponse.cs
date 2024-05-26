@@ -1,7 +1,7 @@
 ﻿using MemoriesBackend.API.DTO.Tokens.Response;
 using MemoriesBackend.API.DTO.User;
 
-namespace MemoriesBackend.API.DTO.Authorization.Response
+namespace MemoriesBackend.API.DTO.Authentication.Response
 {
     public class AuthResponse
     {

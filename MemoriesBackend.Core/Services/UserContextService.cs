@@ -34,8 +34,7 @@ namespace MemoriesBackend.Application.Services
             {
                 Id = Guid.Parse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value),
                 Email = user.FindFirst(ClaimTypes.Email)?.Value,
-                Name = user.Identity.Name,
-                Role = user.FindFirst(ClaimTypes.Role)?.Value
+                Name = user.Identity.Name
             };
 
             var userContext = new UserContext

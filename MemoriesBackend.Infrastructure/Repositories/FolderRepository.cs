@@ -10,16 +10,6 @@ public class FolderRepository : GenericRepository<Folder>, IFolderRepository
     {
     }
 
-    public Task ChangeFolderSubTreeAsync(Folder oldParentFolder, Folder newParentFolder, Folder folder)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<List<Folder>> GetFolderDescendantsAsync(Folder parentFolderId)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<Folder> GetRootFolderAsync()
     {
         return await _context.Folders.FirstOrDefaultAsync(f => f.ParentFolderId == null);
@@ -28,7 +18,8 @@ public class FolderRepository : GenericRepository<Folder>, IFolderRepository
     public async Task<List<Folder>> GetFolderAncestorsAsync(Folder folder)
     {
         var ancestors = await _dbSet
-            .Where(node => folder.HierarchyId.IsDescendantOf(node.HierarchyId))
+            .Where(f => folder.HierarchyId.IsDescendantOf(f.HierarchyId))
+            .OrderBy(f => f.HierarchyId)
             .ToListAsync();
 
         return ancestors;
@@ -39,9 +30,20 @@ public class FolderRepository : GenericRepository<Folder>, IFolderRepository
         var folder = await GetById(folderId);
 
         var ancestors = await _dbSet
-            .Where(node => folder.HierarchyId.IsDescendantOf(node.HierarchyId))
+            .Where(f => folder.HierarchyId.IsDescendantOf(f.HierarchyId))
+            .OrderBy(f => f.HierarchyId)
             .ToListAsync();
 
         return ancestors;
+    }
+
+    public async Task<Folder> GetFolderLastSibling(Guid parentFolderId)
+    {
+        var folder = await _dbSet
+            .Where(f => f.ParentFolderId == parentFolderId)
+            .OrderByDescending(f => f.HierarchyId)
+            .FirstOrDefaultAsync();
+
+        return folder;
     }
 }

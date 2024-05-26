@@ -94,10 +94,13 @@ namespace MemoriesBackend.Application.Services
             if (parentFolderId == null) return HierarchyId.GetRoot();
 
             var parentFolder = await _folderRepository.GetById(parentFolderId.Value);
-
             var parentHierarchyId = parentFolder.HierarchyId;
 
-            var childHierarchyId = parentHierarchyId.GetDescendant(null, null);
+            var lastSibling = await _folderRepository.GetFolderLastSibling(parentFolderId.Value);
+
+            var childHierarchyId = lastSibling == null
+                ? parentHierarchyId.GetDescendant(null, null)
+                : parentHierarchyId.GetDescendant(lastSibling.HierarchyId, null);
 
             return childHierarchyId;
         }

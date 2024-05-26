@@ -70,7 +70,7 @@ public class FileController : ControllerBase
     [HttpPost("{folderId:Guid}")]
     public async Task<FileCreateResponse> Add([FromForm] IFormFile fileData, Guid folderId)
     {
-        var fileDomain = await _fileManagementService.AddFileToDatabaseAndStorageAsync(fileData, folderId);
+        var fileDomain = await _fileManagementService.AddFileAsync(fileData, folderId);
 
         var response = _mapper.Map<FileCreateResponse>(fileDomain);
 
@@ -88,7 +88,7 @@ public class FileController : ControllerBase
     [HttpDelete("{id:Guid}")]
     public async Task Delete(Guid id)
     {
-        await _fileDatabaseService.DeleteFileAsync(id);
+        await _fileManagementService.DeleteFileAsync(id);
     }
 
     [HttpGet("Download/{id:Guid}")]

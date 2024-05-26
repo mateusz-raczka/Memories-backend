@@ -1,7 +1,7 @@
-﻿using MemoriesBackend.Domain.Models.Authorization;
-using MemoriesBackend.Domain.Models.Tokens;
+﻿using MemoriesBackend.Domain.Models.Tokens;
 using System.Security.Claims;
 using MemoriesBackend.Domain.Entities.Authorization;
+using MemoriesBackend.Domain.Models.Authentication;
 
 namespace MemoriesBackend.Application.Interfaces.Services
 {
@@ -10,6 +10,7 @@ namespace MemoriesBackend.Application.Interfaces.Services
         JwtToken GenerateJwtToken(ExtendedIdentityUser user);
         RefreshToken GenerateRefreshToken();
         ClaimsPrincipal ValidateJwtToken(string token);
-        Task<Auth> RefreshToken(RefreshToken refreshToken);
+        Task<Auth> RefreshToken(string refreshToken, string token);
+        ClaimsPrincipal GetPrincipalFromExpiredToken(string? token);
     }
 }

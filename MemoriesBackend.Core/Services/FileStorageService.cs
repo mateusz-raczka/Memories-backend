@@ -37,14 +37,25 @@ namespace MemoriesBackend.Application.Services
 
             var absoluteFilePath = Path.Combine(absoluteFolderPath, fileIdWithExtension);
 
-            if (!Directory.Exists(absoluteFolderPath)) Directory.CreateDirectory(absoluteFolderPath);
-
-            using (var stream = new FileStream(absoluteFilePath, FileMode.Create))
+            try
             {
-                await file.CopyToAsync(stream);
-            }
+                if (!Directory.Exists(absoluteFolderPath))
+                    Directory.CreateDirectory(absoluteFolderPath);
 
-            return fileId;
+                using (var stream = new FileStream(absoluteFilePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                return fileId;
+            }
+            catch (Exception ex)
+            {
+                if (File.Exists(absoluteFilePath))
+                    File.Delete(absoluteFilePath);
+
+                throw;
+            }
         }
 
         public async Task<FileContentResult> DownloadFileAsync(Guid id)

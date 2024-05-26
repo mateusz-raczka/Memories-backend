@@ -1,8 +1,7 @@
-﻿using System.Transactions;
-using MemoriesBackend.Application.Interfaces.Services;
+﻿using MemoriesBackend.Application.Interfaces.Services;
+using MemoriesBackend.Application.Interfaces.Transactions;
 using MemoriesBackend.Domain.Entities.Authorization;
 using MemoriesBackend.Domain.Models.Authentication;
-using MemoriesBackend.Domain.Models.Authorization;
 using MemoriesBackend.Domain.Models.User;
 using Microsoft.AspNetCore.Identity;
 
@@ -13,21 +12,24 @@ namespace MemoriesBackend.Application.Services
         private readonly UserManager<ExtendedIdentityUser> _userManager;
         private readonly ITokenService _tokenService;
         private readonly IInitializeUserService _initializeUserService;
+        private readonly ITransactionHandler _transactionHandler;
 
         public RegisterService(
             UserManager<ExtendedIdentityUser> userManager,
             ITokenService tokenService,
-            IInitializeUserService initializeUserService
+            IInitializeUserService initializeUserService,
+            ITransactionHandler transactionHandler
         )
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _initializeUserService = initializeUserService;
+            _transactionHandler = transactionHandler;
         }
 
-        public async Task<Auth> RegisterAsync(Register register)
+        public async Task<UserData> RegisterAsync(Register register)
         {
-            using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            return await _transactionHandler.ExecuteAsync(async () =>
             {
                 var newUser = await CreateUserAsync(register);
 
@@ -45,20 +47,8 @@ namespace MemoriesBackend.Application.Services
 
                 await _initializeUserService.InitializeUser(userContext);
 
-                var token = _tokenService.GenerateJwtToken(newUser);
-                var refreshToken = _tokenService.GenerateRefreshToken();
-
-                var auth = new Auth()
-                {
-                    AccessToken = token,
-                    RefreshToken = refreshToken,
-                    User = userData
-                };
-
-                transaction.Complete();
-
-                return auth;
-            }
+                return userData;
+            });
         }
 
         private async Task<ExtendedIdentityUser> CreateUserAsync(Register register)

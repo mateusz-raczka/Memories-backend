@@ -1,5 +1,4 @@
-﻿using MemoriesBackend.Application.Interfaces;
-using MemoriesBackend.Application.Interfaces.Services;
+﻿using MemoriesBackend.Application.Interfaces.Services;
 using MemoriesBackend.Application.Interfaces.Transactions;
 using MemoriesBackend.Domain.Entities;
 using Microsoft.AspNetCore.Http;
@@ -7,7 +6,7 @@ using File = MemoriesBackend.Domain.Entities.File;
 
 namespace MemoriesBackend.Application.Services
 {
-    public class FileManagementService : IFileManagementService
+    internal sealed class FileManagementService : IFileManagementService
     {
         private readonly IFileStorageService _fileStorageService;
         private readonly IFileDatabaseService _fileDatabaseService;
@@ -26,7 +25,7 @@ namespace MemoriesBackend.Application.Services
             _transactionHandler = transactionHandler;
         }
 
-        public async Task<File> AddFileToDatabaseAndStorageAsync(IFormFile fileData, Guid folderId)
+        public async Task<File> AddFileAsync(IFormFile fileData, Guid folderId)
         {
             return await _transactionHandler.ExecuteAsync(async () =>
             {
@@ -49,6 +48,15 @@ namespace MemoriesBackend.Application.Services
 
                 var createdFile = await _fileDatabaseService.CreateFileAsync(file);
                 return createdFile;
+            });
+        }
+
+        public async Task DeleteFileAsync(Guid fileId)
+        {
+            await _transactionHandler.ExecuteAsync(async () =>
+            {
+                await _fileDatabaseService.DeleteFileAsync(fileId);
+                await _fileStorageService.DeleteFileAsync(fileId);
             });
         }
     }

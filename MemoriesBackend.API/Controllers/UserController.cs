@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MemoriesBackend.API.DTO.Authentication.Request;
 using MemoriesBackend.API.DTO.Authentication.Response;
-using MemoriesBackend.API.DTO.Authorization.Response;
+using MemoriesBackend.API.DTO.User;
 using MemoriesBackend.Application.Interfaces.Services;
 using MemoriesBackend.Domain.Models.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -33,15 +33,13 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<AuthResponse> Register([FromBody] RegisterRequest registerDto)
+    public async Task<UserDataResponse> Register([FromBody] RegisterRequest registerDto)
     {
         var registerDomain = _mapper.Map<Register>(registerDto);
 
         var authDomain = await _registerService.RegisterAsync(registerDomain);
 
-        var response = _mapper.Map<AuthResponse>(authDomain);
-
-        _cookieService.SetAuthCookies(authDomain);
+        var response = _mapper.Map<UserDataResponse>(authDomain);
 
         return response;
     }
