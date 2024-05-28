@@ -297,6 +297,7 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Size = table.Column<long>(type: "bigint", nullable: false),
+                    Extension = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsStared = table.Column<bool>(type: "bit", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -343,12 +344,12 @@ namespace MemoriesBackend.Infrastructure.Migrations
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("12501170-30da-42eb-a529-a174d16e519c"), "Transfer" },
-                    { new Guid("7234c4e8-1cfb-487e-be3e-6772a6b63d4e"), "Open" },
-                    { new Guid("76ae3981-7ea8-42e6-aca2-573f73a8f944"), "Share" },
-                    { new Guid("7d323da7-dc83-4251-8af7-a7a5f3db87fb"), "Edit" },
-                    { new Guid("a8360ec2-1a70-4709-81ea-2fa9c4f36766"), "Delete" },
-                    { new Guid("e6a4bbb3-8378-454f-b110-429f6fcb6e14"), "Create" }
+                    { new Guid("8b40164c-b022-4c97-8d23-2034b309a5e0"), "Open" },
+                    { new Guid("960063cb-9a42-48a4-94a9-c3a3e84fcff0"), "Delete" },
+                    { new Guid("99d23f5f-74dc-44e7-8d33-069d74bf29c7"), "Create" },
+                    { new Guid("a454ee77-2e46-405f-8c3b-58af86065129"), "Edit" },
+                    { new Guid("a76daeaf-f806-49c0-a31e-6a61a528fb33"), "Transfer" },
+                    { new Guid("e2d442a9-f85a-4335-9157-7746e3bb3f73"), "Share" }
                 });
 
             migrationBuilder.InsertData(
@@ -356,9 +357,9 @@ namespace MemoriesBackend.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "148089b3-e395-44cc-b2d5-01b90f526ac0", null, "USER", "USER" },
-                    { "191e9849-fe92-4300-a570-21659b6a28e4", null, "ADMIN", "ADMIN" },
-                    { "8a0c1404-f382-4f7b-835f-028adf9d65d4", null, "OWNER", "OWNER" }
+                    { "15c4dedc-6976-46dd-bb70-416bbcd3493c", null, "ADMIN", "ADMIN" },
+                    { "1e463f8c-7aae-47a8-902d-a7418d16c9fb", null, "OWNER", "OWNER" },
+                    { "4e64528a-d8d0-4bfa-a025-209a081f8e4c", null, "USER", "USER" }
                 });
 
             migrationBuilder.CreateIndex(

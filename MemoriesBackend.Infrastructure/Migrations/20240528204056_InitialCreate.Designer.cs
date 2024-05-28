@@ -13,15 +13,15 @@ using Microsoft.SqlServer.Types;
 namespace MemoriesBackend.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240525153150_AddExtensionColumnToFileDetails")]
-    partial class AddExtensionColumnToFileDetails
+    [Migration("20240528204056_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.5")
+                .HasAnnotation("ProductVersion", "8.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -58,32 +58,32 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("803057a3-3d8e-4b3d-96b2-a75583a61cbf"),
+                            Id = new Guid("a454ee77-2e46-405f-8c3b-58af86065129"),
                             Name = "Edit"
                         },
                         new
                         {
-                            Id = new Guid("693e4946-385a-45dc-a654-2ef223abff11"),
+                            Id = new Guid("e2d442a9-f85a-4335-9157-7746e3bb3f73"),
                             Name = "Share"
                         },
                         new
                         {
-                            Id = new Guid("786e920b-6bd7-4d1e-b0c8-4317ede4f68e"),
+                            Id = new Guid("a76daeaf-f806-49c0-a31e-6a61a528fb33"),
                             Name = "Transfer"
                         },
                         new
                         {
-                            Id = new Guid("4581b755-b0e0-4d0f-bb2e-eaee92118d67"),
+                            Id = new Guid("99d23f5f-74dc-44e7-8d33-069d74bf29c7"),
                             Name = "Create"
                         },
                         new
                         {
-                            Id = new Guid("9d82aa93-e8b0-43c0-b2ba-b5fea24abf1e"),
+                            Id = new Guid("960063cb-9a42-48a4-94a9-c3a3e84fcff0"),
                             Name = "Delete"
                         },
                         new
                         {
-                            Id = new Guid("21c3a581-6296-4079-af68-b92dd125b13d"),
+                            Id = new Guid("8b40164c-b022-4c97-8d23-2034b309a5e0"),
                             Name = "Open"
                         });
                 });
@@ -288,19 +288,19 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "2f242ee9-9ad0-4fa2-b8b5-7f9ca9b55c90",
+                            Id = "4e64528a-d8d0-4bfa-a025-209a081f8e4c",
                             Name = "USER",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "d836e159-97d7-4a37-bccc-4e4bb26d2455",
+                            Id = "1e463f8c-7aae-47a8-902d-a7418d16c9fb",
                             Name = "OWNER",
                             NormalizedName = "OWNER"
                         },
                         new
                         {
-                            Id = "0c6c8009-483b-4453-97a6-fa82472a0ef8",
+                            Id = "15c4dedc-6976-46dd-bb70-416bbcd3493c",
                             Name = "ADMIN",
                             NormalizedName = "ADMIN"
                         });
