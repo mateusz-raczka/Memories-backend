@@ -3,10 +3,12 @@ using MemoriesBackend.API.DTO.Authentication.Response;
 using MemoriesBackend.API.DTO.Tokens.Request;
 using MemoriesBackend.Application.Interfaces.Services;
 using MemoriesBackend.Domain.Models.Tokens;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MemoriesBackend.Controllers
 {
+    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class TokenController : ControllerBase

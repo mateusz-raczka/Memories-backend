@@ -46,4 +46,15 @@ public class FolderRepository : GenericRepository<Folder>, IFolderRepository
 
         return folder;
     }
+    public override async Task<Folder> GetById(Guid id)
+    {
+        var entity = await _dbSet
+        .Where(f => f.Id == id)
+        .Include(f => f.ChildFolders)
+        .FirstOrDefaultAsync();
+
+        if (entity == null) throw new ApplicationException("Entity was not found");
+
+        return entity;
+    }
 }

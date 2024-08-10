@@ -139,9 +139,9 @@ namespace MemoriesBackend.Application.Services
             return refreshToken;
         }
 
-        public async Task<Auth> RefreshToken(string refreshToken, string token)
+        public async Task<Auth> RefreshToken(string refreshToken, string accessToken)
         {
-            var userPrincipal = GetPrincipalFromExpiredToken(token);
+            var userPrincipal = GetPrincipalFromExpiredToken(accessToken);
 
             var userIdClaim = userPrincipal.FindFirst(ClaimTypes.NameIdentifier);
 
@@ -153,7 +153,7 @@ namespace MemoriesBackend.Application.Services
             if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiry < DateTime.UtcNow)
                 throw new ApplicationException("Refresh token is not valid");
 
-            var accessToken = GenerateJwtToken(user);
+            var newAccessToken = GenerateJwtToken(user);
             var newRefreshToken = GenerateRefreshToken();
 
             user.RefreshToken = newRefreshToken.Value;
@@ -175,7 +175,7 @@ namespace MemoriesBackend.Application.Services
 
             var auth = new Auth()
             {
-                AccessToken = accessToken,
+                AccessToken = newAccessToken,
                 RefreshToken = newRefreshToken,
                 User = userData
             };

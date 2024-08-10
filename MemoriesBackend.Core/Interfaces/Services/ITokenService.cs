@@ -10,7 +10,7 @@ namespace MemoriesBackend.Application.Interfaces.Services
         JwtToken GenerateJwtToken(ExtendedIdentityUser user);
         RefreshToken GenerateRefreshToken();
         ClaimsPrincipal ValidateJwtToken(string token);
-        Task<Auth> RefreshToken(string refreshToken, string token);
+        Task<Auth> RefreshToken(string refreshToken, string accessToken);
         ClaimsPrincipal GetPrincipalFromExpiredToken(string? token);
     }
 }
