@@ -4,6 +4,7 @@ namespace MemoriesBackend.Domain.Interfaces.Repositories
 {
     public interface IGenericRepository<TEntity> : IDisposable where TEntity : class
     {
+        IQueryable<TEntity> GetQueryable();
         Task<TEntity> GetById(Guid id);
         Task<IEnumerable<TEntity>> GetAll(
             int? pageNumber = null,

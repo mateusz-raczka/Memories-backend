@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Http.Features;
 using MemoriesBackend.Domain.Entities;
+using Microsoft.OpenApi.Models;
 
 namespace MemoriesBackend.API;
 
@@ -88,6 +89,8 @@ public class Startup
         services.AddLogging();
         services.AddControllers();
         services.AddEndpointsApiExplorer();
+
+        services.AddSwaggerGen();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -101,6 +104,13 @@ public class Startup
         });
 
         app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
 
         app.UseRouting();
         app.UseAuthentication();

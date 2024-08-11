@@ -15,8 +15,11 @@ namespace MemoriesBackend.Domain.Interfaces.Services
             );
         Task<Folder> GetFolderByIdAsync(Guid folderId);
         Task<Folder> CreateFolderAsync(Folder createModel);
-        Task<Folder> FindRootFolderAsync();
+        Task<Folder> GetRootFolderAsync();
         Task<List<Folder>> GetFolderAncestorsAsync(Guid folderId);
         Task<Folder> GetFolderLastSiblingAsync(Guid folderId);
+        Task<Folder> CopyFolderAsync(Guid sourceFolderId, Guid targetFolderId);
+        Task MoveFolderAsync(Guid sourceFolderId, Guid targetFolderId);
+
     }
 }

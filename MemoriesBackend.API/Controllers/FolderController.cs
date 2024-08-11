@@ -23,10 +23,10 @@ public class FolderController : ControllerBase
         _mapper = mapper;
     }
 
-    [HttpGet]
+    [HttpGet("root")]
     public async Task<FolderGetByIdResponse> GetRootFolder()
     {
-        var folderDomain = await _folderDatabaseService.FindRootFolderAsync();
+        var folderDomain = await _folderDatabaseService.GetRootFolderAsync();
 
         var response = _mapper.Map<FolderGetByIdResponse>(folderDomain);
 

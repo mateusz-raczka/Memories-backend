@@ -19,6 +19,11 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
         _dbSet = _context.Set<TEntity>();
     }
 
+    public IQueryable<TEntity> GetQueryable()
+    {
+        return _dbSet.AsQueryable();
+    }
+
     public async Task<IEnumerable<TEntity>> GetAll(
         int? pageNumber = null,
         int? pageSize = null,
