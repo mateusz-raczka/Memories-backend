@@ -1,4 +1,5 @@
 ﻿using MemoriesBackend.Domain.Entities;
+using MemoriesBackend.Domain.Interfaces.Repositories;
 using MemoriesBackend.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,7 +38,7 @@ public class FolderRepository : GenericRepository<Folder>, IFolderRepository
         return ancestors;
     }
 
-    public async Task<Folder> GetFolderLastSibling(Guid parentFolderId)
+    public async Task<Folder> GetFolderLastSiblingAsync(Guid parentFolderId)
     {
         var folder = await _dbSet
             .Where(f => f.ParentFolderId == parentFolderId)

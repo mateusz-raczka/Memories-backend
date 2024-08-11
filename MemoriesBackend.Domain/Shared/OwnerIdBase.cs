@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using MemoriesBackend.Domain.Interfaces.Models;
+﻿using MemoriesBackend.Domain.Interfaces.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace MemoriesBackend.Domain.Shared
 {

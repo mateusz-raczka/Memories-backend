@@ -1,6 +1,6 @@
-﻿using MemoriesBackend.Application.Interfaces.Transactions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MemoriesBackend.Infrastructure.Contexts;
+using MemoriesBackend.Domain.Interfaces.Transactions;
 
 namespace MemoriesBackend.Infrastructure.Transactions
 {

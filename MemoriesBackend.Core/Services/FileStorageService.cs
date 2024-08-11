@@ -1,4 +1,4 @@
-﻿using MemoriesBackend.Application.Interfaces.Services;
+﻿using MemoriesBackend.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
@@ -8,32 +8,20 @@ namespace MemoriesBackend.Application.Services
 {
     public class FileStorageService : IFileStorageService
     {
-        private readonly IConfiguration _configuration;
-        private readonly IFileDatabaseService _fileDatabaseService;
-        private readonly IFolderDatabaseService _folderDatabaseService;
+        private readonly IPathService _pathService;
 
-        public FileStorageService(
-            IConfiguration configuration,
-            IFileDatabaseService fileDatabaseService,
-            IFolderDatabaseService folderDatabaseService
-        )
+        public FileStorageService(IPathService pathService)
         {
-            _configuration = configuration;
-            _fileDatabaseService = fileDatabaseService;
-            _folderDatabaseService = folderDatabaseService;
+            _pathService = pathService;
         }
 
-        public async Task<Guid> UploadFileAsync(IFormFile file, Guid folderId)
+        public async Task<Guid> UploadFileAsync(IFormFile file, string absoluteFolderPath)
         {
             var fileId = Guid.NewGuid();
 
             var fileExtension = Path.GetExtension(file.FileName);
 
             var fileIdWithExtension = fileId + fileExtension;
-
-            var relativeFolderPath = await _folderDatabaseService.GetFolderRelativePathAsync(folderId);
-
-            var absoluteFolderPath = GetAbsolutePath(relativeFolderPath);
 
             var absoluteFilePath = Path.Combine(absoluteFolderPath, fileIdWithExtension);
 
@@ -58,20 +46,9 @@ namespace MemoriesBackend.Application.Services
             }
         }
 
-        public async Task<FileContentResult> DownloadFileAsync(Guid id)
+        public async Task<FileContentResult> DownloadFileAsync(string absoluteFilePath)
         {
-            var file = await _fileDatabaseService.GetFileByIdAsync(id);
-
-            if (file == null) throw new ApplicationException("Cannot find file with a given id");
-            var fileExtension = Path.GetExtension(file.FileDetails.Name);
-
-            var fileIdWithExtension = id + fileExtension;
-
-            var relativeFolderPath = await _folderDatabaseService.GetFolderRelativePathAsync(file.FolderId);
-
-            var absoluteFolderPath = GetAbsolutePath(relativeFolderPath);
-
-            var absoluteFilePath = Path.Combine(absoluteFolderPath, fileIdWithExtension);
+            var fileName = Path.GetFileName(absoluteFilePath);
 
             if (!File.Exists(absoluteFilePath))
                 throw new FileNotFoundException("Cannot find file with a given id in file storage.");
@@ -80,39 +57,21 @@ namespace MemoriesBackend.Application.Services
 
             var contentTypeProvider = new FileExtensionContentTypeProvider();
 
-            if (!contentTypeProvider.TryGetContentType(file.FileDetails.Name, out var contentType))
+            if (!contentTypeProvider.TryGetContentType(fileName, out var contentType))
                 contentType = "application/octet-stream";
 
             return new FileContentResult(fileBytes, contentType)
             {
-                FileDownloadName = file.FileDetails.Name
+                FileDownloadName = fileName
             };
         }
 
-        public async Task DeleteFileAsync(Guid id)
+        public async Task DeleteFileAsync(string absoluteFilePath)
         {
-            var file = await _fileDatabaseService.GetFileByIdAsync(id);
-            if (file == null) throw new ApplicationException("Cannot find file with a given id.");
-
-            var fileExtension = Path.GetExtension(file.FileDetails.Name);
-
-            var fileIdWithExtension = id + fileExtension;
-
-            var relativeFolderPath = await _folderDatabaseService.GetFolderRelativePathAsync(file.FolderId);
-
-            var absoluteFolderPath = GetAbsolutePath(relativeFolderPath);
-
-            var absoluteFilePath = Path.Combine(absoluteFolderPath, fileIdWithExtension);
-
             if (!File.Exists(absoluteFilePath))
                 throw new FileNotFoundException("Cannot find file with a given id in file storage.");
 
             File.Delete(absoluteFilePath);
-        }
-
-        private string GetAbsolutePath(string path)
-        {
-            return Path.Combine(_configuration["Storage:Path"], path);
         }
     }
 }

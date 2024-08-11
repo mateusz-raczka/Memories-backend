@@ -1,9 +1,9 @@
-﻿using MemoriesBackend.Domain.Models.Tokens;
-using System.Security.Claims;
-using MemoriesBackend.Domain.Entities.Authorization;
+﻿using MemoriesBackend.Domain.Entities;
 using MemoriesBackend.Domain.Models.Authentication;
+using MemoriesBackend.Domain.Models.Tokens;
+using System.Security.Claims;
 
-namespace MemoriesBackend.Application.Interfaces.Services
+namespace MemoriesBackend.Domain.Interfaces.Services
 {
     public interface ITokenService
     {

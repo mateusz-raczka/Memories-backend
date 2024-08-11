@@ -1,6 +1,6 @@
 ﻿using MemoriesBackend.Domain.Models.User;
 
-namespace MemoriesBackend.Application.Interfaces.Services
+namespace MemoriesBackend.Domain.Interfaces.Services
 {
     public interface IUserContextService
     {

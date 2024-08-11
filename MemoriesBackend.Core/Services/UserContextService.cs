@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
-using MemoriesBackend.Application.Interfaces.Services;
 using MemoriesBackend.Domain.Models.User;
+using MemoriesBackend.Domain.Interfaces.Services;
 
 namespace MemoriesBackend.Application.Services
 {

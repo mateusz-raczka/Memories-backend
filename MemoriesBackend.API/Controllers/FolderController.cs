@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using MemoriesBackend.API.DTO.Folder.Request;
 using MemoriesBackend.API.DTO.Folder.Response;
-using MemoriesBackend.Application.Interfaces.Services;
 using MemoriesBackend.Domain.Entities;
+using MemoriesBackend.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MemoriesBackend.API.Controllers;

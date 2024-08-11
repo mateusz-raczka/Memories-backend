@@ -1,4 +1,4 @@
-﻿using MemoriesBackend.Application.Interfaces.Services;
+﻿using MemoriesBackend.Domain.Interfaces.Services;
 using MemoriesBackend.Domain.Models.Authentication;
 using MemoriesBackend.Domain.Models.Tokens;
 using Microsoft.AspNetCore.Http;

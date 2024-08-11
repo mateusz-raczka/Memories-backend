@@ -1,7 +1,8 @@
-﻿using System.Linq.Expressions;
-using MemoriesBackend.Domain.Entities;
+﻿using MemoriesBackend.Domain.Entities;
+using MemoriesBackend.Domain.Interfaces.Repositories;
+using System.Linq.Expressions;
 
-namespace MemoriesBackend.Application.Interfaces.Services
+namespace MemoriesBackend.Domain.Interfaces.Services
 {
     public interface IFolderDatabaseService
     {
@@ -14,7 +15,8 @@ namespace MemoriesBackend.Application.Interfaces.Services
             );
         Task<Folder> GetFolderByIdAsync(Guid folderId);
         Task<Folder> CreateFolderAsync(Folder createModel);
-        Task<string> GetFolderRelativePathAsync(Guid folderId);
         Task<Folder> FindRootFolderAsync();
+        Task<List<Folder>> GetFolderAncestorsAsync(Guid folderId);
+        Task<Folder> GetFolderLastSiblingAsync(Guid folderId);
     }
 }

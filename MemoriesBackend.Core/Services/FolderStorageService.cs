@@ -1,4 +1,4 @@
-﻿using MemoriesBackend.Application.Interfaces.Services;
+﻿using MemoriesBackend.Domain.Interfaces.Services;
 
 namespace MemoriesBackend.Application.Services
 {

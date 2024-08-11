@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MemoriesBackend.Domain.Interfaces.Models;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
-using MemoriesBackend.Domain.Interfaces.Models;
 
 namespace MemoriesBackend.Domain.Entities
 {

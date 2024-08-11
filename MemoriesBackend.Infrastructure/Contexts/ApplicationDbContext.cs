@@ -1,7 +1,6 @@
-﻿using MemoriesBackend.Application.Interfaces.Services;
-using MemoriesBackend.Domain.Entities;
-using MemoriesBackend.Domain.Entities.Authorization;
+﻿using MemoriesBackend.Domain.Entities;
 using MemoriesBackend.Domain.Interfaces.Models;
+using MemoriesBackend.Domain.Interfaces.Services;
 using MemoriesBackend.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

@@ -1,4 +1,4 @@
-﻿namespace MemoriesBackend.Application.Interfaces.Services
+﻿namespace MemoriesBackend.Domain.Interfaces.Services
 {
     public interface IFolderStorageService
     {

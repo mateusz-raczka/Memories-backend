@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
-using MemoriesBackend.Application.Interfaces.Services;
-using MemoriesBackend.Infrastructure.Repositories;
+using MemoriesBackend.Domain.Interfaces.Repositories;
+using MemoriesBackend.Domain.Interfaces.Services;
 using File = MemoriesBackend.Domain.Entities.File;
 
 namespace MemoriesBackend.Application.Services

@@ -1,17 +1,13 @@
-using System.Text;
-using MemoriesBackend.Application.Interfaces.Transactions;
 using MemoriesBackend.Domain.Entities;
-using MemoriesBackend.Domain.Entities.Authorization;
+using MemoriesBackend.Domain.Interfaces.Repositories;
+using MemoriesBackend.Domain.Interfaces.Transactions;
 using MemoriesBackend.Infrastructure.Contexts;
 using MemoriesBackend.Infrastructure.Repositories;
 using MemoriesBackend.Infrastructure.Transactions;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using File = MemoriesBackend.Domain.Entities.File;
 
 namespace MemoriesBackend.Infrastructure;

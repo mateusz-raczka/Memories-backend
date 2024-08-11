@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace MemoriesBackend.Domain.Entities.Authorization
+namespace MemoriesBackend.Domain.Entities
 {
     public class ExtendedIdentityUser : IdentityUser
     {

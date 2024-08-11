@@ -1,10 +1,10 @@
-﻿using MemoriesBackend.Application.Interfaces.Services;
-using MemoriesBackend.Domain.Entities.Authorization;
-using MemoriesBackend.Domain.Models.Authentication;
+﻿using MemoriesBackend.Domain.Models.Authentication;
 using MemoriesBackend.Domain.Models.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using MemoriesBackend.Domain.Entities;
+using MemoriesBackend.Domain.Interfaces.Services;
 
 namespace MemoriesBackend.Application.Services;
 

@@ -1,4 +1,4 @@
-﻿namespace MemoriesBackend.Application.Interfaces.Transactions
+﻿namespace MemoriesBackend.Domain.Interfaces.Transactions
 {
     public interface ITransactionHandler
     {

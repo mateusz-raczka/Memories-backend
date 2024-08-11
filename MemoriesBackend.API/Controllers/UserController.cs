@@ -2,7 +2,7 @@
 using MemoriesBackend.API.DTO.Authentication.Request;
 using MemoriesBackend.API.DTO.Authentication.Response;
 using MemoriesBackend.API.DTO.User;
-using MemoriesBackend.Application.Interfaces.Services;
+using MemoriesBackend.Domain.Interfaces.Services;
 using MemoriesBackend.Domain.Models.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

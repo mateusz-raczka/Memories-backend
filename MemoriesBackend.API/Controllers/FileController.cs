@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MemoriesBackend.API.DTO.File.Request;
 using MemoriesBackend.API.DTO.File.Response;
-using MemoriesBackend.Application.Interfaces.Services;
+using MemoriesBackend.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
 using File = MemoriesBackend.Domain.Entities.File;
@@ -94,6 +94,6 @@ public class FileController : ControllerBase
     [HttpGet("Download/{id:Guid}")]
     public async Task<FileContentResult> Download(Guid id)
     {
-        return await _fileStorageService.DownloadFileAsync(id);
+        return await _fileManagementService.DownloadFileAsync(id);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using MemoriesBackend.API.Middlewares;
 using MemoriesBackend.Core;
-using MemoriesBackend.Domain.Entities.Authorization;
 using MemoriesBackend.Infrastructure;
 using MemoriesBackend.Infrastructure.Contexts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -9,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Http.Features;
+using MemoriesBackend.Domain.Entities;
 
 namespace MemoriesBackend.API;
 

@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
-using MemoriesBackend.Application.Interfaces.Services;
 using MemoriesBackend.Domain.Entities;
-using MemoriesBackend.Infrastructure.Repositories;
+using MemoriesBackend.Domain.Interfaces.Repositories;
+using MemoriesBackend.Domain.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace MemoriesBackend.Application.Services
@@ -78,15 +78,14 @@ namespace MemoriesBackend.Application.Services
             return await _folderRepository.GetRootFolderAsync();
         }
 
-        public async Task<string> GetFolderRelativePathAsync(Guid folderId)
+        public async Task<List<Folder>> GetFolderAncestorsAsync(Guid folderId) 
         {
-            var folderHierarchy = await _folderRepository.GetFolderAncestorsAsync(folderId);
+            return await _folderRepository.GetFolderAncestorsAsync(folderId);
+        }
 
-            var folderIds = folderHierarchy.Select(x => x.Id);
-
-            var path = string.Join("/", folderIds);
-
-            return path;
+        public async Task<Folder> GetFolderLastSiblingAsync(Guid folderId)
+        {
+            return await _folderRepository.GetFolderLastSiblingAsync(folderId);
         }
 
         private async Task<HierarchyId> GenerateHierarchyId(Guid? parentFolderId)
@@ -96,7 +95,7 @@ namespace MemoriesBackend.Application.Services
             var parentFolder = await _folderRepository.GetById(parentFolderId.Value);
             var parentHierarchyId = parentFolder.HierarchyId;
 
-            var lastSibling = await _folderRepository.GetFolderLastSibling(parentFolderId.Value);
+            var lastSibling = await GetFolderLastSiblingAsync(parentFolderId.Value);
 
             var childHierarchyId = lastSibling == null
                 ? parentHierarchyId.GetDescendant(null, null)

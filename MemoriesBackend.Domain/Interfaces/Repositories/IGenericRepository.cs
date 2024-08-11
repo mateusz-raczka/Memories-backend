@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
 
-namespace MemoriesBackend.Infrastructure.Repositories
+namespace MemoriesBackend.Domain.Interfaces.Repositories
 {
-    public interface IGenericRepository<TEntity> : IDisposable where TEntity: class
+    public interface IGenericRepository<TEntity> : IDisposable where TEntity : class
     {
         Task<TEntity> GetById(Guid id);
         Task<IEnumerable<TEntity>> GetAll(

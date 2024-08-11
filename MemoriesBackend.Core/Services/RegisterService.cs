@@ -1,6 +1,6 @@
-﻿using MemoriesBackend.Application.Interfaces.Services;
-using MemoriesBackend.Application.Interfaces.Transactions;
-using MemoriesBackend.Domain.Entities.Authorization;
+﻿using MemoriesBackend.Domain.Entities;
+using MemoriesBackend.Domain.Interfaces.Services;
+using MemoriesBackend.Domain.Interfaces.Transactions;
 using MemoriesBackend.Domain.Models.Authentication;
 using MemoriesBackend.Domain.Models.User;
 using Microsoft.AspNetCore.Identity;
@@ -10,19 +10,16 @@ namespace MemoriesBackend.Application.Services
     public class RegisterService : IRegisterService
     {
         private readonly UserManager<ExtendedIdentityUser> _userManager;
-        private readonly ITokenService _tokenService;
         private readonly IInitializeUserService _initializeUserService;
         private readonly ITransactionHandler _transactionHandler;
 
         public RegisterService(
             UserManager<ExtendedIdentityUser> userManager,
-            ITokenService tokenService,
             IInitializeUserService initializeUserService,
             ITransactionHandler transactionHandler
         )
         {
             _userManager = userManager;
-            _tokenService = tokenService;
             _initializeUserService = initializeUserService;
             _transactionHandler = transactionHandler;
         }

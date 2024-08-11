@@ -2,8 +2,8 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using MemoriesBackend.Application.Interfaces.Services;
-using MemoriesBackend.Domain.Entities.Authorization;
+using MemoriesBackend.Domain.Entities;
+using MemoriesBackend.Domain.Interfaces.Services;
 using MemoriesBackend.Domain.Models.Authentication;
 using MemoriesBackend.Domain.Models.Tokens;
 using MemoriesBackend.Domain.Models.User;

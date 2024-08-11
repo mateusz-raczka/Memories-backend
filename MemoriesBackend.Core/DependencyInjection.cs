@@ -1,5 +1,5 @@
-﻿using MemoriesBackend.Application.Interfaces.Services;
-using MemoriesBackend.Application.Services;
+﻿using MemoriesBackend.Application.Services;
+using MemoriesBackend.Domain.Interfaces.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MemoriesBackend.Core
@@ -19,6 +19,7 @@ namespace MemoriesBackend.Core
             services.AddScoped<IRegisterService, RegisterService>();
             services.AddScoped<IFolderStorageService, FolderStorageService>();
             services.AddScoped<ICookieService, CookieService>();
+            services.AddScoped<IPathService, PathService>();
 
             return services;
         }
