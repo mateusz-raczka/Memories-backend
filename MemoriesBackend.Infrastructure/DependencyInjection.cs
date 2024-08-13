@@ -51,7 +51,6 @@ public static class DependencyInjection
         services.AddScoped<IGenericRepository<Tag>, GenericRepository<Tag>>();
         services.AddScoped<IGenericRepository<FileActivity>, GenericRepository<FileActivity>>();
         services.AddScoped<IGenericRepository<Folder>, GenericRepository<Folder>>();
-        services.AddScoped<IFolderRepository, FolderRepository>();
 
         //Transactions
         services.AddScoped<ITransactionHandler, TransactionHandler>();

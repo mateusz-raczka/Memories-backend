@@ -7,7 +7,7 @@ using File = MemoriesBackend.Domain.Entities.File;
 
 namespace MemoriesBackend.Application.Services
 {
-    internal sealed class FileManagementService : IFileManagementService
+    internal sealed class FileManagementSystemService : IFileManagementSystemService
     {
         private readonly IFileStorageService _fileStorageService;
         private readonly IFileDatabaseService _fileDatabaseService;
@@ -15,7 +15,7 @@ namespace MemoriesBackend.Application.Services
         private readonly ITransactionHandler _transactionHandler;
         private readonly IPathService _pathService;
 
-        public FileManagementService(
+        public FileManagementSystemService(
             IFileStorageService fileStorageService,
             IFileDatabaseService fileDatabaseService,
             IFolderDatabaseService folderDatabaseService,
@@ -74,6 +74,66 @@ namespace MemoriesBackend.Application.Services
             var absoluteFilePath = await _pathService.GetFileAbsolutePathAsync(fileId);
 
             return await _fileStorageService.DownloadFileAsync(absoluteFilePath);
+        }
+
+        public async Task<Folder> CopyAndPasteFolderAsync(Guid sourceFolderId, Guid targetFolderId)
+        {
+                var folderCopy = await _folderDatabaseService.CopyFolderAsync(sourceFolderId);
+
+                var targetFolder = await _folderDatabaseService.GetFolderByIdAsync(targetFolderId);
+
+                if (targetFolder == null)
+                    throw new ApplicationException("Target folder not found");
+
+                // Paste folder to target folder
+                folderCopy.ParentFolderId = targetFolderId;
+
+                if (folderCopy.Files.Any())
+                {
+                    var files = folderCopy.Files.Select(f => f.Id).ToList();
+
+                    folderCopy.Files = await CopyAndPasteFilesAsync(files, folderCopy.Id);
+                }
+
+                if (folderCopy.ChildFolders.Any())
+                {
+                    List<Folder> folders = new List<Folder>();
+
+                    foreach (var childFolder in folderCopy.ChildFolders)
+                    {
+                        folders.Add(await CopyAndPasteFolderAsync(childFolder.Id, folderCopy.Id));
+                    }
+                    
+                    folderCopy.ChildFolders = folders;
+            }
+
+            await _folderDatabaseService.CreateFolderAsync(folderCopy);
+
+            return folderCopy;
+        }
+
+        public async Task<IEnumerable<File>> CopyAndPasteFilesAsync(IEnumerable<Guid> filesIdToCopy, Guid targetFolderId)
+        {
+            List<File> pastedFiles = new List<File>();
+
+            var targetFolder = await _folderDatabaseService.GetFolderByIdAsync(targetFolderId);
+
+            if (targetFolder == null)
+                throw new ApplicationException("Target folder not found");
+
+            foreach (var fileId in filesIdToCopy)
+            {
+                var fileCopy = await _fileDatabaseService.CopyFileAsync(fileId);
+
+                // Paste file to target folder
+                fileCopy.FolderId = targetFolderId;
+
+                pastedFiles.Add(fileCopy);
+
+                await _fileDatabaseService.CreateFileAsync(fileCopy);
+            }
+
+            return pastedFiles;
         }
     }
 }

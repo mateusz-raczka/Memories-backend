@@ -37,7 +37,7 @@ namespace MemoriesBackend.Application.Services
                     Name = newUser.UserName
                 };
 
-                var userContext = new UserContext()
+                var userContext = new Domain.Models.User.UserContext()
                 {
                     UserData = userData
                 };

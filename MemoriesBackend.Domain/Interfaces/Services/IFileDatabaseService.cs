@@ -16,5 +16,6 @@ namespace MemoriesBackend.Domain.Interfaces.Services
             Expression<Func<File, bool>>? filter = null,
             Func<IQueryable<File>, IOrderedQueryable<File>>? orderBy = null
             );
+        Task<File> CopyFileAsync(Guid fileId);
     }
 }

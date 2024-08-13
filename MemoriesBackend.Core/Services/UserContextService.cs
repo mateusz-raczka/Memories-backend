@@ -5,10 +5,6 @@ using MemoriesBackend.Domain.Interfaces.Services;
 
 namespace MemoriesBackend.Application.Services
 {
-    // write documentation
-
-
-
     public class UserContextService : IUserContextService
     {
         public UserContext Current { get; private set; }

@@ -1,5 +1,6 @@
 ﻿using MemoriesBackend.Domain.Entities;
 using MemoriesBackend.Domain.Interfaces.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace MemoriesBackend.Domain.Interfaces.Services
@@ -14,12 +15,12 @@ namespace MemoriesBackend.Domain.Interfaces.Services
             Func<IQueryable<Folder>, IOrderedQueryable<Folder>>? orderBy = null
             );
         Task<Folder> GetFolderByIdAsync(Guid folderId);
+        Task<Folder> GetFolderByIdWithRelations(Guid folderId);
         Task<Folder> CreateFolderAsync(Folder createModel);
         Task<Folder> GetRootFolderAsync();
         Task<List<Folder>> GetFolderAncestorsAsync(Guid folderId);
         Task<Folder> GetFolderLastSiblingAsync(Guid folderId);
-        Task<Folder> CopyFolderAsync(Guid sourceFolderId, Guid targetFolderId);
-        Task MoveFolderAsync(Guid sourceFolderId, Guid targetFolderId);
-
+        Task<Folder> CopyFolderAsync(Guid folderId);
+        Task<HierarchyId> GenerateHierarchyId(Guid? parentFolderId);
     }
 }

@@ -13,17 +13,20 @@ public class FolderController : ControllerBase
 {
     private readonly IMapper _mapper;
     private readonly IFolderDatabaseService _folderDatabaseService;
+    private readonly IFileManagementSystemService _fileManagementSystemService;
 
     public FolderController(
         IFolderDatabaseService folderDatabaseService,
+        IFileManagementSystemService fileManagementSystemService,
         IMapper mapper
     )
     {
         _folderDatabaseService = folderDatabaseService;
+        _fileManagementSystemService = fileManagementSystemService;
         _mapper = mapper;
     }
 
-    [HttpGet("root")]
+    [HttpGet]
     public async Task<FolderGetByIdResponse> GetRootFolder()
     {
         var folderDomain = await _folderDatabaseService.GetRootFolderAsync();
@@ -44,13 +47,23 @@ public class FolderController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<FolderCreateResponse> Create([FromBody] FolderCreateRequest folderDto)
+    public async Task<FolderCreateResponse> Create([FromBody] FolderCreateRequest folderCreateDto)
     {
-        var folderDomain = _mapper.Map<Folder>(folderDto);
+        var folderDomain = _mapper.Map<Folder>(folderCreateDto);
 
         var createdFolderDomain = await _folderDatabaseService.CreateFolderAsync(folderDomain);
 
         var response = _mapper.Map<FolderCreateResponse>(createdFolderDomain);
+
+        return response;
+    }
+
+    [HttpPost("copy")]
+    public async Task<FolderCreateResponse> CopyAndPaste([FromBody] FolderCopyAndPasteRequest folderCopyPasteDto)
+    {
+        var folderDomain = await _fileManagementSystemService.CopyAndPasteFolderAsync(folderCopyPasteDto.SourceFolderId, folderCopyPasteDto.TargetFolderId);
+
+        var response = _mapper.Map<FolderCreateResponse>(folderDomain);
 
         return response;
     }

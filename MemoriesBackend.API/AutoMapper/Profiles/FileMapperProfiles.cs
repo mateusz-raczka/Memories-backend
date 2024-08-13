@@ -15,6 +15,7 @@ namespace MemoriesBackend.API.AutoMapper.Profiles
             CreateMap<File, FileCreateResponse>().ReverseMap();
             CreateMap<FileCreateRequest, FileCreateResponse>().ReverseMap();
             CreateMap<File, FileGetByIdResponse>().ReverseMap();
+            CreateMap<File, FileCopyPasteResponse>().ReverseMap();
         }
     }
 }

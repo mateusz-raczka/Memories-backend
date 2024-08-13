@@ -8,10 +8,11 @@ namespace MemoriesBackend.Application.Services
 {
     public class FolderDatabaseService : IFolderDatabaseService
     {
-        private readonly IFolderRepository _folderRepository;
+        private readonly IGenericRepository<Folder> _folderRepository;
 
         public FolderDatabaseService(
-            IFolderRepository folderRepository
+            IGenericRepository<Folder> folderRepository,
+            IFileDatabaseService fileDatabaseService
         )
         {
             _folderRepository = folderRepository;
@@ -73,9 +74,27 @@ namespace MemoriesBackend.Application.Services
             return createdFolder;
         }
 
+        public async Task<Folder> CopyFolderAsync(Guid folderId)
+        {
+            var folderCopy = await _folderRepository
+                .GetQueryable()
+                .Include(f => f.ChildFolders)
+                .Include(f => f.Files)
+                .Include(f => f.FolderDetails)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Id == folderId);
+
+            folderCopy.Id = Guid.NewGuid();
+            folderCopy.FolderDetails.Id = Guid.NewGuid();
+            folderCopy.FolderDetails.Name = folderCopy.FolderDetails.Name + " COPY test";
+            
+            return folderCopy;
+        }
+
         public async Task<Folder> GetRootFolderAsync()
         {
-            var rootFolder = await _folderRepository.GetQueryable()
+            var rootFolder = await _folderRepository
+                .GetQueryable()
                 .Where(f => f.ParentFolderId == null)
                 .Include(f => f.ChildFolders)
                 .FirstOrDefaultAsync();
@@ -85,9 +104,21 @@ namespace MemoriesBackend.Application.Services
             return rootFolder;
         }
 
+        public async Task<Folder> GetFolderByIdWithRelations(Guid folderId)
+        {
+            var folder = await _folderRepository
+                .GetQueryable()
+                .Where(f => f.Id == folderId)
+                .Include(f => f.ChildFolders)
+                .FirstOrDefaultAsync();
+
+            return folder;
+        }
+
         public async Task<IEnumerable<Folder>> GetFolderAncestorsAsync(Folder folder)
         {
-            var ancestors = await _folderRepository.GetQueryable()
+            var ancestors = await _folderRepository
+                .GetQueryable()
                 .Where(f => folder.HierarchyId.IsDescendantOf(f.HierarchyId))
                 .OrderBy(f => f.HierarchyId)
                 .ToListAsync();
@@ -99,7 +130,8 @@ namespace MemoriesBackend.Application.Services
         {
             var folder = await _folderRepository.GetById(folderId);
 
-            var ancestors = await _folderRepository.GetQueryable()
+            var ancestors = await _folderRepository
+                .GetQueryable()
                 .Where(f => folder.HierarchyId.IsDescendantOf(f.HierarchyId))
                 .OrderBy(f => f.HierarchyId)
                 .ToListAsync();
@@ -109,7 +141,8 @@ namespace MemoriesBackend.Application.Services
 
         public async Task<Folder> GetFolderLastSiblingAsync(Guid parentFolderId)
         {
-            var siblings = await _folderRepository.GetQueryable()
+            var siblings = await _folderRepository
+                .GetQueryable()
                 .Where(f => f.ParentFolderId == parentFolderId)
                 .OrderByDescending(f => f.HierarchyId)
                 .ToListAsync();
@@ -117,58 +150,7 @@ namespace MemoriesBackend.Application.Services
             return siblings.FirstOrDefault();
         }
 
-        public async Task<Folder> CopyFolderAsync(Guid sourceFolderId, Guid targetFolderId)
-        {
-            var sourceFolder = await _folderRepository.GetById(sourceFolderId);
-            var targetFolder = await _folderRepository.GetById(targetFolderId);
-
-            if (sourceFolder == null)
-                throw new ApplicationException("Source folder not found");
-
-            if (targetFolder == null)
-                throw new ApplicationException("Target folder not found");
-
-            var newFolder = new Folder
-            {
-                Id = Guid.NewGuid(),
-                FolderDetails = sourceFolder.FolderDetails,
-                ParentFolderId = targetFolderId,
-                HierarchyId = targetFolder.HierarchyId.GetDescendant(null, null),
-                Files = sourceFolder.Files,
-                ChildFolders = sourceFolder.ChildFolders
-            };
-
-            await _folderRepository.Create(newFolder);
-            await _folderRepository.Save();
-
-            return newFolder;
-        }
-
-        public async Task MoveFolderAsync(Guid sourceFolderId, Guid targetFolderId)
-        {
-            var sourceFolder = await _folderRepository.GetById(sourceFolderId);
-            var targetFolder = await _folderRepository.GetById(targetFolderId);
-
-            if (sourceFolder == null)
-                throw new ApplicationException("Source folder not found");
-
-            if (targetFolder == null)
-                throw new ApplicationException("Target folder not found");
-
-            var folderHierarchy = await _folderRepository.GetQueryable()
-                .Where(f => f.HierarchyId != sourceFolder.HierarchyId && f.HierarchyId.IsDescendantOf(sourceFolder.HierarchyId))
-                .ToListAsync();
-
-            foreach (var folder in folderHierarchy)
-            {
-                folder.OldHierarchyId = folder.HierarchyId;
-                folder.HierarchyId = folder.HierarchyId.GetReparentedValue(sourceFolder.HierarchyId, targetFolder.HierarchyId);
-            }
-
-            await _folderRepository.Save();
-        }
-
-        private async Task<HierarchyId> GenerateHierarchyId(Guid? parentFolderId)
+        public async Task<HierarchyId> GenerateHierarchyId(Guid? parentFolderId)
         {
             if (parentFolderId == null) return HierarchyId.GetRoot();
 

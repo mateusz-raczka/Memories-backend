@@ -13,20 +13,17 @@ namespace MemoriesBackend.API.Controllers;
 public class FileController : ControllerBase
 {
     private readonly IFileDatabaseService _fileDatabaseService;
-    private readonly IFileManagementService _fileManagementService;
-    private readonly IFileStorageService _fileStorageService;
+    private readonly IFileManagementSystemService _fileManagementService;
     private readonly IMapper _mapper;
 
     public FileController(
         IFileDatabaseService fileDatabaseService,
-        IFileManagementService fileManagementService,
-        IFileStorageService fileStorageService,
+        IFileManagementSystemService fileManagementService,
         IMapper mapper
     )
     {
         _fileDatabaseService = fileDatabaseService;
         _fileManagementService = fileManagementService;
-        _fileStorageService = fileStorageService;
         _mapper = mapper;
     }
 
@@ -95,5 +92,15 @@ public class FileController : ControllerBase
     public async Task<FileContentResult> Download(Guid id)
     {
         return await _fileManagementService.DownloadFileAsync(id);
+    }
+
+    [HttpPost("copy")]
+    public async Task<IEnumerable<FileCopyPasteResponse>> CopyAndPaste(FileCopyPasteRequest fileCopyPasteRequest)
+    {
+        var filesDomain = await _fileManagementService.CopyAndPasteFilesAsync(fileCopyPasteRequest.FilesId, fileCopyPasteRequest.TargetFolderId);
+
+        var response = _mapper.Map<IEnumerable<FileCopyPasteResponse>>(filesDomain);
+
+        return response;
     }
 }

@@ -80,12 +80,13 @@ public class Startup
         services.AddAutoMapper(typeof(Program));
 
         //Add layers' services
-        services.AddInfrastructure(Configuration);
         services.AddCore();
+        services.AddInfrastructure(Configuration);
 
         //Middlewares
         services.AddScoped<GlobalExceptionHandlingMiddleware>();
 
+        services.AddHttpContextAccessor();
         services.AddLogging();
         services.AddControllers();
         services.AddEndpointsApiExplorer();
