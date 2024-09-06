@@ -9,5 +9,6 @@ namespace MemoriesBackend.Domain.Interfaces.Services
         Task<FileContentResult> DownloadFileAsync(string absoluteFilePath);
         Task DeleteFileAsync(string absoluteFilePath);
         Task<Guid> CopyAndPasteFileAsync(string fileAbsolutePath, string destinationFolderAbsolutePath);
+        FileStreamResult StreamFile(string absoluteFilePath);
     }
 }

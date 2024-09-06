@@ -93,6 +93,12 @@ public class FileController : ControllerBase
         return await _fileManagementService.DownloadFileAsync(id);
     }
 
+    [HttpGet("Preview/{id:Guid}")]
+    public async Task<FileStreamResult> Preview(Guid id)
+    {
+        return await _fileManagementService.StreamFileAsync(id);
+    }
+
     [HttpPost("copy")]
     public async Task<IEnumerable<FileCopyPasteResponse>> CopyAndPaste(FileCopyAndPasteRequest fileCopyPasteRequest)
     {

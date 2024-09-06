@@ -14,5 +14,6 @@ namespace MemoriesBackend.Domain.Interfaces.Services
         Task<IEnumerable<File>> CopyAndPasteFilesAsync(IEnumerable<File> filesToCopy, Guid targetFolderId);
         Task<IEnumerable<File>> CopyAndPasteFilesAsync(IEnumerable<Guid> filesIdsToCopy, Guid targetFolderId);
         Task<File> CopyAndPasteFileAsync(File file, Guid targetFolderId);
+        Task<FileStreamResult> StreamFileAsync(Guid fileId);
     }
 }

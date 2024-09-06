@@ -78,7 +78,12 @@ namespace MemoriesBackend.Application.Services
             });
         }
 
-        public 
+        public async Task<FileStreamResult> StreamFileAsync(Guid fileId)
+        {
+            var absoluteFilePath = await _pathService.GetFileAbsolutePathAsync(fileId);
+            var fileStream = _fileStorageService.StreamFile(absoluteFilePath);
+            return fileStream;
+        }
 
         public async Task DeleteFileAsync(Guid fileId)
         {

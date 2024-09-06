@@ -91,5 +91,29 @@ namespace MemoriesBackend.Application.Services
 
             return fileId;
         }
+        public FileStreamResult StreamFile(string absoluteFilePath)
+        {
+            if (!File.Exists(absoluteFilePath))
+                throw new FileNotFoundException("The requested file does not exist.");
+
+            var fileExtension = Path.GetExtension(absoluteFilePath);
+            var contentTypeProvider = new FileExtensionContentTypeProvider();
+            if (!contentTypeProvider.TryGetContentType(fileExtension, out var contentType))
+                contentType = "application/octet-stream";
+
+            var fileStream = new FileStream(absoluteFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+            var result = new FileStreamResult(fileStream, contentType)
+            {
+                FileDownloadName = null
+            };
+
+            if (contentType.StartsWith("video/") || contentType.StartsWith("audio/"))
+            {
+                result.EnableRangeProcessing = true;
+            }
+
+            return result;
+        }
     }
 }
