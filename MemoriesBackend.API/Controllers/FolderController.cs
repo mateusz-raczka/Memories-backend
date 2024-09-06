@@ -39,7 +39,7 @@ public class FolderController : ControllerBase
     [HttpGet("{id:Guid}")]
     public async Task<FolderGetByIdResponse> GetById(Guid id)
     {
-        var folderDomain = await _folderDatabaseService.GetFolderByIdAsync(id);
+        var folderDomain = await _folderDatabaseService.GetFolderByIdWithAllRelations(id);
 
         var response = _mapper.Map<FolderGetByIdResponse>(folderDomain);
 
@@ -59,11 +59,11 @@ public class FolderController : ControllerBase
     }
 
     [HttpPost("copy")]
-    public async Task<FolderCreateResponse> CopyAndPaste([FromBody] FolderCopyAndPasteRequest folderCopyPasteDto)
+    public async Task<FolderCopyAndPasteResponse> CopyAndPaste([FromBody] FolderCopyAndPasteRequest folderCopyPasteDto)
     {
         var folderDomain = await _fileManagementSystemService.CopyAndPasteFolderAsync(folderCopyPasteDto.SourceFolderId, folderCopyPasteDto.TargetFolderId);
 
-        var response = _mapper.Map<FolderCreateResponse>(folderDomain);
+        var response = _mapper.Map<FolderCopyAndPasteResponse>(folderDomain);
 
         return response;
     }

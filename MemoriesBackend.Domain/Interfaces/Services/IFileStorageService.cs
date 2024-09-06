@@ -8,5 +8,6 @@ namespace MemoriesBackend.Domain.Interfaces.Services
         Task<Guid> UploadFileAsync(IFormFile file, string absoluteFolderPath);
         Task<FileContentResult> DownloadFileAsync(string absoluteFilePath);
         Task DeleteFileAsync(string absoluteFilePath);
+        Task<Guid> CopyAndPasteFileAsync(string fileAbsolutePath, string destinationFolderAbsolutePath);
     }
 }

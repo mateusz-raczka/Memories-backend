@@ -1,5 +1,3 @@
-using MemoriesBackend.Infrastructure;
-
 namespace MemoriesBackend.API
 
 {

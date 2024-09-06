@@ -60,10 +60,16 @@ public class ApplicationDbContext : IdentityDbContext
                      .Where(x => x.ClrType.GetInterface(nameof(IOwnerId)) != null))
             modelBuilder.Entity(entityOwnedBy.ClrType).HasIndex(nameof(IOwnerId.OwnerId));
 
+        // Global query
+
         modelBuilder.Entity<File>().HasQueryFilter(x => x.OwnerId == _userContext.Current.UserData.Id);
         modelBuilder.Entity<Folder>().HasQueryFilter(x => x.OwnerId == _userContext.Current.UserData.Id);
 
-        modelBuilder.Entity<File>().Navigation(e => e.Category).AutoInclude();
+        // Auto include
+
+        modelBuilder.Entity<File>()
+            .Navigation(e => e.Category)
+            .AutoInclude();
         modelBuilder.Entity<File>()
             .Navigation(e => e.FileDetails)
             .AutoInclude();
@@ -74,9 +80,8 @@ public class ApplicationDbContext : IdentityDbContext
         modelBuilder.Entity<Folder>()
             .Navigation(e => e.FolderDetails)
             .AutoInclude();
-        modelBuilder.Entity<Folder>()
-            .Navigation(e => e.Files)
-            .AutoInclude();
+
+        // Relations
 
         modelBuilder.Entity<File>()
             .HasOne(f => f.FileDetails)

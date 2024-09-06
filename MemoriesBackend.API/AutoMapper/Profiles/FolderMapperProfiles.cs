@@ -13,6 +13,7 @@ namespace MemoriesBackend.API.AutoMapper.Profiles
             CreateMap<Folder, FolderCreateRequest>().ReverseMap();
             CreateMap<Folder, FolderGetAllResponse>().ReverseMap();
             CreateMap<Folder, FolderGetByIdResponse>().ReverseMap();
+            CreateMap<Folder, FolderCopyAndPasteResponse>().ReverseMap();
         }
     }
 }

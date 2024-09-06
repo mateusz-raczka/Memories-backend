@@ -38,7 +38,6 @@ public class FileController : ControllerBase
 
         if (!string.IsNullOrEmpty(filterName)) filter = entity => entity.FileDetails.Name.Contains(filterName);
 
-        // Hardcoded orderby name
         Func<IQueryable<File>, IOrderedQueryable<File>> orderBy = query =>
             query.OrderBy(entity => entity.FileDetails.Name);
 
@@ -95,9 +94,9 @@ public class FileController : ControllerBase
     }
 
     [HttpPost("copy")]
-    public async Task<IEnumerable<FileCopyPasteResponse>> CopyAndPaste(FileCopyPasteRequest fileCopyPasteRequest)
+    public async Task<IEnumerable<FileCopyPasteResponse>> CopyAndPaste(FileCopyAndPasteRequest fileCopyPasteRequest)
     {
-        var filesDomain = await _fileManagementService.CopyAndPasteFilesAsync(fileCopyPasteRequest.FilesId, fileCopyPasteRequest.TargetFolderId);
+        var filesDomain = await _fileManagementService.CopyAndPasteFilesAsync(fileCopyPasteRequest.FilesIds, fileCopyPasteRequest.TargetFolderId);
 
         var response = _mapper.Map<IEnumerable<FileCopyPasteResponse>>(filesDomain);
 

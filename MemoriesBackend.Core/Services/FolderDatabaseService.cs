@@ -10,22 +10,19 @@ namespace MemoriesBackend.Application.Services
     {
         private readonly IGenericRepository<Folder> _folderRepository;
 
-        public FolderDatabaseService(
-            IGenericRepository<Folder> folderRepository,
-            IFileDatabaseService fileDatabaseService
-        )
+        public FolderDatabaseService(IGenericRepository<Folder> folderRepository)
         {
             _folderRepository = folderRepository;
         }
 
         public async Task<Folder> CreateRootFolderAsync()
         {
-            var folder = new Folder();
-
-            folder.HierarchyId = await GenerateHierarchyId(null);
+            var folder = new Folder
+            {
+                HierarchyId = await GenerateHierarchyId(null)
+            };
 
             var createdFolder = await _folderRepository.Create(folder);
-
             await _folderRepository.Save();
 
             return createdFolder;
@@ -35,135 +32,104 @@ namespace MemoriesBackend.Application.Services
             int? pageNumber = null,
             int? pageSize = null,
             Expression<Func<Folder, bool>>? filter = null,
-            Func<IQueryable<Folder>, IOrderedQueryable<Folder>>? orderBy = null
+            Func<IQueryable<Folder>, IOrderedQueryable<Folder>>? orderBy = null,
+            bool asNoTracking = true
         )
         {
-            var folders = await _folderRepository.GetAll(
-                pageNumber,
-                pageSize,
-                filter,
-                orderBy
-            );
-
-            return folders;
+            return await _folderRepository.GetAll(filter, orderBy, pageNumber, pageSize, asNoTracking).ToListAsync();
         }
 
-
-        public async Task<Folder> GetFolderByIdAsync(Guid folderId)
+        public async Task<Folder> GetFolderByIdAsync(Guid folderId, bool asNoTracking = true)
         {
-            var folder = await _folderRepository.GetById(folderId);
+            return await _folderRepository.GetById(folderId, asNoTracking);
+        }
 
-            if (folder == null)
-                throw new KeyNotFoundException("Failed to fetch - There was no folder found with given id.");
+        public async Task<Folder> GetFolderByIdWithAllRelations(Guid folderId, bool asNoTracking = true)
+        {
+            var folderWithRelations =  await _folderRepository
+                .GetQueryable(asNoTracking)
+                .Include(f => f.ChildFolders)
+                .Include(f => f.Files)
+                .Where(f => f.Id == folderId)
+                .FirstOrDefaultAsync();
 
-            return folder;
+            if(folderWithRelations == null)
+            {
+                throw new ApplicationException($"Folder with ID {folderId} was not found");
+            }
+
+            return folderWithRelations;
         }
 
         public async Task<Folder> CreateFolderAsync(Folder folder)
         {
-            if (folder.ParentFolderId == null) throw new ApplicationException("Folder must have parent folder");
+            if (folder.ParentFolderId == null)
+                throw new ApplicationException("Folder must have a parent folder.");
 
-            var parentFolderId = folder.ParentFolderId;
-
-            folder.HierarchyId = await GenerateHierarchyId(parentFolderId);
+            folder.HierarchyId = await GenerateHierarchyId(folder.ParentFolderId);
 
             var createdFolder = await _folderRepository.Create(folder);
-
             await _folderRepository.Save();
 
             return createdFolder;
         }
 
-        public async Task<Folder> CopyFolderAsync(Guid folderId)
-        {
-            var folderCopy = await _folderRepository
-                .GetQueryable()
-                .Include(f => f.ChildFolders)
-                .Include(f => f.Files)
-                .Include(f => f.FolderDetails)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == folderId);
-
-            folderCopy.Id = Guid.NewGuid();
-            folderCopy.FolderDetails.Id = Guid.NewGuid();
-            folderCopy.FolderDetails.Name = folderCopy.FolderDetails.Name + " COPY test";
-            
-            return folderCopy;
-        }
-
-        public async Task<Folder> GetRootFolderAsync()
+        public async Task<Folder> GetRootFolderAsync(bool asNoTracking = true)
         {
             var rootFolder = await _folderRepository
-                .GetQueryable()
-                .Where(f => f.ParentFolderId == null)
+                .GetQueryable(asNoTracking)
+                .Include(f => f.Files)
                 .Include(f => f.ChildFolders)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(f => f.ParentFolderId == null);
 
-            if (rootFolder == null) throw new ApplicationException("Root folder was not found");
+            if(rootFolder == null)
+            {
+                throw new ApplicationException("Critical error - root folder was not found");
+            }
 
             return rootFolder;
         }
 
-        public async Task<Folder> GetFolderByIdWithRelations(Guid folderId)
+        public async Task<IEnumerable<Folder>> GetFolderAncestorsAsync(Folder folder, bool asNoTracking = true)
         {
-            var folder = await _folderRepository
-                .GetQueryable()
-                .Where(f => f.Id == folderId)
-                .Include(f => f.ChildFolders)
-                .FirstOrDefaultAsync();
-
-            return folder;
-        }
-
-        public async Task<IEnumerable<Folder>> GetFolderAncestorsAsync(Folder folder)
-        {
-            var ancestors = await _folderRepository
-                .GetQueryable()
+            return await _folderRepository
+                .GetQueryable(asNoTracking)
                 .Where(f => folder.HierarchyId.IsDescendantOf(f.HierarchyId))
                 .OrderBy(f => f.HierarchyId)
                 .ToListAsync();
-
-            return ancestors;
         }
 
-        public async Task<List<Folder>> GetFolderAncestorsAsync(Guid folderId)
+        public async Task<List<Folder>> GetFolderAncestorsAsync(Guid folderId, bool asNoTracking = true)
         {
-            var folder = await _folderRepository.GetById(folderId);
+            var folder = await GetFolderByIdAsync(folderId, asNoTracking);
 
-            var ancestors = await _folderRepository
-                .GetQueryable()
+            return await _folderRepository
+                .GetQueryable(asNoTracking)
                 .Where(f => folder.HierarchyId.IsDescendantOf(f.HierarchyId))
                 .OrderBy(f => f.HierarchyId)
                 .ToListAsync();
-
-            return ancestors;
         }
 
-        public async Task<Folder> GetFolderLastSiblingAsync(Guid parentFolderId)
+        public async Task<Folder?> GetFolderLastSiblingAsync(Guid parentFolderId, bool asNoTracking = true)
         {
-            var siblings = await _folderRepository
-                .GetQueryable()
+            return await _folderRepository
+                .GetQueryable(asNoTracking)
                 .Where(f => f.ParentFolderId == parentFolderId)
                 .OrderByDescending(f => f.HierarchyId)
-                .ToListAsync();
-
-            return siblings.FirstOrDefault();
+                .FirstOrDefaultAsync();
         }
 
         public async Task<HierarchyId> GenerateHierarchyId(Guid? parentFolderId)
         {
-            if (parentFolderId == null) return HierarchyId.GetRoot();
+            if (parentFolderId == null)
+                return HierarchyId.GetRoot();
 
-            var parentFolder = await _folderRepository.GetById(parentFolderId.Value);
-            var parentHierarchyId = parentFolder.HierarchyId;
-
+            var parentFolder = await GetFolderByIdAsync(parentFolderId.Value);
             var lastSibling = await GetFolderLastSiblingAsync(parentFolderId.Value);
 
-            var childHierarchyId = lastSibling == null
-                ? parentHierarchyId.GetDescendant(null, null)
-                : parentHierarchyId.GetDescendant(lastSibling.HierarchyId, null);
-
-            return childHierarchyId;
+            return lastSibling == null
+                ? parentFolder.HierarchyId.GetDescendant(null, null)
+                : parentFolder.HierarchyId.GetDescendant(lastSibling.HierarchyId, null);
         }
     }
 }

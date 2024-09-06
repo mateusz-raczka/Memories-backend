@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
 using MemoriesBackend.API.DTO.Authentication.Response;
-using MemoriesBackend.API.DTO.Tokens.Request;
 using MemoriesBackend.Domain.Interfaces.Services;
-using MemoriesBackend.Domain.Models.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MemoriesBackend.Controllers
+namespace MemoriesBackend.API.Controllers
 {
     [AllowAnonymous]
     [Route("api/[controller]")]

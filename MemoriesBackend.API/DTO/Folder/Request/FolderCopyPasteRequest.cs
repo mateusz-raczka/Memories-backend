@@ -3,6 +3,6 @@
     public class FolderCopyAndPasteRequest
     {
         public Guid SourceFolderId { get; set; }
-        public Guid TargetFolderId { get; set;}
+        public Guid TargetFolderId { get; set; }
     }
 }

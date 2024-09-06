@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MemoriesBackend.Infrastructure.Contexts;
 using MemoriesBackend.Domain.Interfaces.Transactions;
+using System;
+using System.Threading.Tasks;
 
 namespace MemoriesBackend.Infrastructure.Transactions
 {
@@ -13,7 +15,7 @@ namespace MemoriesBackend.Infrastructure.Transactions
             _context = context;
         }
 
-        public async Task ExecuteAsync(Func<Task> action)
+        public async Task ExecuteAsync(Func<Task> action, Func<Task>? rollbackAction = null)
         {
             var strategy = _context.Database.CreateExecutionStrategy();
 
@@ -21,13 +23,25 @@ namespace MemoriesBackend.Infrastructure.Transactions
             {
                 using (var transaction = await _context.Database.BeginTransactionAsync())
                 {
-                    await action();
-                    await transaction.CommitAsync();
+                    try
+                    {
+                        await action();
+                        await transaction.CommitAsync();
+                    }
+                    catch (Exception)
+                    {
+                        await transaction.RollbackAsync();
+                        if (rollbackAction != null)
+                        {
+                            await rollbackAction();
+                        }
+                        throw;
+                    }
                 }
             });
         }
 
-        public async Task<T> ExecuteAsync<T>(Func<Task<T>> action)
+        public async Task<T> ExecuteAsync<T>(Func<Task<T>> action, Func<Task>? rollbackAction = null)
         {
             var strategy = _context.Database.CreateExecutionStrategy();
 
@@ -35,9 +49,21 @@ namespace MemoriesBackend.Infrastructure.Transactions
             {
                 using (var transaction = await _context.Database.BeginTransactionAsync())
                 {
-                    var result = await action();
-                    await transaction.CommitAsync();
-                    return result;
+                    try
+                    {
+                        var result = await action();
+                        await transaction.CommitAsync();
+                        return result;
+                    }
+                    catch (Exception)
+                    {
+                        await transaction.RollbackAsync();
+                        if (rollbackAction != null)
+                        {
+                            await rollbackAction();
+                        }
+                        throw;
+                    }
                 }
             });
         }

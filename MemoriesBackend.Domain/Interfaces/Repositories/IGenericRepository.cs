@@ -1,21 +1,29 @@
 ﻿using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace MemoriesBackend.Domain.Interfaces.Repositories
 {
-    public interface IGenericRepository<TEntity> : IDisposable where TEntity : class
+    public interface IGenericRepository<TEntity> where TEntity : class
     {
-        IQueryable<TEntity> GetQueryable();
-        Task<TEntity> GetById(Guid id);
-        Task<IEnumerable<TEntity>> GetAll(
+        IQueryable<TEntity> GetQueryable(bool asNoTracking = true);
+
+        IQueryable<TEntity> GetAll(
+            Expression<Func<TEntity, bool>>? filter = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
             int? pageNumber = null,
             int? pageSize = null,
-            Expression<Func<TEntity, bool>>? filter = null,
-            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null
-            );
+            bool asNoTracking = true);
+
+        Task<TEntity> GetById(Guid id, bool asNoTracking = true);
+
         Task<TEntity> Create(TEntity entity);
+
         Task Delete(Guid id);
+
         void Delete(TEntity entityToDelete);
+
         void Update(TEntity entityToUpdate);
+
         Task Save();
     }
 }

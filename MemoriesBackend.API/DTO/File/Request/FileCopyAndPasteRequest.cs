@@ -1,8 +1,8 @@
 ﻿namespace MemoriesBackend.API.DTO.File.Request
 {
-    public class FileCopyPasteRequest
+    public class FileCopyAndPasteRequest
     {
-        public IEnumerable<Guid> FilesId { get; set; }
+        public IEnumerable<Guid> FilesIds { get; set; }
         public Guid TargetFolderId { get; set; }
     }
 }

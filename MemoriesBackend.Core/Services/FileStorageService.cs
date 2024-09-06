@@ -2,18 +2,12 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.Extensions.Configuration;
 
 namespace MemoriesBackend.Application.Services
 {
     public class FileStorageService : IFileStorageService
     {
-        private readonly IPathService _pathService;
-
-        public FileStorageService(IPathService pathService)
-        {
-            _pathService = pathService;
-        }
+        public FileStorageService(){}
 
         public async Task<Guid> UploadFileAsync(IFormFile file, string absoluteFolderPath)
         {
@@ -40,7 +34,7 @@ namespace MemoriesBackend.Application.Services
             catch (Exception ex)
             {
                 if (File.Exists(absoluteFilePath))
-                    File.Delete(absoluteFilePath);
+                    await Task.Run(()=>File.Delete(absoluteFilePath));
 
                 throw;
             }
@@ -71,7 +65,31 @@ namespace MemoriesBackend.Application.Services
             if (!File.Exists(absoluteFilePath))
                 throw new FileNotFoundException("Cannot find file with a given id in file storage.");
 
-            File.Delete(absoluteFilePath);
+            await Task.Run(()=>File.Delete(absoluteFilePath));
+        }
+
+        public async Task<Guid> CopyAndPasteFileAsync(string fileAbsolutePath, string destinationFolderAbsolutePath)
+        {
+            if (string.IsNullOrWhiteSpace(fileAbsolutePath))
+                throw new ArgumentException("File path cannot be null or empty", nameof(fileAbsolutePath));
+
+            if (string.IsNullOrWhiteSpace(destinationFolderAbsolutePath))
+                throw new ArgumentException("Destination folder path cannot be null or empty", nameof(destinationFolderAbsolutePath));
+
+            if (!File.Exists(fileAbsolutePath))
+                throw new FileNotFoundException("Source file not found", fileAbsolutePath);
+
+            if (!Directory.Exists(destinationFolderAbsolutePath))
+                Directory.CreateDirectory(destinationFolderAbsolutePath);
+
+            var fileId = Guid.NewGuid();
+            var extension = Path.GetExtension(fileAbsolutePath);
+            var newFileName = $"{fileId}{extension}";
+            var destinationFilePath = Path.Combine(destinationFolderAbsolutePath, newFileName);
+
+            await Task.Run(() => File.Copy(fileAbsolutePath, destinationFilePath, overwrite: true));
+
+            return fileId;
         }
     }
 }
