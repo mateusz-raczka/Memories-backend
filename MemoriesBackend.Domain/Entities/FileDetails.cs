@@ -1,14 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using MemoriesBackend.Domain.Interfaces.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MemoriesBackend.Domain.Entities
 {
-    public class FileDetails
+    public class FileDetails : IEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
         public string Name { get; set; }
         public long Size { get; set; }
         public string Extension { get; set; }
+        public byte[]? Icon { get; set; }
         public string? Description { get; set; }
         public bool? IsStared { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;

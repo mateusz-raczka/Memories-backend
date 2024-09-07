@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MemoriesBackend.Domain.Entities
 {
-    public class Folder : IOwnerId
+    public class Folder : IOwnerId, IEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }

@@ -14,7 +14,6 @@ namespace MemoriesBackend.Application.Services
     public class CookieService : ICookieService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-
         public CookieService(
             IHttpContextAccessor httpContextAccessor
         )
@@ -24,8 +23,8 @@ namespace MemoriesBackend.Application.Services
 
         public void SetAuthCookies(Auth auth)
         {
-            SetRefreshTokenCookie(auth.RefreshToken);
-            SetAccessTokenCookie(auth.AccessToken);
+            SetRefreshTokenCookie(auth.RefreshToken, auth.RefreshToken.ExpireDate);
+            SetAccessTokenCookie(auth.AccessToken, auth.RefreshToken.ExpireDate);
         }
 
         public string GetRefreshTokenFromCookie()
@@ -52,28 +51,28 @@ namespace MemoriesBackend.Application.Services
             return accessTokenValue;
         }
 
-        private void SetAccessTokenCookie(JwtToken accessToken)
+        private void SetAccessTokenCookie(JwtToken accessToken, DateTime expireDate)
         {
             var accessTokenCookieOptions = new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
-                Expires = accessToken.ExpireDate
+                Expires = expireDate
             };
 
             _httpContextAccessor.HttpContext.Response.Cookies
                 .Append(CookieType.accessToken.ToString(), accessToken.Value, accessTokenCookieOptions);
         }
 
-        private void SetRefreshTokenCookie(RefreshToken refreshToken)
+        private void SetRefreshTokenCookie(RefreshToken refreshToken, DateTime expireDate)
         {
             var refreshTokenCookieOptions = new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
-                Expires = refreshToken.ExpireDate
+                Expires = expireDate
             };
 
             _httpContextAccessor.HttpContext.Response.Cookies

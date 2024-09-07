@@ -25,7 +25,7 @@ namespace MemoriesBackend.API.Controllers
             _cookieService = cookieService;
         }
 
-        [HttpPost("refresh")]
+        [HttpGet("refresh")]
         public async Task<AuthResponse> Refresh()
         {
             var refreshToken = _cookieService.GetRefreshTokenFromCookie();

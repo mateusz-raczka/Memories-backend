@@ -2,6 +2,7 @@
 using MemoriesBackend.Domain.Interfaces.Repositories;
 using MemoriesBackend.Domain.Interfaces.Services;
 using MemoriesBackend.Domain.Interfaces.Transactions;
+using MemoriesBackend.Domain.Models.Storage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using File = MemoriesBackend.Domain.Entities.File;
@@ -37,22 +38,27 @@ namespace MemoriesBackend.Application.Services
         public async Task<File> AddFileAsync(IFormFile fileData, Guid folderId)
         {
             var absoluteFolderPath = await _pathService.GetFolderAbsolutePathAsync( folderId );
-            var fileId = Guid.Empty;
+            UploadFileResult uploadedFile = null;
 
             return await _transactionHandler.ExecuteAsync(async () =>
             {
                 var folder = await _folderDatabaseService.GetFolderByIdAsync(folderId);
-                if (folder == null) throw new ArgumentException("Folder with the given ID does not exist.", nameof(folderId));
+                if (folder == null) throw new ApplicationException($"Folder with the given ID {folderId} - does not exist.");
 
-                fileId = await _fileStorageService.UploadFileAsync(fileData, absoluteFolderPath);
+                uploadedFile = await _fileStorageService.UploadFileAsync(fileData, absoluteFolderPath);
+
+                if(uploadedFile == null)
+                {
+                    throw new ApplicationException("Failed to upload file to file storage");
+                }
 
                 var file = new File
                 {
-                    Id = fileId,
+                    Id = uploadedFile.Id,
                     FolderId = folderId,
                     FileDetails = new FileDetails
                     {
-                        Id = fileId,
+                        Id = uploadedFile.Id,
                         Name = fileData.FileName,
                         Size = fileData.Length,
                         Extension = Path.GetExtension(fileData.FileName)
@@ -65,7 +71,7 @@ namespace MemoriesBackend.Application.Services
             {
                 try
                 {
-                    var absoluteFilePath = Path.Combine(absoluteFolderPath, fileId.ToString());
+                    var absoluteFilePath = Path.Combine(absoluteFolderPath, uploadedFile.Id.ToString());
                     if (System.IO.File.Exists(absoluteFilePath))
                     {
                         await _fileStorageService.DeleteFileAsync(absoluteFolderPath);
@@ -81,8 +87,7 @@ namespace MemoriesBackend.Application.Services
         public async Task<FileStreamResult> StreamFileAsync(Guid fileId)
         {
             var absoluteFilePath = await _pathService.GetFileAbsolutePathAsync(fileId);
-            var fileStream = _fileStorageService.StreamFile(absoluteFilePath);
-            return fileStream;
+            return _fileStorageService.StreamFile(absoluteFilePath);
         }
 
         public async Task DeleteFileAsync(Guid fileId)

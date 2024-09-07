@@ -58,7 +58,7 @@ namespace MemoriesBackend.Application.Services
                 new(ClaimTypes.Role, userRole)
             };
 
-            var expireDate = DateTime.UtcNow.AddHours(2);
+            var expireDate = DateTime.UtcNow.AddMinutes(1);
 
             var identity = new ClaimsIdentity(claims);
 
@@ -195,6 +195,7 @@ namespace MemoriesBackend.Application.Services
                     ValidateAudience = true,
                     ValidIssuer = _configuration["JWT:Issuer"],
                     ValidAudience = _configuration["JWT:Audience"],
+                    ValidateLifetime = false,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
                 }, out SecurityToken validatedToken);
 

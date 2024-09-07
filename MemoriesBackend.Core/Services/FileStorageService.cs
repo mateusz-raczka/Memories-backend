@@ -2,21 +2,25 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using Image = SixLabors.ImageSharp.Image;
+using MemoriesBackend.Domain.Models.Storage;
 
 namespace MemoriesBackend.Application.Services
 {
     public class FileStorageService : IFileStorageService
     {
-        public FileStorageService(){}
 
-        public async Task<Guid> UploadFileAsync(IFormFile file, string absoluteFolderPath)
+        public async Task<UploadFileResult> UploadFileAsync(IFormFile file, string absoluteFolderPath)
         {
-            var fileId = Guid.NewGuid();
-
+            var uploadedFile = new UploadFileResult
+            {
+                Id = Guid.NewGuid(),
+                Icon = null
+            };
             var fileExtension = Path.GetExtension(file.FileName);
-
-            var fileIdWithExtension = fileId + fileExtension;
-
+            var fileIdWithExtension = uploadedFile.Id + fileExtension;
             var absoluteFilePath = Path.Combine(absoluteFolderPath, fileIdWithExtension);
 
             try
@@ -29,12 +33,29 @@ namespace MemoriesBackend.Application.Services
                     await file.CopyToAsync(stream);
                 }
 
-                return fileId;
+                if (file.ContentType.StartsWith("image/"))
+                {
+                    using (var imageStream = file.OpenReadStream())
+                    using (Image image = await Image.LoadAsync(imageStream))
+                    {
+                        image.Mutate(x => x.Resize(100, 100));
+
+                        var format = Image.DetectFormat(imageStream);
+
+                        using (var ms = new MemoryStream())
+                        {
+                            await image.SaveAsync(ms, format);
+                            uploadedFile.Icon = ms.ToArray();
+                        }
+                    }
+                }
+
+                return uploadedFile;
             }
             catch (Exception ex)
             {
                 if (File.Exists(absoluteFilePath))
-                    await Task.Run(()=>File.Delete(absoluteFilePath));
+                    await Task.Run(() => File.Delete(absoluteFilePath));
 
                 throw;
             }
@@ -65,7 +86,7 @@ namespace MemoriesBackend.Application.Services
             if (!File.Exists(absoluteFilePath))
                 throw new FileNotFoundException("Cannot find file with a given id in file storage.");
 
-            await Task.Run(()=>File.Delete(absoluteFilePath));
+            await Task.Run(() => File.Delete(absoluteFilePath));
         }
 
         public async Task<Guid> CopyAndPasteFileAsync(string fileAbsolutePath, string destinationFolderAbsolutePath)
@@ -91,6 +112,7 @@ namespace MemoriesBackend.Application.Services
 
             return fileId;
         }
+
         public FileStreamResult StreamFile(string absoluteFilePath)
         {
             if (!File.Exists(absoluteFilePath))

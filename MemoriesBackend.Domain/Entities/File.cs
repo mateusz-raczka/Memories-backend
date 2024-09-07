@@ -1,11 +1,9 @@
 ﻿using MemoriesBackend.Domain.Interfaces.Models;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MemoriesBackend.Domain.Entities
 {
-    public class File : IOwnerId
+    public class File : IOwnerId, IEntity
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
         public Guid FolderId { get; set; }
         public Guid? CategoryId { get; set; }

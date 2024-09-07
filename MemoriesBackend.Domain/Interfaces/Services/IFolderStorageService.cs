@@ -2,6 +2,6 @@
 {
     public interface IFolderStorageService
     {
-        Task DeleteFolderAsync(Guid folderId);
+        Task DeleteFolderAsync(string absoluteFolderPath);
     }
 }

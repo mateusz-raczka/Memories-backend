@@ -1,7 +1,9 @@
 ﻿using System.Linq.Expressions;
+using MemoriesBackend.Application.Services;
+using MemoriesBackend.Domain.Interfaces.Models;
 using MemoriesBackend.Domain.Interfaces.Repositories;
+using MemoriesBackend.Domain.Interfaces.Services;
 using MemoriesBackend.Infrastructure.Contexts;
-using MemoriesBackend.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace MemoriesBackend.Infrastructure.Repositories
@@ -10,27 +12,41 @@ namespace MemoriesBackend.Infrastructure.Repositories
     {
         protected readonly ApplicationDbContext _context;
         protected readonly DbSet<TEntity> _dbSet;
+        protected readonly IUserContextService _userContextService;
         private bool disposed;
 
-        public GenericRepository(ApplicationDbContext context)
+        public GenericRepository(ApplicationDbContext context, IUserContextService userContextService)
         {
             _context = context;
             _dbSet = _context.Set<TEntity>();
+            _userContextService = userContextService;
+        }
+
+        private IQueryable<TEntity> ApplyOwnershipFilter(IQueryable<TEntity> query)
+        {
+            if (typeof(IOwnerId).IsAssignableFrom(typeof(TEntity)))
+            {
+                var currentUserId = _userContextService.Current.UserData.Id;
+                query = query.Where(e => ((IOwnerId)e).OwnerId == currentUserId);
+            }
+            return query;
         }
 
         public IQueryable<TEntity> GetQueryable(bool asNoTracking = true)
         {
-            return asNoTracking ? _dbSet.AsNoTracking() : _dbSet.AsQueryable();
+            var query = asNoTracking ? _dbSet.AsNoTracking() : _dbSet.AsQueryable();
+            return ApplyOwnershipFilter(query);
         }
 
         public IQueryable<TEntity> GetAll(
-    Expression<Func<TEntity, bool>>? filter = null,
-    Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-    int? pageNumber = null,
-    int? pageSize = null,
-    bool asNoTracking = true)
+            Expression<Func<TEntity, bool>>? filter = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+            int? pageNumber = null,
+            int? pageSize = null,
+            bool asNoTracking = true
+        )
         {
-            IQueryable<TEntity> query = _dbSet;
+            IQueryable<TEntity> query = GetQueryable(asNoTracking);
 
             if (filter != null)
                 query = query.Where(filter);
@@ -38,31 +54,31 @@ namespace MemoriesBackend.Infrastructure.Repositories
             if (orderBy != null)
                 query = orderBy(query);
 
-            if (asNoTracking)
-                query = query.AsNoTracking();
-
             if (pageNumber != null && pageSize != null && pageNumber > 0 && pageSize > 0)
                 query = query.Skip((pageNumber.Value - 1) * pageSize.Value).Take(pageSize.Value);
 
             return query;
         }
 
-
-
         public virtual async Task<TEntity> GetById(Guid id, bool asNoTracking = true)
         {
-            var entity = asNoTracking
-                ? await _dbSet.AsNoTracking().FirstOrDefaultAsync(e => EF.Property<Guid>(e, "Id") == id)
-                : await _dbSet.FindAsync(id);
+            var query = GetQueryable(asNoTracking).Where(e => ((IEntity)e).Id == id);
+            var entity = await query.FirstOrDefaultAsync();
 
             if (entity == null)
-                throw new ApplicationException("Entity was not found");
+                throw new ApplicationException("Entity was not found or you do not have access to it.");
 
             return entity;
         }
 
         public virtual async Task<TEntity> Create(TEntity entity)
         {
+            if (typeof(IOwnerId).IsAssignableFrom(entity.GetType()))
+            {
+                var currentUserId = _userContextService.Current.UserData.Id;
+                ((IOwnerId)entity).SetOwnerId(currentUserId);
+            }
+
             await _dbSet.AddAsync(entity);
             return entity;
         }
@@ -85,6 +101,15 @@ namespace MemoriesBackend.Infrastructure.Repositories
 
         public virtual void Update(TEntity entityToUpdate)
         {
+            if (typeof(IOwnerId).IsAssignableFrom(entityToUpdate.GetType()))
+            {
+                var currentUserId = _userContextService.Current.UserData.Id;
+                if (((IOwnerId)entityToUpdate).OwnerId != currentUserId)
+                {
+                    throw new UnauthorizedAccessException("Cannot modify an entity that does not belong to the current user.");
+                }
+            }
+
             _context.Entry(entityToUpdate).State = EntityState.Modified;
         }
 
