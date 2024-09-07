@@ -33,23 +33,6 @@ namespace MemoriesBackend.Application.Services
                     await file.CopyToAsync(stream);
                 }
 
-                if (file.ContentType.StartsWith("image/"))
-                {
-                    using (var imageStream = file.OpenReadStream())
-                    using (Image image = await Image.LoadAsync(imageStream))
-                    {
-                        image.Mutate(x => x.Resize(100, 100));
-
-                        var format = Image.DetectFormat(imageStream);
-
-                        using (var ms = new MemoryStream())
-                        {
-                            await image.SaveAsync(ms, format);
-                            uploadedFile.Icon = ms.ToArray();
-                        }
-                    }
-                }
-
                 return uploadedFile;
             }
             catch (Exception ex)
