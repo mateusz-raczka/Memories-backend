@@ -58,7 +58,7 @@ namespace MemoriesBackend.Application.Services
                 new(ClaimTypes.Role, userRole)
             };
 
-            var expireDate = DateTime.UtcNow.AddMinutes(1);
+            var expireDate = DateTime.UtcNow.AddMinutes(30);
 
             var identity = new ClaimsIdentity(claims);
 

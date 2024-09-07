@@ -57,7 +57,7 @@ namespace MemoriesBackend.Application.Services
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Expires = expireDate
             };
 
@@ -71,7 +71,7 @@ namespace MemoriesBackend.Application.Services
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Expires = expireDate
             };
 
