@@ -25,7 +25,7 @@ namespace MemoriesBackend.Application.Services
 
         public async Task UpdateFileAsync(Guid id, File file)
         {
-            if (file == null) throw new KeyNotFoundException("Invalid FileId.");
+            if (file == null) throw new ApplicationException("Invalid FileId.");
             _fileRepository.Update(file);
             await _fileRepository.Save();
         }
@@ -45,7 +45,7 @@ namespace MemoriesBackend.Application.Services
         public async Task<File> GetFileByIdAsync(Guid id)
         {
             var file = await _fileRepository.GetById(id);
-            if (file == null) throw new KeyNotFoundException("Failed to fetch - There was no file found with the given id.");
+            if (file == null) throw new ApplicationException("Failed to fetch - There was no file found with the given id.");
             return file;
         }
 

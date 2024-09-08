@@ -2,6 +2,7 @@
 using MemoriesBackend.Domain.Interfaces.Repositories;
 using MemoriesBackend.Domain.Interfaces.Services;
 using MemoriesBackend.Domain.Interfaces.Transactions;
+using MemoriesBackend.Domain.Models.FileManagement;
 using MemoriesBackend.Domain.Models.Storage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,7 @@ namespace MemoriesBackend.Application.Services
         private readonly ITransactionHandler _transactionHandler;
         private readonly IPathService _pathService;
         private readonly IGenericRepository<Folder> _folderRepository;
+        private readonly IFolderStorageService _folderStorageService;
 
         public FileManagementSystemService(
             IFileStorageService fileStorageService,
@@ -24,7 +26,8 @@ namespace MemoriesBackend.Application.Services
             IFolderDatabaseService folderDatabaseService,
             ITransactionHandler transactionHandler,
             IPathService pathService,
-            IGenericRepository<Folder> folderRepository
+            IGenericRepository<Folder> folderRepository,
+            IFolderStorageService folderStorageService
             )
         {
             _fileStorageService = fileStorageService;
@@ -33,6 +36,7 @@ namespace MemoriesBackend.Application.Services
             _transactionHandler = transactionHandler;
             _pathService = pathService;
             _folderRepository = folderRepository;
+            _folderStorageService = folderStorageService;
         }
 
         public async Task<File> AddFileAsync(IFormFile fileData, Guid folderId)
@@ -66,28 +70,30 @@ namespace MemoriesBackend.Application.Services
                 };
 
                 var createdFile = await _fileDatabaseService.CreateFileAsync(file);
+
                 return createdFile;
-            }, async () =>
-            {
-                try
-                {
-                    var absoluteFilePath = Path.Combine(absoluteFolderPath, uploadedFile.Id.ToString());
-                    if (System.IO.File.Exists(absoluteFilePath))
-                    {
-                        await _fileStorageService.DeleteFileAsync(absoluteFolderPath);
-                    }
-                }
-                catch(Exception ex)
-                {
-                    throw new ApplicationException("Failed to rollback file", ex);
-                }
-            });
+
+            }, async () => await UploadFileRollbackAsync(uploadedFile, absoluteFolderPath));
         }
 
         public async Task<FileStreamResult> StreamFileAsync(Guid fileId)
         {
             var absoluteFilePath = await _pathService.GetFileAbsolutePathAsync(fileId);
             return _fileStorageService.StreamFile(absoluteFilePath);
+        }
+
+        public async Task DeleteFolderAsync(Guid folderId)
+        {
+            var folder = await _folderDatabaseService.GetFolderByIdAsync(folderId);
+            if(folder == null)
+            {
+                throw new ApplicationException($"Cannot delete folder with Id {folderId} - it was not found");
+            }
+
+            var absoluteFolderPath = await _pathService.GetFolderAbsolutePathAsync(folderId);
+
+            await _folderDatabaseService.DeleteFolderAsync(folderId);
+            await _folderStorageService.DeleteFolderAsync(absoluteFolderPath);
         }
 
         public async Task DeleteFileAsync(Guid fileId)
@@ -106,6 +112,20 @@ namespace MemoriesBackend.Application.Services
             var absoluteFilePath = await _pathService.GetFileAbsolutePathAsync(fileId);
 
             return await _fileStorageService.DownloadFileAsync(absoluteFilePath);
+        }
+
+        public async Task<CopyAndPasteFoldersAndFilesResult> CopyAndPasteFoldersAndFilesAsync(IEnumerable<Guid> filesIds, IEnumerable<Guid> foldersIds, Guid targetFolderId)
+        {
+            var pastedFiles = await CopyAndPasteFilesAsync(filesIds, targetFolderId);
+            var pastedFolders = await CopyAndPasteFoldersAsync(foldersIds, targetFolderId);
+
+            var copyAndPasteFoldersAndFilesResult = new CopyAndPasteFoldersAndFilesResult
+            {
+                Folders = pastedFolders,
+                Files = pastedFiles,
+            };
+
+            return copyAndPasteFoldersAndFilesResult;
         }
 
         public async Task<Folder> CopyAndPasteFolderAsync(Guid sourceFolderId, Guid targetFolderId)
@@ -153,6 +173,25 @@ namespace MemoriesBackend.Application.Services
                 await _folderRepository.Save();
 
                 return folderPasted;
+        }
+
+        public async Task<IEnumerable<Folder>> CopyAndPasteFoldersAsync(IEnumerable<Guid> folderIds, Guid targetFolderId)
+        {
+            var targetFolder = await _folderDatabaseService.GetFolderByIdAsync(targetFolderId);
+            if(targetFolder == null)
+            {
+                throw new ApplicationException("Target folder not found");
+            }
+
+            var pastedFolders = new List<Folder>();
+
+            foreach (var folderId in folderIds)
+            {
+                var pastedFolder = await CopyAndPasteFolderAsync(folderId, targetFolderId);
+                pastedFolders.Add(pastedFolder);
+            }
+
+            return pastedFolders;
         }
 
 
@@ -218,6 +257,22 @@ namespace MemoriesBackend.Application.Services
 
                 return await _fileDatabaseService.CreateFileAsync(fileCopy);
             });
+        }
+        
+        private async Task UploadFileRollbackAsync(UploadFileResult uploadFileResult, string absoluteFolderPath)
+        {
+            try
+            {
+                var absoluteFilePath = Path.Combine(absoluteFolderPath, uploadFileResult.Id.ToString());
+                if (System.IO.File.Exists(absoluteFilePath))
+                {
+                    await _fileStorageService.DeleteFileAsync(absoluteFolderPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Failed to rollback file", ex);
+            }
         }
     }
 }

@@ -131,5 +131,18 @@ namespace MemoriesBackend.Application.Services
                 ? parentFolder.HierarchyId.GetDescendant(null, null)
                 : parentFolder.HierarchyId.GetDescendant(lastSibling.HierarchyId, null);
         }
+
+        public async Task DeleteFolderAsync(Guid folderId)
+        {
+            var folder = await _folderRepository.GetById(folderId);
+            if(folder == null)
+            {
+                throw new ApplicationException($"Failed to delete - folder with Id {folderId} was not found");
+            }
+
+            await _folderRepository.Delete(folderId);
+
+            await _folderRepository.Save();
+        }
     }
 }

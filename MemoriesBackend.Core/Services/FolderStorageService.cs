@@ -6,7 +6,12 @@ namespace MemoriesBackend.Application.Services
     {
         public async Task DeleteFolderAsync(string absoluteFolderPath)
         {
-            return;
+            if (!Directory.Exists(absoluteFolderPath))
+            {
+                throw new ApplicationException($"Failed to delete folder from file storage - it was not found");
+            }
+
+            await Task.Run(() => Directory.Delete(absoluteFolderPath, recursive: true));
         }
     }
 }

@@ -58,13 +58,9 @@ public class FolderController : ControllerBase
         return response;
     }
 
-    [HttpPost("copy")]
-    public async Task<FolderCopyAndPasteResponse> CopyAndPaste([FromBody] FolderCopyAndPasteRequest folderCopyPasteDto)
+    [HttpDelete("{id:Guid}")]
+    public async Task Delete(Guid id)
     {
-        var folderDomain = await _fileManagementSystemService.CopyAndPasteFolderAsync(folderCopyPasteDto.SourceFolderId, folderCopyPasteDto.TargetFolderId);
-
-        var response = _mapper.Map<FolderCopyAndPasteResponse>(folderDomain);
-
-        return response;
+        await _fileManagementSystemService.DeleteFolderAsync(id);
     }
 }

@@ -98,14 +98,4 @@ public class FileController : ControllerBase
     {
         return await _fileManagementService.StreamFileAsync(id);
     }
-
-    [HttpPost("copy")]
-    public async Task<IEnumerable<FileCopyPasteResponse>> CopyAndPaste(FileCopyAndPasteRequest fileCopyPasteRequest)
-    {
-        var filesDomain = await _fileManagementService.CopyAndPasteFilesAsync(fileCopyPasteRequest.FilesIds, fileCopyPasteRequest.TargetFolderId);
-
-        var response = _mapper.Map<IEnumerable<FileCopyPasteResponse>>(filesDomain);
-
-        return response;
-    }
 }
