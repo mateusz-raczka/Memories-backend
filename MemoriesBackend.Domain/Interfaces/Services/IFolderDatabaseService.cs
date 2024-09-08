@@ -31,5 +31,7 @@ namespace MemoriesBackend.Domain.Interfaces.Services
         Task<HierarchyId> GenerateHierarchyId(Guid? parentFolderId);
 
         Task<Folder> GetFolderByIdWithAllRelations(Guid folderId, bool asNoTracking = true);
+
+        Task DeleteFolderAsync(Guid folderId);
     }
 }
