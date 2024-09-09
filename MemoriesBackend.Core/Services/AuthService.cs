@@ -25,21 +25,21 @@ public class AuthService : IAuthService
         _logger = logger;
     }
 
-    public async Task<Auth> LoginAsync(Login loginDto)
+    public async Task<Auth> LoginAsync(Login login)
     {
-        var user = await _userManager.FindByNameAsync(loginDto.UserName);
+        var user = await _userManager.FindByNameAsync(login.UserName);
 
         if (user == null)
         {
-            _logger.LogWarning("User not found: {UserName}", loginDto.UserName);
+            _logger.LogWarning("User not found: {UserName}", login.UserName);
             throw new ApplicationException("User not found");
         }
 
-        var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, loginDto.Password);
+        var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, login.Password);
 
         if (!isPasswordCorrect)
         {
-            _logger.LogWarning("Invalid credentials for user: {UserName}", loginDto.UserName);
+            _logger.LogWarning("Invalid credentials for user: {UserName}", login.UserName);
             throw new UnauthorizedAccessException("Invalid credentials");
         }
 
@@ -56,14 +56,14 @@ public class AuthService : IAuthService
             if (!updateResult.Succeeded)
             {
                 _logger.LogError("Error updating user: {UserName}, Errors: {Errors}",
-                    loginDto.UserName, string.Join(", ", updateResult.Errors.Select(e => e.Description)));
+                    login.UserName, string.Join(", ", updateResult.Errors.Select(e => e.Description)));
                 throw new ApplicationException("Failed to update user");
             }
         }
         catch (DbUpdateConcurrencyException ex)
         {
             _logger.LogError("Concurrency error updating user: {UserName}, Error: {Error}",
-                loginDto.UserName, ex.Message);
+                login.UserName, ex.Message);
             throw new ApplicationException("Concurrency error updating user");
         }
 

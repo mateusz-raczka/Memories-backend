@@ -13,16 +13,16 @@ public class FolderController : ControllerBase
 {
     private readonly IMapper _mapper;
     private readonly IFolderDatabaseService _folderDatabaseService;
-    private readonly IFileManagementSystemService _fileManagementSystemService;
+    private readonly IFileService _fileService;
 
     public FolderController(
         IFolderDatabaseService folderDatabaseService,
-        IFileManagementSystemService fileManagementSystemService,
+        IFileService fileService,
         IMapper mapper
     )
     {
         _folderDatabaseService = folderDatabaseService;
-        _fileManagementSystemService = fileManagementSystemService;
+        _fileService = fileService;
         _mapper = mapper;
     }
 
@@ -61,6 +61,6 @@ public class FolderController : ControllerBase
     [HttpDelete("{id:Guid}")]
     public async Task Delete(Guid id)
     {
-        await _fileManagementSystemService.DeleteFolderAsync(id);
+        //await _fileManagementSystemService.DeleteFolderAsync(id);
     }
 }

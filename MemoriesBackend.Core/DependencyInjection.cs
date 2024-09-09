@@ -13,13 +13,14 @@ namespace MemoriesBackend.Core
             services.AddScoped<IUserContextService, UserContextService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IFileStorageService, FileStorageService>();
-            services.AddScoped<IFileManagementSystemService, FileManagementSystemService>();
+            services.AddScoped<IFileService, FileService>();
             services.AddScoped<IFolderDatabaseService, FolderDatabaseService>();
             services.AddScoped<IInitializeUserService, InitializeUserService>();
             services.AddScoped<IRegisterService, RegisterService>();
             services.AddScoped<IFolderStorageService, FolderStorageService>();
             services.AddScoped<ICookieService, CookieService>();
             services.AddScoped<IPathService, PathService>();
+            services.AddScoped<ICopyAndPasteService, CopyAndPasteService>();
 
             return services;
         }

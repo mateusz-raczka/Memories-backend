@@ -15,21 +15,21 @@ namespace MemoriesBackend.API.Controllers
     public class CopyController : Controller
     {
 
-        IFileManagementSystemService _fileManagementSystemService;
+        ICopyAndPasteService _copyAndPasteService;
         IMapper _mapper;
         public CopyController(
-            IFileManagementSystemService fileManagementSystemService,
+            ICopyAndPasteService copyAndPasteService,
             IMapper mapper
             )
-        { 
-            _fileManagementSystemService = fileManagementSystemService;
+        {
+            _copyAndPasteService = copyAndPasteService;
             _mapper = mapper;
         }
 
         [HttpPost("file")]
         public async Task<IEnumerable<FileCopyPasteResponse>> CopyAndPaste(FileCopyAndPasteRequest fileCopyAndPasteRequest)
         {
-            var filesDomain = await _fileManagementSystemService.CopyAndPasteFilesAsync(fileCopyAndPasteRequest.FilesIds, fileCopyAndPasteRequest.TargetFolderId);
+            var filesDomain = await _copyAndPasteService.CopyAndPasteFilesAsync(fileCopyAndPasteRequest.FilesIds, fileCopyAndPasteRequest.TargetFolderId);
 
             var response = _mapper.Map<IEnumerable<FileCopyPasteResponse>>(filesDomain);
 
@@ -39,7 +39,7 @@ namespace MemoriesBackend.API.Controllers
         [HttpPost("folder")]
         public async Task<FolderCopyAndPasteResponse> CopyAndPaste([FromBody] FolderCopyAndPasteRequest folderCopyAndPasteDto)
         {
-            var folderDomain = await _fileManagementSystemService.CopyAndPasteFolderAsync(folderCopyAndPasteDto.SourceFolderId, folderCopyAndPasteDto.TargetFolderId);
+            var folderDomain = await _copyAndPasteService.CopyAndPasteFolderAsync(folderCopyAndPasteDto.SourceFolderId, folderCopyAndPasteDto.TargetFolderId);
 
             var response = _mapper.Map<FolderCopyAndPasteResponse>(folderDomain);
 
@@ -49,7 +49,7 @@ namespace MemoriesBackend.API.Controllers
         [HttpPost("foldersandfiles")]
         public async Task<FolderAndFileCopyAndPasteResponse> CopyAndPaste([FromBody] FolderAndFileCopyAndPasteRequest foldersAndFilesCopyAndPasteDto)
         {
-            var folderDomain = await _fileManagementSystemService.CopyAndPasteFoldersAndFilesAsync(
+            var folderDomain = await _copyAndPasteService.CopyAndPasteFoldersAndFilesAsync(
                 foldersAndFilesCopyAndPasteDto.FilesIds, 
                 foldersAndFilesCopyAndPasteDto.FoldersIds, 
                 foldersAndFilesCopyAndPasteDto.TargetFolderId

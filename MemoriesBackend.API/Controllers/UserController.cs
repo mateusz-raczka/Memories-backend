@@ -33,13 +33,15 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<UserDataResponse> Register([FromBody] RegisterRequest registerDto)
+    public async Task<AuthResponse> Register([FromBody] RegisterRequest registerDto)
     {
         var registerDomain = _mapper.Map<Register>(registerDto);
 
         var authDomain = await _registerService.RegisterAsync(registerDomain);
 
-        var response = _mapper.Map<UserDataResponse>(authDomain);
+        var response = _mapper.Map<AuthResponse>(authDomain);
+
+        _cookieService.SetAuthCookies(authDomain);
 
         return response;
     }

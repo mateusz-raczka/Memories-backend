@@ -5,6 +5,6 @@ namespace MemoriesBackend.Domain.Interfaces.Services
 {
     public interface IRegisterService
     {
-        Task<UserData> RegisterAsync(Register register);
+        Task<Auth> RegisterAsync(Register register);
     }
 }

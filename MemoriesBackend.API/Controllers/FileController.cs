@@ -13,17 +13,17 @@ namespace MemoriesBackend.API.Controllers;
 public class FileController : ControllerBase
 {
     private readonly IFileDatabaseService _fileDatabaseService;
-    private readonly IFileManagementSystemService _fileManagementService;
+    private readonly IFileService _fileService;
     private readonly IMapper _mapper;
 
     public FileController(
         IFileDatabaseService fileDatabaseService,
-        IFileManagementSystemService fileManagementService,
+        IFileService fileService,
         IMapper mapper
     )
     {
         _fileDatabaseService = fileDatabaseService;
-        _fileManagementService = fileManagementService;
+        _fileService = fileService;
         _mapper = mapper;
     }
 
@@ -64,9 +64,9 @@ public class FileController : ControllerBase
     }
 
     [HttpPost("{folderId:Guid}")]
-    public async Task<FileCreateResponse> Add([FromForm] IFormFile fileData, Guid folderId)
+    public async Task<FileCreateResponse> Add(IFormFile fileData, Guid folderId)
     {
-        var fileDomain = await _fileManagementService.AddFileAsync(fileData, folderId);
+        var fileDomain = await _fileService.AddFileAsync(fileData, folderId);
 
         var response = _mapper.Map<FileCreateResponse>(fileDomain);
 
@@ -84,18 +84,18 @@ public class FileController : ControllerBase
     [HttpDelete("{id:Guid}")]
     public async Task Delete(Guid id)
     {
-        await _fileManagementService.DeleteFileAsync(id);
+        await _fileService.DeleteFileAsync(id);
     }
 
     [HttpGet("Download/{id:Guid}")]
     public async Task<FileContentResult> Download(Guid id)
     {
-        return await _fileManagementService.DownloadFileAsync(id);
+        return await _fileService.DownloadFileAsync(id);
     }
 
     [HttpGet("Preview/{id:Guid}")]
     public async Task<FileStreamResult> Preview(Guid id)
     {
-        return await _fileManagementService.StreamFileAsync(id);
+        return await _fileService.StreamFileAsync(id);
     }
 }
