@@ -1,7 +1,7 @@
 ﻿using MemoriesBackend.Domain.Entities;
 using File = MemoriesBackend.Domain.Entities.File;
 
-namespace MemoriesBackend.Domain.Models.FileManagement
+namespace MemoriesBackend.Domain.Models.FolderAndFileManagement
 {
     public class CopyAndPasteFoldersAndFilesResult
     {

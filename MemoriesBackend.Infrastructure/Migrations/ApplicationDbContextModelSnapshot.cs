@@ -55,32 +55,32 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("500f7468-213a-4c22-bf11-28224ecacedf"),
+                            Id = new Guid("1be9dadf-54af-4b5e-9c7a-815cb0331151"),
                             Name = "Edit"
                         },
                         new
                         {
-                            Id = new Guid("010b9244-d4f2-4c9e-b235-ae064ac6823b"),
+                            Id = new Guid("3c030a6d-c66f-4fbf-a942-12410b45aee0"),
                             Name = "Share"
                         },
                         new
                         {
-                            Id = new Guid("200ed180-5a7b-469b-9cfc-105076f57b7e"),
+                            Id = new Guid("8c570b94-7809-4662-8d72-c25f90613808"),
                             Name = "Transfer"
                         },
                         new
                         {
-                            Id = new Guid("ff0a7133-0ee0-464c-bc2f-12191a7c7a91"),
+                            Id = new Guid("4ffb5a4c-1377-48e4-9b3f-a0ed516d5636"),
                             Name = "Create"
                         },
                         new
                         {
-                            Id = new Guid("301879a9-ef65-457e-9b54-135111eb99ca"),
+                            Id = new Guid("d5d42717-84a7-4403-9f45-c72bc38d9d65"),
                             Name = "Delete"
                         },
                         new
                         {
-                            Id = new Guid("903c6fac-85e9-4ab8-a618-7fb836aaaa8e"),
+                            Id = new Guid("0bb34b14-4956-482e-adc2-656118f403f8"),
                             Name = "Open"
                         });
                 });
@@ -185,6 +185,36 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.ToTable("FileDetails");
                 });
 
+            modelBuilder.Entity("MemoriesBackend.Domain.Entities.FileUploadProgress", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ChunkIndex")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RelativePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("Size")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("TotalChunks")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FileUploadProgress");
+                });
+
             modelBuilder.Entity("MemoriesBackend.Domain.Entities.Folder", b =>
                 {
                     b.Property<Guid>("Id")
@@ -281,19 +311,19 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "864b84de-3e1f-48c1-b656-b32e691f607b",
+                            Id = "1b650316-85a8-4d19-a725-1f74b6b29560",
                             Name = "USER",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "e35aa4a5-eb7f-414a-98e9-896e65ff9ee3",
+                            Id = "ad994e65-6ad0-4451-8c83-711abbacb5a7",
                             Name = "OWNER",
                             NormalizedName = "OWNER"
                         },
                         new
                         {
-                            Id = "327e43ce-5d35-4150-a436-47d06fff4cf7",
+                            Id = "d4d75c56-7900-467f-b924-02858816a0d6",
                             Name = "ADMIN",
                             NormalizedName = "ADMIN"
                         });

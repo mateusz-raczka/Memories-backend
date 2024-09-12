@@ -9,8 +9,8 @@ namespace MemoriesBackend.API.AutoMapper.Profiles
     {
         public FolderMapperProfiles()
         {
-            CreateMap<Folder, FolderCreateResponse>().ReverseMap();
-            CreateMap<Folder, FolderCreateRequest>().ReverseMap();
+            CreateMap<Folder, FolderAddResponse>().ReverseMap();
+            CreateMap<Folder, FolderAddRequest>().ReverseMap();
             CreateMap<Folder, FolderGetAllResponse>().ReverseMap();
             CreateMap<Folder, FolderGetByIdResponse>().ReverseMap();
             CreateMap<Folder, FolderCopyAndPasteResponse>().ReverseMap();

@@ -13,8 +13,8 @@ using Microsoft.SqlServer.Types;
 namespace MemoriesBackend.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240907195405_RemoveIconPropertyFromFileDetailsEntity")]
-    partial class RemoveIconPropertyFromFileDetailsEntity
+    [Migration("20240909102809_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -58,32 +58,32 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("500f7468-213a-4c22-bf11-28224ecacedf"),
+                            Id = new Guid("72269638-224e-4c5d-89d4-01a30edaee07"),
                             Name = "Edit"
                         },
                         new
                         {
-                            Id = new Guid("010b9244-d4f2-4c9e-b235-ae064ac6823b"),
+                            Id = new Guid("a489ba86-3d87-4be5-a16e-05564cd60fcf"),
                             Name = "Share"
                         },
                         new
                         {
-                            Id = new Guid("200ed180-5a7b-469b-9cfc-105076f57b7e"),
+                            Id = new Guid("c95d5b6f-730d-46d1-9d79-eeb71977f84c"),
                             Name = "Transfer"
                         },
                         new
                         {
-                            Id = new Guid("ff0a7133-0ee0-464c-bc2f-12191a7c7a91"),
+                            Id = new Guid("14234fd7-01f2-402d-947e-d9c068dec679"),
                             Name = "Create"
                         },
                         new
                         {
-                            Id = new Guid("301879a9-ef65-457e-9b54-135111eb99ca"),
+                            Id = new Guid("d5cdbc00-39a1-4a60-9ca8-657cb827a0c5"),
                             Name = "Delete"
                         },
                         new
                         {
-                            Id = new Guid("903c6fac-85e9-4ab8-a618-7fb836aaaa8e"),
+                            Id = new Guid("b2197da5-463a-4621-bfc1-ed38ec1decac"),
                             Name = "Open"
                         });
                 });
@@ -284,19 +284,19 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "864b84de-3e1f-48c1-b656-b32e691f607b",
+                            Id = "96d34c0f-fba6-4cc2-913c-1f0378784e03",
                             Name = "USER",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "e35aa4a5-eb7f-414a-98e9-896e65ff9ee3",
+                            Id = "91c5ef10-08a5-4fdf-a860-0fc201680585",
                             Name = "OWNER",
                             NormalizedName = "OWNER"
                         },
                         new
                         {
-                            Id = "327e43ce-5d35-4150-a436-47d06fff4cf7",
+                            Id = "43d428da-0b3b-4efa-9e13-2c5008ec0a4e",
                             Name = "ADMIN",
                             NormalizedName = "ADMIN"
                         });

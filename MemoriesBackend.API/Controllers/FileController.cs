@@ -13,17 +13,17 @@ namespace MemoriesBackend.API.Controllers;
 public class FileController : ControllerBase
 {
     private readonly IFileDatabaseService _fileDatabaseService;
-    private readonly IFileService _fileService;
+    private readonly IFileManagementService _fileManagementService;
     private readonly IMapper _mapper;
 
     public FileController(
         IFileDatabaseService fileDatabaseService,
-        IFileService fileService,
+        IFileManagementService fileManagementService,
         IMapper mapper
     )
     {
         _fileDatabaseService = fileDatabaseService;
-        _fileService = fileService;
+        _fileManagementService = fileManagementService;
         _mapper = mapper;
     }
 
@@ -64,11 +64,23 @@ public class FileController : ControllerBase
     }
 
     [HttpPost("{folderId:Guid}")]
-    public async Task<FileCreateResponse> Add(IFormFile fileData, Guid folderId)
+    public async Task<FileAddResponse> Add(IFormFile fileData, Guid folderId)
     {
-        var fileDomain = await _fileService.AddFileAsync(fileData, folderId);
+        var fileDomain = await _fileManagementService.AddFileAsync(fileData, folderId);
 
-        var response = _mapper.Map<FileCreateResponse>(fileDomain);
+        var response = _mapper.Map<FileAddResponse>(fileDomain);
+
+        return response;
+    }
+
+    [HttpPost("chunk")]
+    public async Task<FileChunkAddResponse> AddChunk([FromQuery] string fileName, [FromQuery] int chunkIndex, [FromQuery] int totalChunks, [FromQuery] Guid folderId, [FromQuery] Guid fileId)
+    {
+        var stream = Request.Body;
+
+        var fileChunkDomain = await _fileManagementService.AddFileChunkAsync(stream, fileName, chunkIndex, totalChunks, folderId, fileId);
+
+        var response = _mapper.Map<FileChunkAddResponse>(fileChunkDomain);
 
         return response;
     }
@@ -84,18 +96,18 @@ public class FileController : ControllerBase
     [HttpDelete("{id:Guid}")]
     public async Task Delete(Guid id)
     {
-        await _fileService.DeleteFileAsync(id);
+        await _fileManagementService.DeleteFileAsync(id);
     }
 
     [HttpGet("Download/{id:Guid}")]
     public async Task<FileContentResult> Download(Guid id)
     {
-        return await _fileService.DownloadFileAsync(id);
+        return await _fileManagementService.DownloadFileAsync(id);
     }
 
     [HttpGet("Preview/{id:Guid}")]
     public async Task<FileStreamResult> Preview(Guid id)
     {
-        return await _fileService.StreamFileAsync(id);
+        return await _fileManagementService.StreamFileAsync(id);
     }
 }

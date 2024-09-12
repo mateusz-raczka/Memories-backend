@@ -24,6 +24,7 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<Folder> Folders { get; set; }
     public DbSet<Tag> Tags { get; set; }
     public DbSet<ExtendedIdentityUser> IdentityUsers { get; set; }
+    public DbSet<FileUploadProgress> FileUploadProgress { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

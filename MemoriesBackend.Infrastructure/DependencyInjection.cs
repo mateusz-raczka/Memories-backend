@@ -49,6 +49,7 @@ public static class DependencyInjection
         services.AddScoped<IGenericRepository<Tag>, GenericRepository<Tag>>();
         services.AddScoped<IGenericRepository<FileActivity>, GenericRepository<FileActivity>>();
         services.AddScoped<IGenericRepository<Folder>, GenericRepository<Folder>>();
+        services.AddScoped<IGenericRepository<FileUploadProgress>, GenericRepository<FileUploadProgress>>();
 
         //Transactions
         services.AddScoped<ITransactionHandler, TransactionHandler>();

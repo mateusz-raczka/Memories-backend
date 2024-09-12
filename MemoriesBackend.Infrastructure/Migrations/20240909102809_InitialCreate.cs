@@ -344,12 +344,12 @@ namespace MemoriesBackend.Infrastructure.Migrations
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("8b40164c-b022-4c97-8d23-2034b309a5e0"), "Open" },
-                    { new Guid("960063cb-9a42-48a4-94a9-c3a3e84fcff0"), "Delete" },
-                    { new Guid("99d23f5f-74dc-44e7-8d33-069d74bf29c7"), "Create" },
-                    { new Guid("a454ee77-2e46-405f-8c3b-58af86065129"), "Edit" },
-                    { new Guid("a76daeaf-f806-49c0-a31e-6a61a528fb33"), "Transfer" },
-                    { new Guid("e2d442a9-f85a-4335-9157-7746e3bb3f73"), "Share" }
+                    { new Guid("14234fd7-01f2-402d-947e-d9c068dec679"), "Create" },
+                    { new Guid("72269638-224e-4c5d-89d4-01a30edaee07"), "Edit" },
+                    { new Guid("a489ba86-3d87-4be5-a16e-05564cd60fcf"), "Share" },
+                    { new Guid("b2197da5-463a-4621-bfc1-ed38ec1decac"), "Open" },
+                    { new Guid("c95d5b6f-730d-46d1-9d79-eeb71977f84c"), "Transfer" },
+                    { new Guid("d5cdbc00-39a1-4a60-9ca8-657cb827a0c5"), "Delete" }
                 });
 
             migrationBuilder.InsertData(
@@ -357,9 +357,9 @@ namespace MemoriesBackend.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "15c4dedc-6976-46dd-bb70-416bbcd3493c", null, "ADMIN", "ADMIN" },
-                    { "1e463f8c-7aae-47a8-902d-a7418d16c9fb", null, "OWNER", "OWNER" },
-                    { "4e64528a-d8d0-4bfa-a025-209a081f8e4c", null, "USER", "USER" }
+                    { "43d428da-0b3b-4efa-9e13-2c5008ec0a4e", null, "ADMIN", "ADMIN" },
+                    { "91c5ef10-08a5-4fdf-a860-0fc201680585", null, "OWNER", "OWNER" },
+                    { "96d34c0f-fba6-4cc2-913c-1f0378784e03", null, "USER", "USER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -422,19 +422,9 @@ namespace MemoriesBackend.Infrastructure.Migrations
                 column: "FolderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Files_OwnerId",
-                table: "Files",
-                column: "OwnerId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_FileTag_TagsId",
                 table: "FileTag",
                 column: "TagsId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Folders_OwnerId",
-                table: "Folders",
-                column: "OwnerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Folders_ParentFolderId",

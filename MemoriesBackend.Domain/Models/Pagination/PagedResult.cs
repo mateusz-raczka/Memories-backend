@@ -1,6 +1,6 @@
 ﻿using MemoriesBackend.Domain.Shared;
 
-namespace MemoriesBackend.Domain.Models.PagedResult
+namespace MemoriesBackend.Domain.Models.Pagination
 {
     public class PagedResult<T> : PagedResultBase where T : class
     {

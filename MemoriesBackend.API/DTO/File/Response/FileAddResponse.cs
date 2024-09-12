@@ -2,7 +2,7 @@
 
 namespace MemoriesBackend.API.DTO.File.Response
 {
-    public class FileCreateResponse
+    public class FileAddResponse
     {
         public Guid Id { get; set; }
         public Guid FolderId { get; set; }

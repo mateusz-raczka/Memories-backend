@@ -13,8 +13,8 @@ using Microsoft.SqlServer.Types;
 namespace MemoriesBackend.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240528204056_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240912200724_AddFileUploadProgressTable")]
+    partial class AddFileUploadProgressTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -58,32 +58,32 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a454ee77-2e46-405f-8c3b-58af86065129"),
+                            Id = new Guid("1be9dadf-54af-4b5e-9c7a-815cb0331151"),
                             Name = "Edit"
                         },
                         new
                         {
-                            Id = new Guid("e2d442a9-f85a-4335-9157-7746e3bb3f73"),
+                            Id = new Guid("3c030a6d-c66f-4fbf-a942-12410b45aee0"),
                             Name = "Share"
                         },
                         new
                         {
-                            Id = new Guid("a76daeaf-f806-49c0-a31e-6a61a528fb33"),
+                            Id = new Guid("8c570b94-7809-4662-8d72-c25f90613808"),
                             Name = "Transfer"
                         },
                         new
                         {
-                            Id = new Guid("99d23f5f-74dc-44e7-8d33-069d74bf29c7"),
+                            Id = new Guid("4ffb5a4c-1377-48e4-9b3f-a0ed516d5636"),
                             Name = "Create"
                         },
                         new
                         {
-                            Id = new Guid("960063cb-9a42-48a4-94a9-c3a3e84fcff0"),
+                            Id = new Guid("d5d42717-84a7-4403-9f45-c72bc38d9d65"),
                             Name = "Delete"
                         },
                         new
                         {
-                            Id = new Guid("8b40164c-b022-4c97-8d23-2034b309a5e0"),
+                            Id = new Guid("0bb34b14-4956-482e-adc2-656118f403f8"),
                             Name = "Open"
                         });
                 });
@@ -123,8 +123,6 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("FolderId");
-
-                    b.HasIndex("OwnerId");
 
                     b.ToTable("Files");
                 });
@@ -190,6 +188,36 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.ToTable("FileDetails");
                 });
 
+            modelBuilder.Entity("MemoriesBackend.Domain.Entities.FileUploadProgress", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ChunkIndex")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RelativePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("Size")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("TotalChunks")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FileUploadProgress");
+                });
+
             modelBuilder.Entity("MemoriesBackend.Domain.Entities.Folder", b =>
                 {
                     b.Property<Guid>("Id")
@@ -209,8 +237,6 @@ namespace MemoriesBackend.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OwnerId");
 
                     b.HasIndex("ParentFolderId");
 
@@ -288,19 +314,19 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "4e64528a-d8d0-4bfa-a025-209a081f8e4c",
+                            Id = "1b650316-85a8-4d19-a725-1f74b6b29560",
                             Name = "USER",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "1e463f8c-7aae-47a8-902d-a7418d16c9fb",
+                            Id = "ad994e65-6ad0-4451-8c83-711abbacb5a7",
                             Name = "OWNER",
                             NormalizedName = "OWNER"
                         },
                         new
                         {
-                            Id = "15c4dedc-6976-46dd-bb70-416bbcd3493c",
+                            Id = "d4d75c56-7900-467f-b924-02858816a0d6",
                             Name = "ADMIN",
                             NormalizedName = "ADMIN"
                         });
@@ -486,7 +512,7 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("MemoriesBackend.Domain.Entities.Authorization.ExtendedIdentityUser", b =>
+            modelBuilder.Entity("MemoriesBackend.Domain.Entities.ExtendedIdentityUser", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 

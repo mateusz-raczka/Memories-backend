@@ -13,16 +13,13 @@ public class FolderController : ControllerBase
 {
     private readonly IMapper _mapper;
     private readonly IFolderDatabaseService _folderDatabaseService;
-    private readonly IFileService _fileService;
 
     public FolderController(
         IFolderDatabaseService folderDatabaseService,
-        IFileService fileService,
         IMapper mapper
     )
     {
         _folderDatabaseService = folderDatabaseService;
-        _fileService = fileService;
         _mapper = mapper;
     }
 
@@ -47,13 +44,13 @@ public class FolderController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<FolderCreateResponse> Create([FromBody] FolderCreateRequest folderCreateDto)
+    public async Task<FolderAddResponse> Create([FromBody] FolderAddRequest folderCreateDto)
     {
         var folderDomain = _mapper.Map<Folder>(folderCreateDto);
 
         var createdFolderDomain = await _folderDatabaseService.CreateFolderAsync(folderDomain);
 
-        var response = _mapper.Map<FolderCreateResponse>(createdFolderDomain);
+        var response = _mapper.Map<FolderAddResponse>(createdFolderDomain);
 
         return response;
     }

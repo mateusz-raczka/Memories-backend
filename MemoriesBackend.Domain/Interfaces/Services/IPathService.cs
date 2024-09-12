@@ -6,5 +6,6 @@
         Task<string> GetFileRelativePathAsync(Guid fileId);
         Task<string> GetFileAbsolutePathAsync(Guid fileId);
         Task<string> GetFolderAbsolutePathAsync(Guid folderId);
+        string GetAbsolutePath(string path);
     }
 }

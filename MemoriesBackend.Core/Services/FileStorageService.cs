@@ -2,29 +2,35 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
-using Image = SixLabors.ImageSharp.Image;
 using MemoriesBackend.Domain.Models.Storage;
+using MemoriesBackend.Domain.Models.FileStorage;
+using MemoriesBackend.Domain.Interfaces.Repositories;
+using MemoriesBackend.Domain.Entities;
+using File = System.IO.File;
 
 namespace MemoriesBackend.Application.Services
 {
     public class FileStorageService : IFileStorageService
     {
+        IGenericRepository<FileUploadProgress> _fileUploadProgressRepository;
 
-        public async Task<UploadFileResult> UploadFileAsync(IFormFile file, string absoluteFolderPath)
+        public FileStorageService(IGenericRepository<FileUploadProgress> fileUploadProgressRepository)
         {
-            var uploadedFile = new UploadFileResult
+            _fileUploadProgressRepository = fileUploadProgressRepository;
+        }
+
+        public async Task<FileUploadedResult> UploadFileAsync(IFormFile file, string absoluteFolderPath)
+        {
+            var uploadedFile = new FileUploadedResult
             {
                 Id = Guid.NewGuid(),
-                Icon = null
+                Size = file.Length,
+                Extension = Path.GetExtension(file.FileName),
+                Name = file.FileName,
             };
-            var fileExtension = Path.GetExtension(file.FileName);
-            var fileIdWithExtension = uploadedFile.Id + fileExtension;
+            var fileIdWithExtension = uploadedFile.Id + uploadedFile.Extension;
             var absoluteFilePath = Path.Combine(absoluteFolderPath, fileIdWithExtension);
 
-            try
-            {
                 if (!Directory.Exists(absoluteFolderPath))
                     Directory.CreateDirectory(absoluteFolderPath);
 
@@ -34,14 +40,6 @@ namespace MemoriesBackend.Application.Services
                 }
 
                 return uploadedFile;
-            }
-            catch (Exception ex)
-            {
-                if (File.Exists(absoluteFilePath))
-                    await Task.Run(() => File.Delete(absoluteFilePath));
-
-                throw;
-            }
         }
 
         public async Task<FileContentResult> DownloadFileAsync(string absoluteFilePath)
@@ -64,12 +62,12 @@ namespace MemoriesBackend.Application.Services
             };
         }
 
-        public async Task DeleteFileAsync(string absoluteFilePath)
+        public void DeleteFile(string absoluteFilePath)
         {
             if (!File.Exists(absoluteFilePath))
                 throw new FileNotFoundException("Cannot find file with a given id in file storage.");
 
-            await Task.Run(() => File.Delete(absoluteFilePath));
+            File.Delete(absoluteFilePath);
         }
 
         public async Task<Guid> CopyAndPasteFileAsync(string fileAbsolutePath, string destinationFolderAbsolutePath)
@@ -119,6 +117,18 @@ namespace MemoriesBackend.Application.Services
             }
 
             return result;
+        }
+
+        public async Task UploadFileChunkAsync(Stream stream, FileChunkMetaData fileChunkMetaData, string absoluteFolderPath)
+        {
+            var fileExtension = Path.GetExtension(fileChunkMetaData.FileName);
+            var fileIdWithExtension = fileChunkMetaData.Id + fileExtension;
+            var absoluteFilePath = Path.Combine(absoluteFolderPath, fileIdWithExtension);
+
+            using (var fileStream = new FileStream(absoluteFilePath, FileMode.Append))
+            {
+                await stream.CopyToAsync(stream);
+            }
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace MemoriesBackend.API.DTO.Folder.Response
 {
-    public class FolderCreateResponse
+    public class FolderAddResponse
     {
         public Guid Id { get; set; }
         public Guid? ParentFolderId { get; set; }
