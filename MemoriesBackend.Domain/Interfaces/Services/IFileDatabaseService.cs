@@ -17,5 +17,6 @@ namespace MemoriesBackend.Domain.Interfaces.Services
             Func<IQueryable<File>, IOrderedQueryable<File>>? orderBy = null,
             bool asNoTracking = true
             );
+        Task BatchCreateFilesAsync(IEnumerable<File> files);
     }
 }

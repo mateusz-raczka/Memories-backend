@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using MemoriesBackend.API.DTO.Authentication.Request;
 using MemoriesBackend.API.DTO.Authentication.Response;
-using MemoriesBackend.API.DTO.User;
 using MemoriesBackend.Domain.Interfaces.Services;
-using MemoriesBackend.Domain.Models.Authentication;
+using MemoriesBackend.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

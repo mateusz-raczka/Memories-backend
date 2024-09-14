@@ -2,6 +2,7 @@
 using MemoriesBackend.API.DTO.Folder.Request;
 using MemoriesBackend.API.DTO.Folder.Response;
 using MemoriesBackend.Domain.Entities;
+using MemoriesBackend.Domain.Models;
 
 namespace MemoriesBackend.API.AutoMapper.Profiles
 {
@@ -14,6 +15,12 @@ namespace MemoriesBackend.API.AutoMapper.Profiles
             CreateMap<Folder, FolderGetAllResponse>().ReverseMap();
             CreateMap<Folder, FolderGetByIdResponse>().ReverseMap();
             CreateMap<Folder, FolderCopyAndPasteResponse>().ReverseMap();
+            CreateMap<Folder, FolderPathSegmentResposne>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.FolderDetails.Name))
+                .ReverseMap();
+            CreateMap<FolderWithAncestors, FolderGetByIdWithPathResponse>()
+                .ForMember(dest => dest.Path, opt => opt.MapFrom(src => src.Ancestors))
+                .ReverseMap();
         }
     }
 }

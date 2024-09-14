@@ -5,21 +5,25 @@ namespace MemoriesBackend.Application.Services
 {
     public class FolderManagementService : IFolderManagementService
     {
-        IFolderDatabaseService _folderDatabaseService;
-        IFileManagementService _fileManagementService;
+        private readonly IFolderDatabaseService _folderDatabaseService;
+        private readonly IFileManagementService _fileManagementService;
+        private readonly IPathService _pathService;
+        private readonly IFolderStorageService _folderStorageService;
 
         public FolderManagementService(
             IFileManagementService fileManagementService,
-            IFolderDatabaseService folderDatabaseService
-            ) 
+            IFolderDatabaseService folderDatabaseService,
+            IPathService pathService
+            )
         {
             _fileManagementService = fileManagementService;
             _folderDatabaseService = folderDatabaseService;
+            _pathService = pathService;
         }
 
         public async Task<Folder> CopyAndPasteFolderAsync(Guid sourceFolderId, Guid targetFolderId)
         {
-            var sourceFolder = await _folderDatabaseService.GetFolderByIdWithAllRelations(sourceFolderId);
+            var sourceFolder = await _folderDatabaseService.GetFolderByIdWithRelations(sourceFolderId);
 
             if (sourceFolder == null)
             {
@@ -44,7 +48,6 @@ namespace MemoriesBackend.Application.Services
                     Id = newFolderId,
                     Name = sourceFolder.FolderDetails.Name
                 },
-                HierarchyId = await _folderDatabaseService.GenerateHierarchyId(targetFolderId)
             };
 
             var folderPasted = await _folderDatabaseService.CreateFolderAsync(folderToPaste);
@@ -79,6 +82,20 @@ namespace MemoriesBackend.Application.Services
             }
 
             return pastedFolders;
+        }
+
+        public async Task DeleteFolderAsync(Guid folderId)
+        {
+            var folder = await _folderDatabaseService.GetFolderByIdAsync(folderId);
+            if (folder == null)
+            {
+                throw new ApplicationException($"Cannot delete folder with Id {folderId} - it was not found");
+            }
+
+            var absoluteFolderPath = await _pathService.GetFolderAbsolutePathAsync(folderId);
+
+            await _folderDatabaseService.DeleteFolderAsync(folderId);
+            await _folderStorageService.DeleteFolderAsync(absoluteFolderPath);
         }
     }
 }

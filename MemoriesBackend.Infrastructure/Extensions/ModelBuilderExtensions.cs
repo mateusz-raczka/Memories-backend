@@ -1,5 +1,5 @@
 ﻿using MemoriesBackend.Domain.Entities;
-using MemoriesBackend.Domain.Models.Authentication;
+using MemoriesBackend.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

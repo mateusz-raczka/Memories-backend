@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MemoriesBackend.API.DTO.Tokens.Request;
 using MemoriesBackend.API.DTO.Tokens.Response;
-using MemoriesBackend.Domain.Models.Tokens;
+using MemoriesBackend.Domain.Models;
 
 namespace MemoriesBackend.API.AutoMapper.Profiles
 {

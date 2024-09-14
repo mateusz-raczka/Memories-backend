@@ -13,8 +13,8 @@ namespace MemoriesBackend.Application.Services
             IConfiguration configuration,
             IFileDatabaseService fileDatabaseService,
             IFolderDatabaseService folderDatabaseService
-        ) 
-        { 
+        )
+        {
             _configuration = configuration;
             _fileDatabaseService = fileDatabaseService;
             _folderDatabaseService = folderDatabaseService;

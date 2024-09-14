@@ -2,7 +2,7 @@
 using MemoriesBackend.Domain.Interfaces.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MemoriesBackend.Core
+namespace MemoriesBackend.Application
 {
     public static class DependencyInjection
     {

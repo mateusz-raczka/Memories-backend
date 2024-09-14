@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MemoriesBackend.Domain.Models.Authentication
+namespace MemoriesBackend.Domain.Models
 {
     public class Register
     {

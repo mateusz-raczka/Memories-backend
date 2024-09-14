@@ -1,4 +1,4 @@
-﻿namespace MemoriesBackend.Domain.Models.Authentication
+﻿namespace MemoriesBackend.Domain.Models
 {
     public static class ApplicationRoles
     {

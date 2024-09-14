@@ -1,15 +1,13 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using MemoriesBackend.Domain.Entities;
+﻿using MemoriesBackend.Domain.Entities;
 using MemoriesBackend.Domain.Interfaces.Services;
-using MemoriesBackend.Domain.Models.Authentication;
-using MemoriesBackend.Domain.Models.Tokens;
-using MemoriesBackend.Domain.Models.User;
+using MemoriesBackend.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace MemoriesBackend.Application.Services
 {

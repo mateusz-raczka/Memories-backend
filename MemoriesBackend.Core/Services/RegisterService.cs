@@ -1,8 +1,7 @@
 ﻿using MemoriesBackend.Domain.Entities;
 using MemoriesBackend.Domain.Interfaces.Services;
 using MemoriesBackend.Domain.Interfaces.Transactions;
-using MemoriesBackend.Domain.Models.Authentication;
-using MemoriesBackend.Domain.Models.User;
+using MemoriesBackend.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -31,7 +30,7 @@ namespace MemoriesBackend.Application.Services
             _tokenService = tokenService;
             _logger = logger;
         }
-        
+
         public async Task<Auth> RegisterAsync(Register register)
         {
             return await _transactionHandler.ExecuteAsync(async () =>

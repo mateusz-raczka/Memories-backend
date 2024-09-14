@@ -1,6 +1,5 @@
 ﻿using MemoriesBackend.Domain.Interfaces.Services;
-using MemoriesBackend.Domain.Models.Authentication;
-using MemoriesBackend.Domain.Models.Tokens;
+using MemoriesBackend.Domain.Models;
 using Microsoft.AspNetCore.Http;
 
 namespace MemoriesBackend.Application.Services

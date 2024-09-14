@@ -16,8 +16,8 @@ namespace MemoriesBackend.Domain.Entities
         // Navigation properties
         public FolderDetails FolderDetails { get; set; }
         public Folder ParentFolder { get; set; }
-        public IEnumerable<Folder>? ChildFolders { get; set; }
-        public IEnumerable<File>? Files { get; set; }
+        public List<Folder>? ChildFolders { get; set; }
+        public List<File>? Files { get; set; }
 
         void IOwnerId.SetOwnerId(Guid ownerId)
         {

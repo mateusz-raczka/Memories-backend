@@ -1,8 +1,7 @@
 ﻿using MemoriesBackend.Domain.Entities;
 using MemoriesBackend.Domain.Interfaces.Repositories;
 using MemoriesBackend.Domain.Interfaces.Services;
-using MemoriesBackend.Domain.Models.FileStorage;
-using MemoriesBackend.Domain.Models.Storage;
+using MemoriesBackend.Domain.Interfaces.Transactions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using File = MemoriesBackend.Domain.Entities.File;
@@ -15,110 +14,97 @@ namespace MemoriesBackend.Application.Services
         private readonly IFileDatabaseService _fileDatabaseService;
         private readonly IFolderDatabaseService _folderDatabaseService;
         private readonly IPathService _pathService;
-        private readonly IFolderStorageService _folderStorageService;
         private readonly IGenericRepository<FileUploadProgress> _fileUploadProgressRepository;
+        private readonly IGenericRepository<FileChunk> _fileChunkRepository;
+        private readonly ITransactionHandler _transactionHandler;
 
         public FileManagementService(
             IFileStorageService fileStorageService,
             IFileDatabaseService fileDatabaseService,
             IFolderDatabaseService folderDatabaseService,
             IPathService pathService,
-            IFolderStorageService folderStorageService,
-            IGenericRepository<FileUploadProgress> fileUploadProgressRepository
+            IGenericRepository<FileUploadProgress> fileUploadProgressRepository,
+            IGenericRepository<FileChunk> fileChunkRepository,
+            ITransactionHandler transactionHandler
             )
         {
             _fileStorageService = fileStorageService;
             _fileDatabaseService = fileDatabaseService;
             _folderDatabaseService = folderDatabaseService;
             _pathService = pathService;
-            _folderStorageService = folderStorageService;
             _fileUploadProgressRepository = fileUploadProgressRepository;
+            _fileChunkRepository = fileChunkRepository;
+            _transactionHandler = transactionHandler;
         }
 
         public async Task<File> AddFileAsync(IFormFile fileData, Guid folderId)
         {
-            var absoluteFolderPath = await _pathService.GetFolderAbsolutePathAsync( folderId );
-            FileUploadedResult uploadedFile = null;
+            var absoluteFolderPath = await _pathService.GetFolderAbsolutePathAsync(folderId);
 
-                var folder = await _folderDatabaseService.GetFolderByIdAsync(folderId);
-                if (folder == null) throw new ApplicationException($"Folder with the given ID {folderId} - does not exist.");
+            var folder = await _folderDatabaseService.GetFolderByIdAsync(folderId);
+            if (folder == null)
+                throw new ApplicationException($"Folder with the given ID {folderId} - does not exist.");
 
-                uploadedFile = await _fileStorageService.UploadFileAsync(fileData, absoluteFolderPath);
+            var uploadedFile = await _fileStorageService.UploadFileAsync(fileData, absoluteFolderPath);
 
-                if(uploadedFile == null)
-                {
-                    throw new ApplicationException("Cannot get file id from uploaded file");
-                }
+            if (uploadedFile == null)
+                throw new ApplicationException("Cannot get file id from uploaded file");
 
-                var file = new File
+            var file = new File
+            {
+                Id = uploadedFile.Id,
+                FolderId = folderId,
+                FileDetails = new FileDetails
                 {
                     Id = uploadedFile.Id,
-                    FolderId = folderId,
-                    FileDetails = new FileDetails
-                    {
-                        Id = uploadedFile.Id,
-                        Name = uploadedFile.Name,
-                        Size = uploadedFile.Size,
-                        Extension = uploadedFile.Extension
-                    }
-                };
-
-                var createdFile = await _fileDatabaseService.CreateFileAsync(file);
-
-                return createdFile;
-        }
-
-        public async Task<FileChunkUploadedResult> AddFileChunkAsync(Stream stream, string fileName, int chunkIndex, int totalChunks, Guid folderId, Guid fileId)
-        {
-            var currentUploadProgress = await _fileUploadProgressRepository.GetById(fileId);
-
-            if (currentUploadProgress == null)
-            {
-                if(chunkIndex != 0)
-                {
-                    throw new ApplicationException("Unable to find progress of the file");
+                    Name = uploadedFile.Name,
+                    Size = uploadedFile.Size,
+                    Extension = uploadedFile.Extension
                 }
-
-                var relativePath = await _pathService.GetFolderRelativePathAsync(folderId);
-
-                currentUploadProgress = new FileUploadProgress
-                {
-                    Id = fileId,
-                    ChunkIndex = 0,
-                    TotalChunks = totalChunks,
-                    RelativePath = relativePath,
-                    LastModifiedDate = DateTime.UtcNow
-                };
-
-                await _fileUploadProgressRepository.Create(currentUploadProgress);
-            }
-
-            if (chunkIndex < currentUploadProgress.ChunkIndex)
-            {
-                throw new ApplicationException("Invalid chunk index.");
-            }
-
-            string absoluteFolderPath = _pathService.GetAbsolutePath(currentUploadProgress.RelativePath);
-
-            var fileChunkMetaData = new FileChunkMetaData
-            {
-                Id = fileId,
-                ChunkIndex = chunkIndex,
-                TotalChunks = totalChunks,
-                FileName = fileName
             };
 
-            await _fileStorageService.UploadFileChunkAsync(stream, fileChunkMetaData, absoluteFolderPath);
+            var createdFile = await _fileDatabaseService.CreateFileAsync(file);
 
-            currentUploadProgress.ChunkIndex = chunkIndex + 1;
+            return createdFile;
+        }
+
+        public async Task<File?> AddFileUsingChunksAsync(Stream stream, string fileName, int chunkIndex, int totalChunks, Guid folderId, Guid fileId)
+        {
+            File file = null;
+
+            var currentUploadProgress = await GetOrInitializeUploadProgressAsync(chunkIndex, totalChunks, folderId, fileId, fileName);
+
+            if (chunkIndex != currentUploadProgress.FileChunks.Count)
+                throw new ApplicationException("Invalid chunk index.");
+            if (chunkIndex >= currentUploadProgress.FileChunks.Count)
+                throw new ApplicationException("File is already uploaded");
+
+            var absoluteFolderPath = _pathService.GetAbsolutePath(currentUploadProgress.RelativePath);
+
+            var fileChunkId = await _fileStorageService.UploadFileChunkAsync(stream, absoluteFolderPath);
+
+            var fileChunk = new FileChunk
+            {
+                Id = fileChunkId,
+                FileId = fileId,
+                Size = stream.Length,
+                ChunkIndex = chunkIndex
+            };
+
+            var newFileChunk = await _fileChunkRepository.Create(fileChunk);
+            currentUploadProgress.FileChunks.Add(newFileChunk);
+
             currentUploadProgress.LastModifiedDate = DateTime.UtcNow;
             currentUploadProgress.Size += stream.Length;
 
-            var isUploaded = currentUploadProgress.ChunkIndex >= totalChunks;
+            var isUploaded = currentUploadProgress.FileChunks.Count >= totalChunks;
+
 
             if (isUploaded)
             {
-                var file = new File
+                await _fileStorageService.MergeAndDeleteFileChunksAsync(currentUploadProgress, absoluteFolderPath);
+
+                file = new File
                 {
                     Id = fileId,
                     FolderId = folderId,
@@ -138,41 +124,22 @@ namespace MemoriesBackend.Application.Services
             _fileUploadProgressRepository.Update(currentUploadProgress);
             await _fileUploadProgressRepository.Save();
 
-            return new FileChunkUploadedResult
-            {
-                Id = currentUploadProgress.Id,
-                isUploaded = isUploaded
-            };
+            return file;
         }
 
 
         public async Task<FileStreamResult> StreamFileAsync(Guid fileId)
         {
-            var file = _fileDatabaseService.GetFileByIdAsync(fileId);
             var absoluteFilePath = await _pathService.GetFileAbsolutePathAsync(fileId);
-            return _fileStorageService.StreamFile(absoluteFilePath);
-        }
-
-        public async Task DeleteFolderAsync(Guid folderId)
-        {
-            var folder = await _folderDatabaseService.GetFolderByIdAsync(folderId);
-            if(folder == null)
-            {
-                throw new ApplicationException($"Cannot delete folder with Id {folderId} - it was not found");
-            }
-
-            var absoluteFolderPath = await _pathService.GetFolderAbsolutePathAsync(folderId);
-
-            await _folderDatabaseService.DeleteFolderAsync(folderId);
-            await _folderStorageService.DeleteFolderAsync(absoluteFolderPath);
+            return await _fileStorageService.StreamFileAsync(absoluteFilePath);
         }
 
         public async Task DeleteFileAsync(Guid fileId)
         {
             var absoluteFilePath = await _pathService.GetFileAbsolutePathAsync(fileId);
 
-                await _fileDatabaseService.DeleteFileAsync(fileId);
-                _fileStorageService.DeleteFile(absoluteFilePath);
+            await _fileDatabaseService.DeleteFileAsync(fileId);
+            _fileStorageService.DeleteFile(absoluteFilePath);
         }
 
         public async Task<FileContentResult> DownloadFileAsync(Guid fileId)
@@ -223,24 +190,52 @@ namespace MemoriesBackend.Application.Services
             if (targetFolder == null)
                 throw new ApplicationException("Target folder not found");
 
-                var folderAbsolutePath = await _pathService.GetFolderAbsolutePathAsync(targetFolderId);
-                var fileAbsolutePath = await _pathService.GetFileAbsolutePathAsync(file.Id);
-                var pastedFileId = await _fileStorageService.CopyAndPasteFileAsync(fileAbsolutePath, folderAbsolutePath);
+            var folderAbsolutePath = await _pathService.GetFolderAbsolutePathAsync(targetFolderId);
+            var fileAbsolutePath = await _pathService.GetFileAbsolutePathAsync(file.Id);
+            var pastedFileId = await _fileStorageService.CopyAndPasteFileAsync(fileAbsolutePath, folderAbsolutePath);
 
-                var fileCopy = new File
+            var fileCopy = new File
+            {
+                Id = pastedFileId,
+                FolderId = targetFolderId,
+                FileDetails = new FileDetails
                 {
                     Id = pastedFileId,
-                    FolderId = targetFolderId,
-                    FileDetails = new FileDetails
-                    {
-                        Id = pastedFileId,
-                        Name = file.FileDetails.Name,
-                        Size = file.FileDetails.Size,
-                        Extension = file.FileDetails.Extension,
-                    }
+                    Name = file.FileDetails.Name,
+                    Size = file.FileDetails.Size,
+                    Extension = file.FileDetails.Extension,
+                }
+            };
+
+            return await _fileDatabaseService.CreateFileAsync(fileCopy);
+        }
+
+        private async Task<FileUploadProgress> GetOrInitializeUploadProgressAsync(int chunkIndex, int totalChunks, Guid folderId, Guid fileId, string fileName)
+        {
+            var currentUploadProgress = await _fileUploadProgressRepository.GetById(fileId);
+
+            if (currentUploadProgress == null)
+            {
+                if (chunkIndex != 0)
+                {
+                    throw new ApplicationException($"Unable to find upload progress for file with Id {fileId}");
+                }
+
+                var relativeFolderPath = await _pathService.GetFolderRelativePathAsync(folderId);
+                currentUploadProgress = new FileUploadProgress
+                {
+                    Id = fileId,
+                    TotalChunks = totalChunks,
+                    RelativePath = relativeFolderPath,
+                    Extension = Path.GetExtension(fileName),
+                    Name = Path.GetFileName(fileName),
+                    LastModifiedDate = DateTime.UtcNow
                 };
 
-                return await _fileDatabaseService.CreateFileAsync(fileCopy);
+                await _fileUploadProgressRepository.Create(currentUploadProgress);
+            }
+
+            return currentUploadProgress;
         }
     }
 }

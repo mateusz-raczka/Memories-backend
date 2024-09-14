@@ -1,6 +1,6 @@
-﻿namespace MemoriesBackend.Domain.Models.Tokens
+﻿namespace MemoriesBackend.Domain.Models
 {
-    public class RefreshToken
+    public class JwtToken
     {
         public string Value { get; set; }
         public DateTime ExpireDate { get; set; }

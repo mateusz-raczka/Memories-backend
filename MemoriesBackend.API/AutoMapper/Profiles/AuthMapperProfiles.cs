@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using MemoriesBackend.API.DTO.Authentication.Response;
-using MemoriesBackend.Domain.Models.Authentication;
+using MemoriesBackend.Domain.Models;
 
 namespace MemoriesBackend.API.AutoMapper.Profiles
 {

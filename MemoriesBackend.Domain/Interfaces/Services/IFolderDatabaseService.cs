@@ -1,6 +1,7 @@
-﻿using System.Linq.Expressions;
-using MemoriesBackend.Domain.Entities;
+﻿using MemoriesBackend.Domain.Entities;
+using MemoriesBackend.Domain.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace MemoriesBackend.Domain.Interfaces.Services
 {
@@ -30,7 +31,9 @@ namespace MemoriesBackend.Domain.Interfaces.Services
 
         Task<HierarchyId> GenerateHierarchyId(Guid? parentFolderId);
 
-        Task<Folder> GetFolderByIdWithAllRelations(Guid folderId, bool asNoTracking = true);
+        Task<Folder> GetFolderByIdWithRelations(Guid folderId, bool asNoTracking = true);
+
+        Task<FolderWithAncestors> GetFolderByIdWithRelationsAndPath(Guid folderId, bool asNoTracking = true);
 
         Task DeleteFolderAsync(Guid folderId);
     }

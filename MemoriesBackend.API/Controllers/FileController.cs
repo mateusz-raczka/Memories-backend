@@ -74,19 +74,19 @@ public class FileController : ControllerBase
     }
 
     [HttpPost("chunk")]
-    public async Task<FileChunkAddResponse> AddChunk([FromQuery] string fileName, [FromQuery] int chunkIndex, [FromQuery] int totalChunks, [FromQuery] Guid folderId, [FromQuery] Guid fileId)
+    public async Task<FileAddResponse> AddChunk(IFormFile file, [FromForm] string fileName, [FromForm] int chunkIndex, [FromForm] int totalChunks, [FromForm] Guid folderId, [FromForm] Guid fileId)
     {
-        var stream = Request.Body;
+        var stream = file.OpenReadStream();
 
-        var fileChunkDomain = await _fileManagementService.AddFileChunkAsync(stream, fileName, chunkIndex, totalChunks, folderId, fileId);
+        var fileDomain = await _fileManagementService.AddFileUsingChunksAsync(stream, fileName, chunkIndex, totalChunks, folderId, fileId);
 
-        var response = _mapper.Map<FileChunkAddResponse>(fileChunkDomain);
+        var response = _mapper.Map<FileAddResponse>(fileDomain);
 
         return response;
     }
 
     [HttpPut("{id:Guid}")]
-    public async Task Update(Guid id, [FromBody] FileUpdateRequest fileDto)
+    public async Task Update([FromBody] FileUpdateRequest fileDto, Guid id)
     {
         var fileDomain = _mapper.Map<File>(fileDto);
 

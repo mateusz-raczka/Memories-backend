@@ -1,4 +1,4 @@
-﻿using MemoriesBackend.Domain.Models.Pagination;
+﻿using MemoriesBackend.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace MemoriesBackend.Infrastructure.Extensions;

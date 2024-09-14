@@ -1,10 +1,9 @@
-﻿using System.Linq.Expressions;
-using MemoriesBackend.Application.Services;
-using MemoriesBackend.Domain.Interfaces.Models;
+﻿using MemoriesBackend.Domain.Interfaces.Models;
 using MemoriesBackend.Domain.Interfaces.Repositories;
 using MemoriesBackend.Domain.Interfaces.Services;
 using MemoriesBackend.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace MemoriesBackend.Infrastructure.Repositories
 {

@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace MemoriesBackend.Domain.Models.User
+namespace MemoriesBackend.Domain.Models
 {
     public class UserContext
     {

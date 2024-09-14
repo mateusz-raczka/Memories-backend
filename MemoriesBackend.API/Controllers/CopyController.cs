@@ -52,8 +52,8 @@ namespace MemoriesBackend.API.Controllers
         public async Task<FolderAndFileCopyAndPasteResponse> CopyAndPaste([FromBody] FolderAndFileCopyAndPasteRequest foldersAndFilesCopyAndPasteDto)
         {
             var folderDomain = await _folderAndFileManagementService.CopyAndPasteFoldersAndFilesAsync(
-                foldersAndFilesCopyAndPasteDto.FilesIds, 
-                foldersAndFilesCopyAndPasteDto.FoldersIds, 
+                foldersAndFilesCopyAndPasteDto.FilesIds,
+                foldersAndFilesCopyAndPasteDto.FoldersIds,
                 foldersAndFilesCopyAndPasteDto.TargetFolderId
                 );
 

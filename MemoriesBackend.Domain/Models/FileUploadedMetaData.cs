@@ -1,6 +1,6 @@
-﻿namespace MemoriesBackend.Domain.Models.Storage
+﻿namespace MemoriesBackend.Domain.Models
 {
-    public class FileUploadedResult
+    public class FileUploadedMetaData
     {
         public Guid Id { get; set; }
         public long Size { get; set; }

@@ -25,6 +25,7 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<Tag> Tags { get; set; }
     public DbSet<ExtendedIdentityUser> IdentityUsers { get; set; }
     public DbSet<FileUploadProgress> FileUploadProgress { get; set; }
+    public DbSet<FileChunk> FileChunks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

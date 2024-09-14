@@ -4,6 +4,7 @@ using MemoriesBackend.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.SqlServer.Types;
 
@@ -12,9 +13,11 @@ using Microsoft.SqlServer.Types;
 namespace MemoriesBackend.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240913183812_ChangeUploadFileChunksTables")]
+    partial class ChangeUploadFileChunksTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,32 +58,32 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("deb95113-c6e5-429b-b6a5-8fc0f2c0e808"),
+                            Id = new Guid("3e07d13d-368f-4445-9726-983b8219d24c"),
                             Name = "Edit"
                         },
                         new
                         {
-                            Id = new Guid("ea0d2cda-5131-4955-8434-8b6478aa9cb0"),
+                            Id = new Guid("1c82688d-81bc-4e6c-90f4-ce895090c57f"),
                             Name = "Share"
                         },
                         new
                         {
-                            Id = new Guid("a2f01a6e-fdc5-42f4-8eeb-8e95d83cfa6b"),
+                            Id = new Guid("a575b52b-a56f-495c-9998-706b6da45298"),
                             Name = "Transfer"
                         },
                         new
                         {
-                            Id = new Guid("0be93035-7459-4419-b46b-a20a54a9db1c"),
+                            Id = new Guid("3f3c6141-744a-4dc2-bd68-488facc22d5c"),
                             Name = "Create"
                         },
                         new
                         {
-                            Id = new Guid("72e2daaf-7c5e-4011-9161-a4f617a831f3"),
+                            Id = new Guid("3bb09ecf-8d70-4eaa-b027-cbd074ca4e56"),
                             Name = "Delete"
                         },
                         new
                         {
-                            Id = new Guid("02ff5702-3b3b-44ab-9794-5ebb479ccf47"),
+                            Id = new Guid("7dce3f40-6ce5-4df6-b078-0749f38a99a4"),
                             Name = "Open"
                         });
                 });
@@ -219,16 +222,8 @@ namespace MemoriesBackend.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Extension")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime?>("LastModifiedDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uniqueidentifier");
@@ -344,19 +339,19 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "e4c8b4fa-a821-4f49-b360-eb349432284a",
+                            Id = "7da01bdd-1c50-4c78-afb3-a53affe68059",
                             Name = "USER",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "b429b068-c648-4006-a492-ddc8918e076a",
+                            Id = "aa1f9394-16ee-4387-9b1a-c13f517a6bc8",
                             Name = "OWNER",
                             NormalizedName = "OWNER"
                         },
                         new
                         {
-                            Id = "35714ba5-89db-47f2-9593-9dc4475ff0e8",
+                            Id = "28619b03-1188-43ca-9ec7-0e5addb38be8",
                             Name = "ADMIN",
                             NormalizedName = "ADMIN"
                         });

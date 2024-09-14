@@ -1,6 +1,5 @@
 ﻿using MemoriesBackend.Domain.Interfaces.Models;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 
 namespace MemoriesBackend.Domain.Entities
 {
@@ -11,7 +10,6 @@ namespace MemoriesBackend.Domain.Entities
         public string Name { get; set; }
 
         // Navigation properties
-        [JsonIgnore]
         public IEnumerable<File> Files { get; set; }
     }
 }

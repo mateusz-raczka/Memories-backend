@@ -1,8 +1,7 @@
-﻿using System.Linq.Expressions;
-using MemoriesBackend.Domain.Entities;
-using MemoriesBackend.Domain.Interfaces.Repositories;
+﻿using MemoriesBackend.Domain.Interfaces.Repositories;
 using MemoriesBackend.Domain.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using File = MemoriesBackend.Domain.Entities.File;
 
 namespace MemoriesBackend.Application.Services
@@ -66,6 +65,15 @@ namespace MemoriesBackend.Application.Services
             ).ToListAsync();
 
             return files;
+        }
+
+        public async Task BatchCreateFilesAsync(IEnumerable<File> files)
+        {
+            foreach (var file in files)
+            {
+                await _fileRepository.Create(file);
+            }
+            await _fileRepository.Save();
         }
     }
 }

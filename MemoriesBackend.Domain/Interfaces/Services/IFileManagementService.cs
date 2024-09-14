@@ -1,6 +1,4 @@
-﻿using MemoriesBackend.Domain.Models.FileManagement;
-using MemoriesBackend.Domain.Models.FileStorage;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using File = MemoriesBackend.Domain.Entities.File;
 
@@ -15,6 +13,6 @@ namespace MemoriesBackend.Domain.Interfaces.Services
         Task<IEnumerable<File>> CopyAndPasteFilesAsync(IEnumerable<File> filesToCopy, Guid targetFolderId);
         Task<IEnumerable<File>> CopyAndPasteFilesAsync(IEnumerable<Guid> filesIdsToCopy, Guid targetFolderId);
         Task<File> CopyAndPasteFileAsync(File file, Guid targetFolderId);
-        Task<FileChunkUploadedResult> AddFileChunkAsync(Stream stream, string fileName, int chunkIndex, int totalChunks, Guid folderId, Guid fileId);
+        Task<File?> AddFileUsingChunksAsync(Stream stream, string fileName, int chunkIndex, int totalChunks, Guid folderId, Guid fileId);
     }
 }

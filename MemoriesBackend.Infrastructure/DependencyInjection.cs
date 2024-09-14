@@ -26,9 +26,11 @@ public static class DependencyInjection
         //Database context
         services.AddDbContext<ApplicationDbContext>(options =>
         {
-                    options.UseSqlServer(connectionString, options => { options.UseHierarchyId();
-                    options.EnableRetryOnFailure(3);
-                });
+            options.UseSqlServer(connectionString, options =>
+            {
+                options.UseHierarchyId();
+                options.EnableRetryOnFailure(3);
+            });
         });
 
         services.Configure<IdentityOptions>(options =>
@@ -50,6 +52,7 @@ public static class DependencyInjection
         services.AddScoped<IGenericRepository<FileActivity>, GenericRepository<FileActivity>>();
         services.AddScoped<IGenericRepository<Folder>, GenericRepository<Folder>>();
         services.AddScoped<IGenericRepository<FileUploadProgress>, GenericRepository<FileUploadProgress>>();
+        services.AddScoped<IGenericRepository<FileChunk>, GenericRepository<FileChunk>>();
 
         //Transactions
         services.AddScoped<ITransactionHandler, TransactionHandler>();

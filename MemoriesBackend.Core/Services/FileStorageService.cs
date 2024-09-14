@@ -1,27 +1,22 @@
-﻿using MemoriesBackend.Domain.Interfaces.Services;
+﻿using MemoriesBackend.Domain.Entities;
+using MemoriesBackend.Domain.Interfaces.Services;
+using MemoriesBackend.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
-using MemoriesBackend.Domain.Models.Storage;
-using MemoriesBackend.Domain.Models.FileStorage;
-using MemoriesBackend.Domain.Interfaces.Repositories;
-using MemoriesBackend.Domain.Entities;
 using File = System.IO.File;
 
 namespace MemoriesBackend.Application.Services
 {
     public class FileStorageService : IFileStorageService
     {
-        IGenericRepository<FileUploadProgress> _fileUploadProgressRepository;
+        private readonly string tempPath = "/Temp";
 
-        public FileStorageService(IGenericRepository<FileUploadProgress> fileUploadProgressRepository)
-        {
-            _fileUploadProgressRepository = fileUploadProgressRepository;
-        }
+        public FileStorageService() { }
 
-        public async Task<FileUploadedResult> UploadFileAsync(IFormFile file, string absoluteFolderPath)
+        public async Task<FileUploadedMetaData> UploadFileAsync(IFormFile file, string absoluteFolderPath)
         {
-            var uploadedFile = new FileUploadedResult
+            var uploadedFile = new FileUploadedMetaData
             {
                 Id = Guid.NewGuid(),
                 Size = file.Length,
@@ -31,15 +26,15 @@ namespace MemoriesBackend.Application.Services
             var fileIdWithExtension = uploadedFile.Id + uploadedFile.Extension;
             var absoluteFilePath = Path.Combine(absoluteFolderPath, fileIdWithExtension);
 
-                if (!Directory.Exists(absoluteFolderPath))
-                    Directory.CreateDirectory(absoluteFolderPath);
+            if (!Directory.Exists(absoluteFolderPath))
+                Directory.CreateDirectory(absoluteFolderPath);
 
-                using (var stream = new FileStream(absoluteFilePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
+            using (var stream = new FileStream(absoluteFilePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
 
-                return uploadedFile;
+            return uploadedFile;
         }
 
         public async Task<FileContentResult> DownloadFileAsync(string absoluteFilePath)
@@ -94,40 +89,80 @@ namespace MemoriesBackend.Application.Services
             return fileId;
         }
 
-        public FileStreamResult StreamFile(string absoluteFilePath)
+        public async Task<FileStreamResult> StreamFileAsync(string absoluteFilePath)
         {
             if (!File.Exists(absoluteFilePath))
                 throw new FileNotFoundException("The requested file does not exist.");
 
             var fileExtension = Path.GetExtension(absoluteFilePath);
             var contentTypeProvider = new FileExtensionContentTypeProvider();
+
             if (!contentTypeProvider.TryGetContentType(fileExtension, out var contentType))
                 contentType = "application/octet-stream";
 
-            var fileStream = new FileStream(absoluteFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            // Open the file stream with async flag and proper buffer size for large files.
+            var fileStream = new FileStream(absoluteFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 64 * 1024, useAsync: true);
 
             var result = new FileStreamResult(fileStream, contentType)
             {
-                FileDownloadName = null
+                FileDownloadName = null,
+                EnableRangeProcessing = contentType.StartsWith("video/") || contentType.StartsWith("audio/")
             };
-
-            if (contentType.StartsWith("video/") || contentType.StartsWith("audio/"))
-            {
-                result.EnableRangeProcessing = true;
-            }
 
             return result;
         }
 
-        public async Task UploadFileChunkAsync(Stream stream, FileChunkMetaData fileChunkMetaData, string absoluteFolderPath)
+        public async Task<Guid> UploadFileChunkAsync(Stream stream, string absoluteFolderPath)
         {
-            var fileExtension = Path.GetExtension(fileChunkMetaData.FileName);
-            var fileIdWithExtension = fileChunkMetaData.Id + fileExtension;
-            var absoluteFilePath = Path.Combine(absoluteFolderPath, fileIdWithExtension);
+            Guid fileChunkId = Guid.NewGuid();
+            var absoluteTempFolderPath = Path.Combine(absoluteFolderPath, tempPath);
+            var absoluteFileChunkPath = Path.Combine(absoluteTempFolderPath, fileChunkId.ToString());
 
-            using (var fileStream = new FileStream(absoluteFilePath, FileMode.Append))
+            using (var fileStream = new FileStream(absoluteFileChunkPath, FileMode.Create, FileAccess.Write, FileShare.None))
             {
-                await stream.CopyToAsync(stream);
+                await stream.CopyToAsync(fileStream);
+            }
+
+            return fileChunkId;
+        }
+
+        public async Task MergeFileChunksAsync(FileUploadProgress uploadProgress, string absoluteFolderPath)
+        {
+            var absoluteTempFolderPath = Path.Combine(absoluteFolderPath, tempPath);
+            var fileIdWithExtension = uploadProgress.Id.ToString() + uploadProgress.Extension;
+            var finalAbsoluteFilePath = Path.Combine(absoluteFolderPath, fileIdWithExtension);
+
+            using (var finalFileStream = new FileStream(finalAbsoluteFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                var orderedChunks = uploadProgress.FileChunks.OrderBy(fc => fc.ChunkIndex).ToList();
+
+                foreach (var chunk in orderedChunks)
+                {
+                    var chunkIdWithExtension = chunk.Id.ToString() + uploadProgress.Extension;
+                    var absoluteFileChunkPath = Path.Combine(absoluteTempFolderPath, chunkIdWithExtension);
+
+                    using (var chunkFileStream = new FileStream(absoluteFileChunkPath, FileMode.Open, FileAccess.Read))
+                    {
+                        await chunkFileStream.CopyToAsync(finalFileStream);
+                    }
+                }
+            }
+        }
+
+        public async Task MergeAndDeleteFileChunksAsync(FileUploadProgress uploadProgress, string absoluteFolderPath)
+        {
+            await MergeFileChunksAsync(uploadProgress, absoluteFolderPath);
+
+            DeleteTempFolder(absoluteFolderPath);
+        }
+
+        private void DeleteTempFolder(string absoluteFolderPath)
+        {
+            var tempFolderPath = Path.Combine(absoluteFolderPath, tempPath);
+
+            if (Directory.Exists(tempFolderPath))
+            {
+                Directory.Delete(tempFolderPath, true);
             }
         }
     }

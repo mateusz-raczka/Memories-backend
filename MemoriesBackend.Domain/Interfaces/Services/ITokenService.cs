@@ -1,6 +1,5 @@
 ﻿using MemoriesBackend.Domain.Entities;
-using MemoriesBackend.Domain.Models.Authentication;
-using MemoriesBackend.Domain.Models.Tokens;
+using MemoriesBackend.Domain.Models;
 using System.Security.Claims;
 
 namespace MemoriesBackend.Domain.Interfaces.Services

@@ -1,5 +1,5 @@
 ﻿using MemoriesBackend.Domain.Interfaces.Services;
-using MemoriesBackend.Domain.Models.User;
+using MemoriesBackend.Domain.Models;
 
 namespace MemoriesBackend.Application.Services
 {

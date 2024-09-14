@@ -1,8 +1,9 @@
-﻿using System.Linq.Expressions;
-using MemoriesBackend.Domain.Entities;
+﻿using MemoriesBackend.Domain.Entities;
 using MemoriesBackend.Domain.Interfaces.Repositories;
 using MemoriesBackend.Domain.Interfaces.Services;
+using MemoriesBackend.Domain.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace MemoriesBackend.Application.Services
 {
@@ -23,6 +24,7 @@ namespace MemoriesBackend.Application.Services
             };
 
             var createdFolder = await _folderRepository.Create(folder);
+
             await _folderRepository.Save();
 
             return createdFolder;
@@ -44,16 +46,17 @@ namespace MemoriesBackend.Application.Services
             return await _folderRepository.GetById(folderId, asNoTracking);
         }
 
-        public async Task<Folder> GetFolderByIdWithAllRelations(Guid folderId, bool asNoTracking = true)
+        public async Task<Folder> GetFolderByIdWithRelations(Guid folderId, bool asNoTracking = true)
         {
-            var folderWithRelations =  await _folderRepository
+            var folderWithRelations = await _folderRepository
                 .GetQueryable(asNoTracking)
                 .Include(f => f.ChildFolders)
                 .Include(f => f.Files)
+                .AsSplitQuery()
                 .Where(f => f.Id == folderId)
                 .FirstOrDefaultAsync();
 
-            if(folderWithRelations == null)
+            if (folderWithRelations == null)
             {
                 throw new ApplicationException($"Folder with ID {folderId} was not found");
             }
@@ -61,14 +64,31 @@ namespace MemoriesBackend.Application.Services
             return folderWithRelations;
         }
 
+        public async Task<FolderWithAncestors> GetFolderByIdWithRelationsAndPath(Guid folderId, bool asNoTracking = true)
+        {
+            var folder = await GetFolderByIdWithRelations(folderId, asNoTracking);
+
+            var ancestors = await GetFolderAncestorsAsync(folder, asNoTracking);
+
+            var folderWithAncestors = new FolderWithAncestors
+            {
+                Folder = folder,
+                Ancestors = ancestors,
+            };
+
+            return folderWithAncestors;
+        }
+
         public async Task<Folder> CreateFolderAsync(Folder folder)
         {
             if (folder.ParentFolderId == null)
                 throw new ApplicationException("Folder must have a parent folder.");
 
-            folder.HierarchyId = await GenerateHierarchyId(folder.ParentFolderId);
+            if(folder.HierarchyId == null)
+                folder.HierarchyId = await GenerateHierarchyId(folder.ParentFolderId);
 
             var createdFolder = await _folderRepository.Create(folder);
+            
             await _folderRepository.Save();
 
             return createdFolder;
@@ -80,9 +100,10 @@ namespace MemoriesBackend.Application.Services
                 .GetQueryable(asNoTracking)
                 .Include(f => f.Files)
                 .Include(f => f.ChildFolders)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(f => f.ParentFolderId == null);
 
-            if(rootFolder == null)
+            if (rootFolder == null)
             {
                 throw new ApplicationException("Critical error - root folder was not found");
             }
@@ -135,7 +156,7 @@ namespace MemoriesBackend.Application.Services
         public async Task DeleteFolderAsync(Guid folderId)
         {
             var folder = await _folderRepository.GetById(folderId);
-            if(folder == null)
+            if (folder == null)
             {
                 throw new ApplicationException($"Failed to delete - folder with Id {folderId} was not found");
             }

@@ -1,22 +1,22 @@
 ﻿using MemoriesBackend.Domain.Interfaces.Services;
-using MemoriesBackend.Domain.Models.FolderAndFileManagement;
+using MemoriesBackend.Domain.Models;
 
 namespace MemoriesBackend.Application.Services
 {
     public class FolderAndFileManagementService : IFolderAndFileManagementService
     {
-        IFolderManagementService _folderManagementService;
-        IFileManagementService _fileManagementService;
+        private readonly IFolderManagementService _folderManagementService;
+        private readonly IFileManagementService _fileManagementService;
 
         public FolderAndFileManagementService(
             IFolderManagementService folderManagementService,
             IFileManagementService fileManagementService
-            ) 
+            )
         {
             _fileManagementService = fileManagementService;
             _folderManagementService = folderManagementService;
         }
-        public async Task<CopyAndPasteFoldersAndFilesResult> CopyAndPasteFoldersAndFilesAsync(
+        public async Task<FoldersAndFiles> CopyAndPasteFoldersAndFilesAsync(
             IEnumerable<Guid> filesIds,
             IEnumerable<Guid> foldersIds,
             Guid targetFolderId
@@ -25,7 +25,7 @@ namespace MemoriesBackend.Application.Services
             var pastedFiles = await _fileManagementService.CopyAndPasteFilesAsync(filesIds, targetFolderId);
             var pastedFolders = await _folderManagementService.CopyAndPasteFoldersAsync(foldersIds, targetFolderId);
 
-            var copyAndPasteFoldersAndFilesResult = new CopyAndPasteFoldersAndFilesResult
+            var copyAndPasteFoldersAndFilesResult = new FoldersAndFiles
             {
                 Folders = pastedFolders,
                 Files = pastedFiles,

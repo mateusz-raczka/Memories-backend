@@ -1,5 +1,5 @@
 ﻿using MemoriesBackend.API.Middlewares;
-using MemoriesBackend.Core;
+using MemoriesBackend.Application;
 using MemoriesBackend.Domain.Entities;
 using MemoriesBackend.Infrastructure;
 using MemoriesBackend.Infrastructure.Contexts;
