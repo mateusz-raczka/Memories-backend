@@ -59,13 +59,16 @@ namespace MemoriesBackend.Infrastructure.Repositories
             return query;
         }
 
-        public virtual async Task<TEntity> GetById(Guid id, bool asNoTracking = true)
+        public virtual async Task<TEntity?> GetById(Guid id, bool asNoTracking = true)
         {
             var query = GetQueryable(asNoTracking).Where(e => ((IEntity)e).Id == id);
             var entity = await query.FirstOrDefaultAsync();
 
-            if (entity == null)
-                throw new ApplicationException("Entity was not found or you do not have access to it.");
+            var currentUserId = _userContextService.Current.UserData.Id;
+            if (((IOwnerId)entity).OwnerId != currentUserId)
+            {
+                throw new UnauthorizedAccessException("You don't have access to this entity");
+            }
 
             return entity;
         }
@@ -85,11 +88,21 @@ namespace MemoriesBackend.Infrastructure.Repositories
         public virtual async Task Delete(Guid id)
         {
             var entityToDelete = await GetById(id, asNoTracking: false);
+            if(entityToDelete == null)
+            {
+                throw new ApplicationException($"Cannot delete entity with Id {id} - it was not found");
+            }
+
             Delete(entityToDelete);
         }
 
         public virtual void Delete(TEntity entityToDelete)
         {
+            if (entityToDelete == null)
+            {
+                throw new ApplicationException($"Cannot delete entity - it was not found");
+            }
+
             if (_context.Entry(entityToDelete).State == EntityState.Detached)
             {
                 _dbSet.Attach(entityToDelete);
