@@ -34,21 +34,21 @@ public class FolderController : ControllerBase
     }
 
     [HttpGet("{id:Guid}")]
-    public async Task<FolderGetByIdWithPathResponse> GetById(Guid id)
+    public async Task<FolderGetByIdResponse> GetById(Guid id)
     {
         var folderDomain = await _folderDatabaseService.GetFolderByIdWithRelations(id);
 
-        var response = _mapper.Map<FolderGetByIdWithPathResponse>(folderDomain);
+        var response = _mapper.Map<FolderGetByIdResponse>(folderDomain);
 
         return response;
     }
 
     [HttpGet("path/{id:Guid}")]
-    public async Task<FolderGetByIdResponse> GetByIdWithPath(Guid id)
+    public async Task<FolderGetByIdWithPathResponse> GetByIdWithPath(Guid id)
     {
         var folderDomain = await _folderDatabaseService.GetFolderByIdWithRelationsAndPath(id);
 
-        var response = _mapper.Map<FolderGetByIdResponse>(folderDomain);
+        var response = _mapper.Map<FolderGetByIdWithPathResponse>(folderDomain);
 
         return response;
     }
