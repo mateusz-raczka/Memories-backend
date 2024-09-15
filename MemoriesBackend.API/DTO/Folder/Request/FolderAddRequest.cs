@@ -6,6 +6,6 @@ namespace MemoriesBackend.API.DTO.Folder.Request
     {
         public Guid ParentFolderId { get; set; }
 
-        public FolderDetailsRequest FolderDetails { get; set; }
+        public FolderDetailsAddRequest FolderDetails { get; set; }
     }
 }

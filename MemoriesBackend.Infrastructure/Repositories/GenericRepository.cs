@@ -65,6 +65,12 @@ namespace MemoriesBackend.Infrastructure.Repositories
             var entity = await query.FirstOrDefaultAsync();
 
             var currentUserId = _userContextService.Current.UserData.Id;
+            
+            if( entity == null)
+            {
+                return entity;
+            }
+
             if (((IOwnerId)entity).OwnerId != currentUserId)
             {
                 throw new UnauthorizedAccessException("You don't have access to this entity");

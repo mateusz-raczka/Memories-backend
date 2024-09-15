@@ -10,7 +10,7 @@ namespace MemoriesBackend.API.AutoMapper.Profiles
         public FileDetailsMapperProfiles()
         {
             CreateMap<FileDetails, FileDetailsResponse>().ReverseMap();
-            CreateMap<FileDetails, FileDetailsRequest>().ReverseMap();
+            CreateMap<FileDetails, FileDetailsUpdateRequest>().ReverseMap();
         }
     }
 }

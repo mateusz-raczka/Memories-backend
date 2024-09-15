@@ -6,7 +6,6 @@ namespace MemoriesBackend.Domain.Interfaces.Services
     public interface IFileDatabaseService
     {
         Task<File> CreateFileAsync(File file);
-        Task UpdateFileAsync(Guid id, File file);
         Task DeleteFileAsync(Guid id);
         Task DeleteFileAsync(File file);
         Task<File> GetFileByIdAsync(Guid id);

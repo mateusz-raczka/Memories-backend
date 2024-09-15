@@ -1,6 +1,6 @@
 ﻿namespace MemoriesBackend.API.DTO.Category.Request
 {
-    public class CategoryRequest
+    public class CategoryAddRequest
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

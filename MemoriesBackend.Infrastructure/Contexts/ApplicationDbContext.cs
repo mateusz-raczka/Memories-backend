@@ -50,6 +50,10 @@ public class ApplicationDbContext : IdentityDbContext
             .Navigation(e => e.FolderDetails)
             .AutoInclude();
 
+        modelBuilder.Entity<FileUploadProgress>()
+            .Navigation(e => e.FileChunks)
+            .AutoInclude();
+
         // Relations
 
         modelBuilder.Entity<File>()

@@ -10,7 +10,7 @@ namespace MemoriesBackend.Application.Services
 {
     public class FileStorageService : IFileStorageService
     {
-        private readonly string tempPath = "/Temp";
+        private readonly string tempPath = "Temp";
 
         public FileStorageService() { }
 
@@ -118,6 +118,9 @@ namespace MemoriesBackend.Application.Services
             var absoluteTempFolderPath = Path.Combine(absoluteFolderPath, tempPath);
             var absoluteFileChunkPath = Path.Combine(absoluteTempFolderPath, fileChunkId.ToString());
 
+            if (!Directory.Exists(absoluteTempFolderPath))
+                Directory.CreateDirectory(absoluteTempFolderPath);
+
             using (var fileStream = new FileStream(absoluteFileChunkPath, FileMode.Create, FileAccess.Write, FileShare.None))
             {
                 await stream.CopyToAsync(fileStream);
@@ -138,8 +141,7 @@ namespace MemoriesBackend.Application.Services
 
                 foreach (var chunk in orderedChunks)
                 {
-                    var chunkIdWithExtension = chunk.Id.ToString() + uploadProgress.Extension;
-                    var absoluteFileChunkPath = Path.Combine(absoluteTempFolderPath, chunkIdWithExtension);
+                    var absoluteFileChunkPath = Path.Combine(absoluteTempFolderPath, chunk.Id.ToString());
 
                     using (var chunkFileStream = new FileStream(absoluteFileChunkPath, FileMode.Open, FileAccess.Read))
                     {

@@ -97,7 +97,7 @@ public class Startup
     {
         app.UseCors(builder =>
         {
-            builder.WithOrigins("http://localhost:3000", "https://localhost:3000", "https://memories.maszaweb.pl", "https://imemories.pl")
+            builder.WithOrigins("http://localhost:3000", "https://localhost:3000", "https://memories.maszaweb.pl", "https://imemories.pl", "http://127.0.0.1:5500")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();

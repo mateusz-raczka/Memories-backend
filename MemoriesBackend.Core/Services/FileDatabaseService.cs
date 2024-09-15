@@ -1,4 +1,5 @@
-﻿using MemoriesBackend.Domain.Interfaces.Repositories;
+﻿using MemoriesBackend.Domain.Entities;
+using MemoriesBackend.Domain.Interfaces.Repositories;
 using MemoriesBackend.Domain.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -20,13 +21,6 @@ namespace MemoriesBackend.Application.Services
             var createdFile = await _fileRepository.Create(file);
             await _fileRepository.Save();
             return createdFile;
-        }
-
-        public async Task UpdateFileAsync(Guid id, File file)
-        {
-            if (file == null) throw new ApplicationException("Invalid FileId.");
-            _fileRepository.Update(file);
-            await _fileRepository.Save();
         }
 
         public async Task DeleteFileAsync(Guid id)

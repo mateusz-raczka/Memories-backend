@@ -8,7 +8,7 @@ using File = MemoriesBackend.Domain.Entities.File;
 
 namespace MemoriesBackend.Application.Services
 {
-    internal sealed class FileManagementService : IFileManagementService
+    public class FileManagementService : IFileManagementService
     {
         private readonly IFileStorageService _fileStorageService;
         private readonly IFileDatabaseService _fileDatabaseService;
@@ -76,7 +76,7 @@ namespace MemoriesBackend.Application.Services
 
             if (chunkIndex != currentUploadProgress.FileChunks.Count)
                 throw new ApplicationException("Invalid chunk index.");
-            if (chunkIndex >= currentUploadProgress.FileChunks.Count)
+            if (chunkIndex > currentUploadProgress.FileChunks.Count)
                 throw new ApplicationException("File is already uploaded");
 
             var absoluteFolderPath = _pathService.GetAbsolutePath(currentUploadProgress.RelativePath);
@@ -119,10 +119,18 @@ namespace MemoriesBackend.Application.Services
 
                 await _fileDatabaseService.CreateFileAsync(file);
                 await _fileUploadProgressRepository.Delete(fileId);
+                foreach(var chunk in currentUploadProgress.FileChunks)
+                {
+                    await _fileChunkRepository.Delete(chunk.Id);
+                }
+            }
+            else
+            {
+                _fileUploadProgressRepository.Update(currentUploadProgress);
             }
 
-            _fileUploadProgressRepository.Update(currentUploadProgress);
             await _fileUploadProgressRepository.Save();
+            await _fileChunkRepository.Save();
 
             return file;
         }
@@ -229,10 +237,12 @@ namespace MemoriesBackend.Application.Services
                     RelativePath = relativeFolderPath,
                     Extension = Path.GetExtension(fileName),
                     Name = Path.GetFileName(fileName),
-                    LastModifiedDate = DateTime.UtcNow
+                    LastModifiedDate = DateTime.UtcNow,
+                    FileChunks = new List<FileChunk>()
                 };
 
                 await _fileUploadProgressRepository.Create(currentUploadProgress);
+                await _fileUploadProgressRepository.Save();
             }
 
             return currentUploadProgress;

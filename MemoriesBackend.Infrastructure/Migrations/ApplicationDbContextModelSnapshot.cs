@@ -55,32 +55,32 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("deb95113-c6e5-429b-b6a5-8fc0f2c0e808"),
+                            Id = new Guid("592538cb-b8c7-4f5e-823d-3777fb9e316a"),
                             Name = "Edit"
                         },
                         new
                         {
-                            Id = new Guid("ea0d2cda-5131-4955-8434-8b6478aa9cb0"),
+                            Id = new Guid("4e8db2e6-b5aa-4a4e-a6d0-eefb5148e330"),
                             Name = "Share"
                         },
                         new
                         {
-                            Id = new Guid("a2f01a6e-fdc5-42f4-8eeb-8e95d83cfa6b"),
+                            Id = new Guid("7d1d718c-a74b-4498-a3e2-76653df74d91"),
                             Name = "Transfer"
                         },
                         new
                         {
-                            Id = new Guid("0be93035-7459-4419-b46b-a20a54a9db1c"),
+                            Id = new Guid("c52e7f68-5618-4efe-9241-063018d5a5fd"),
                             Name = "Create"
                         },
                         new
                         {
-                            Id = new Guid("72e2daaf-7c5e-4011-9161-a4f617a831f3"),
+                            Id = new Guid("9cb5e6df-264b-4e7b-b758-d93702f0d0b8"),
                             Name = "Delete"
                         },
                         new
                         {
-                            Id = new Guid("02ff5702-3b3b-44ab-9794-5ebb479ccf47"),
+                            Id = new Guid("1ea837d4-099b-4d8f-aa1f-a9c81c185ddf"),
                             Name = "Open"
                         });
                 });
@@ -295,6 +295,9 @@ namespace MemoriesBackend.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.ToTable("FolderDetails");
@@ -344,19 +347,19 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "e4c8b4fa-a821-4f49-b360-eb349432284a",
+                            Id = "b338e502-9ed1-43da-86e1-924dad51229e",
                             Name = "USER",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "b429b068-c648-4006-a492-ddc8918e076a",
+                            Id = "30e5912d-1756-492d-bd19-0792ad5be4c3",
                             Name = "OWNER",
                             NormalizedName = "OWNER"
                         },
                         new
                         {
-                            Id = "35714ba5-89db-47f2-9593-9dc4475ff0e8",
+                            Id = "356537eb-cd03-41b2-a98b-f9ad5c3e91e4",
                             Name = "ADMIN",
                             NormalizedName = "ADMIN"
                         });

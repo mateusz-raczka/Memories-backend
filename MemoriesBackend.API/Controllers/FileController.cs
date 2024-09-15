@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using MemoriesBackend.API.DTO.File.Request;
 using MemoriesBackend.API.DTO.File.Response;
+using MemoriesBackend.API.DTO.FileDetails.Request;
 using MemoriesBackend.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
@@ -83,14 +83,6 @@ public class FileController : ControllerBase
         var response = _mapper.Map<FileAddResponse>(fileDomain);
 
         return response;
-    }
-
-    [HttpPut("{id:Guid}")]
-    public async Task Update([FromBody] FileUpdateRequest fileDto, Guid id)
-    {
-        var fileDomain = _mapper.Map<File>(fileDto);
-
-        await _fileDatabaseService.UpdateFileAsync(id, fileDomain);
     }
 
     [HttpDelete("{id:Guid}")]
