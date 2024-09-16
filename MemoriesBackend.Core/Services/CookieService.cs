@@ -26,6 +26,24 @@ namespace MemoriesBackend.Application.Services
             SetAccessTokenCookie(auth.AccessToken, auth.RefreshToken.ExpireDate);
         }
 
+        public void RemoveAuthCookies()
+        {
+            var accessToken = new JwtToken
+            {
+                ExpireDate = DateTime.MinValue.AddYears(1),
+                Value = ""
+            };
+
+            var refreshToken = new RefreshToken
+            {
+                ExpireDate = DateTime.MinValue.AddYears(1),
+                Value = ""
+            };
+
+            SetAccessTokenCookie(accessToken, accessToken.ExpireDate);
+            SetRefreshTokenCookie(refreshToken, refreshToken.ExpireDate);
+        }
+
         public string GetRefreshTokenFromCookie()
         {
             var refreshTokenValue = _httpContextAccessor.HttpContext.Request.Cookies[CookieType.refreshToken.ToString()];

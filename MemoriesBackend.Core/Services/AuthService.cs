@@ -11,17 +11,17 @@ public class AuthService : IAuthService
 {
     private readonly UserManager<ExtendedIdentityUser> _userManager;
     private readonly ITokenService _tokenService;
-    private readonly ILogger<AuthService> _logger;
+    private readonly IUserContextService _userContextService;
 
     public AuthService(
         UserManager<ExtendedIdentityUser> userManager,
         ITokenService tokenService,
-        ILogger<AuthService> logger
+        IUserContextService userContextService
     )
     {
         _userManager = userManager;
         _tokenService = tokenService;
-        _logger = logger;
+        _userContextService = userContextService;
     }
 
     public async Task<Auth> LoginAsync(Login login)
@@ -30,7 +30,6 @@ public class AuthService : IAuthService
 
         if (user == null)
         {
-            _logger.LogWarning("User not found: {UserName}", login.UserName);
             throw new ApplicationException("User not found");
         }
 
@@ -38,7 +37,6 @@ public class AuthService : IAuthService
 
         if (!isPasswordCorrect)
         {
-            _logger.LogWarning("Invalid credentials for user: {UserName}", login.UserName);
             throw new UnauthorizedAccessException("Invalid credentials");
         }
 
@@ -47,6 +45,7 @@ public class AuthService : IAuthService
 
         user.RefreshToken = refreshToken.Value;
         user.RefreshTokenExpiry = refreshToken.ExpireDate;
+        user.isLoggedIn = true;
 
         try
         {
@@ -54,15 +53,11 @@ public class AuthService : IAuthService
 
             if (!updateResult.Succeeded)
             {
-                _logger.LogError("Error updating user: {UserName}, Errors: {Errors}",
-                    login.UserName, string.Join(", ", updateResult.Errors.Select(e => e.Description)));
                 throw new ApplicationException("Failed to update user");
             }
         }
         catch (DbUpdateConcurrencyException ex)
         {
-            _logger.LogError("Concurrency error updating user: {UserName}, Error: {Error}",
-                login.UserName, ex.Message);
             throw new ApplicationException("Concurrency error updating user");
         }
 
@@ -81,5 +76,37 @@ public class AuthService : IAuthService
         };
 
         return auth;
+    }
+
+    public async Task LogoutAsync()
+    {
+        var userData = _userContextService.Current.UserData;
+
+        var userId = userData.Id;
+
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+
+        if (user == null)
+        {
+            throw new ApplicationException("User not found");
+        }
+
+        user.isLoggedIn = false;
+        user.RefreshToken = "";
+        user.RefreshTokenExpiry = DateTime.MinValue;
+
+        try
+        {
+            var updateResult = await _userManager.UpdateAsync(user);
+
+            if (!updateResult.Succeeded)
+            {
+                throw new ApplicationException("Failed to update user");
+            }
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            throw new ApplicationException("Concurrency error updating user");
+        }
     }
 }

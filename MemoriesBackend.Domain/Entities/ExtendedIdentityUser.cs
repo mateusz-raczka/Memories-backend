@@ -6,5 +6,6 @@ namespace MemoriesBackend.Domain.Entities
     {
         public string RefreshToken { get; set; }
         public DateTime RefreshTokenExpiry { get; set; }
+        public bool isLoggedIn { get; set; }
     }
 }

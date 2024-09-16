@@ -10,8 +10,6 @@ namespace MemoriesBackend.Application.Services
 {
     public class FileStorageService : IFileStorageService
     {
-        private readonly string tempPath = "Temp";
-
         public FileStorageService() { }
 
         public async Task<FileUploadedMetaData> UploadFileAsync(IFormFile file, string absoluteFolderPath)
@@ -115,7 +113,7 @@ namespace MemoriesBackend.Application.Services
         public async Task<Guid> UploadFileChunkAsync(Stream stream, string absoluteFolderPath)
         {
             Guid fileChunkId = Guid.NewGuid();
-            var absoluteTempFolderPath = Path.Combine(absoluteFolderPath, tempPath);
+            var absoluteTempFolderPath = Path.Combine(absoluteFolderPath, $"Temp_{fileChunkId}");
             var absoluteFileChunkPath = Path.Combine(absoluteTempFolderPath, fileChunkId.ToString());
 
             if (!Directory.Exists(absoluteTempFolderPath))
@@ -131,7 +129,7 @@ namespace MemoriesBackend.Application.Services
 
         public async Task MergeFileChunksAsync(FileUploadProgress uploadProgress, string absoluteFolderPath)
         {
-            var absoluteTempFolderPath = Path.Combine(absoluteFolderPath, tempPath);
+            var absoluteTempFolderPath = Path.Combine(absoluteFolderPath, $"Temp_{uploadProgress.Id}");
             var fileIdWithExtension = uploadProgress.Id.ToString() + uploadProgress.Extension;
             var finalAbsoluteFilePath = Path.Combine(absoluteFolderPath, fileIdWithExtension);
 
@@ -160,7 +158,7 @@ namespace MemoriesBackend.Application.Services
 
         private void DeleteTempFolder(string absoluteFolderPath)
         {
-            var tempFolderPath = Path.Combine(absoluteFolderPath, tempPath);
+            var tempFolderPath = Path.Combine(absoluteFolderPath, $"Temp_");
 
             if (Directory.Exists(tempFolderPath))
             {

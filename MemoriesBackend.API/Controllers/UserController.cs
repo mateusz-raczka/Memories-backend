@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace MemoriesBackend.API.Controllers;
 
 [AllowAnonymous]
-[Route("api/[controller]/[action]")]
+[Route("api/[controller]")]
 [ApiController]
 public class UserController : ControllerBase
 {
@@ -31,7 +31,7 @@ public class UserController : ControllerBase
         _cookieService = cookieService;
     }
 
-    [HttpPost]
+    [HttpPost("register")]
     public async Task<AuthResponse> Register([FromBody] RegisterRequest registerDto)
     {
         var registerDomain = _mapper.Map<Register>(registerDto);
@@ -45,7 +45,7 @@ public class UserController : ControllerBase
         return response;
     }
 
-    [HttpPost]
+    [HttpPost("login")]
     public async Task<AuthResponse> Login([FromBody] LoginResponse loginDto)
     {
         var loginDomain = _mapper.Map<Login>(loginDto);
@@ -57,5 +57,13 @@ public class UserController : ControllerBase
         _cookieService.SetAuthCookies(authDomain);
 
         return response;
+    }
+
+    [HttpPost("logout")]
+    public async Task Logout()
+    {
+        await _authService.LogoutAsync();
+
+        _cookieService.RemoveAuthCookies();
     }
 }

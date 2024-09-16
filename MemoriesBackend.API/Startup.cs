@@ -84,6 +84,7 @@ public class Startup
 
         //Middlewares
         services.AddScoped<GlobalExceptionHandlingMiddleware>();
+        services.AddScoped<SessionValidationMiddleware>();
 
         services.AddHttpContextAccessor();
         services.AddLogging();
@@ -104,6 +105,7 @@ public class Startup
         });
 
         app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+        app.UseMiddleware<SessionValidationMiddleware>();
 
         if (env.IsDevelopment())
         {

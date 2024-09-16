@@ -7,5 +7,6 @@ namespace MemoriesBackend.Domain.Interfaces.Services
         void SetAuthCookies(Auth auth);
         string GetRefreshTokenFromCookie();
         string GetAccessTokenFromCookie();
+        void RemoveAuthCookies();
     }
 }
