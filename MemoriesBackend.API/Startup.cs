@@ -82,10 +82,6 @@ public class Startup
         services.AddCore();
         services.AddInfrastructure(Configuration);
 
-        //Middlewares
-        services.AddScoped<GlobalExceptionHandlingMiddleware>();
-        services.AddScoped<SessionValidationMiddleware>();
-
         services.AddHttpContextAccessor();
         services.AddLogging();
         services.AddControllers();
@@ -96,6 +92,10 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
+        app.UseGlobalExceptionHandlingMiddleware();
+
+        app.UseRouting();
+
         app.UseCors(builder =>
         {
             builder.WithOrigins("http://localhost:3000", "https://localhost:3000", "https://memories.maszaweb.pl", "https://imemories.pl", "http://127.0.0.1:5500")
@@ -104,17 +104,14 @@ public class Startup
                 .AllowCredentials();
         });
 
-        app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
-        app.UseMiddleware<SessionValidationMiddleware>();
+        app.UseSessionValidationMiddleware();
 
         if (env.IsDevelopment())
         {
-            app.UseDeveloperExceptionPage();
             app.UseSwagger();
             app.UseSwaggerUI();
         }
 
-        app.UseRouting();
         app.UseAuthentication();
         app.UseAuthorization();
 

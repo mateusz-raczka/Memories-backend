@@ -48,6 +48,8 @@ public class UserController : ControllerBase
     [HttpPost("login")]
     public async Task<AuthResponse> Login([FromBody] LoginRequest loginDto)
     {
+
+        throw new ApplicationException("test");
         var loginDomain = _mapper.Map<Login>(loginDto);
 
         var authDomain = await _authService.LoginAsync(loginDomain);

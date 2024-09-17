@@ -1,23 +1,28 @@
 ﻿using System.Net;
+using System.Text.Json;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace MemoriesBackend.API.Middlewares
 {
     public record ExceptionResponse(HttpStatusCode StatusCode, string Description);
 
-    public class GlobalExceptionHandlingMiddleware : IMiddleware
+    public class GlobalExceptionHandlingMiddleware
     {
+        private readonly RequestDelegate _next;
         private readonly ILogger<GlobalExceptionHandlingMiddleware> _logger;
 
-        public GlobalExceptionHandlingMiddleware(ILogger<GlobalExceptionHandlingMiddleware> logger)
+        public GlobalExceptionHandlingMiddleware(RequestDelegate next, ILogger<GlobalExceptionHandlingMiddleware> logger)
         {
+            _next = next;
             _logger = logger;
         }
 
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        public async Task InvokeAsync(HttpContext context)
         {
             try
             {
-                await next(context);
+                await _next(context);
             }
             catch (Exception ex)
             {
@@ -25,7 +30,7 @@ namespace MemoriesBackend.API.Middlewares
             }
         }
 
-        private async Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             _logger.LogError(exception, "An unexpected error occurred.");
 
@@ -39,7 +44,19 @@ namespace MemoriesBackend.API.Middlewares
 
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)response.StatusCode;
-            await context.Response.WriteAsJsonAsync(response);
+
+            var jsonResponse = JsonSerializer.Serialize(response);
+
+            return context.Response.WriteAsync(jsonResponse);
+        }
+    }
+
+    public static class GlobalExceptionHandlingMiddlewareExtensions
+    {
+        public static IApplicationBuilder UseGlobalExceptionHandlingMiddleware(
+            this IApplicationBuilder builder)
+        {
+            return builder.UseMiddleware<GlobalExceptionHandlingMiddleware>();
         }
     }
 }

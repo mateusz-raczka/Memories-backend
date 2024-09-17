@@ -1,31 +1,27 @@
 ﻿using MemoriesBackend.Domain.Entities;
-using MemoriesBackend.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
 namespace MemoriesBackend.API.Middlewares
 {
-    public class SessionValidationMiddleware : IMiddleware
+    public class SessionValidationMiddleware
     {
-        private readonly UserManager<ExtendedIdentityUser> _userManager;
-        private readonly ILogger<SessionValidationMiddleware> _logger;
+        private readonly RequestDelegate _next;
 
         public SessionValidationMiddleware(
-            ILogger<SessionValidationMiddleware> logger,
-            UserManager<ExtendedIdentityUser> userManager
-            )
+            RequestDelegate next
+        )
         {
-            _userManager = userManager;
-            _logger = logger;
+            _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        public async Task InvokeAsync(HttpContext context, ILogger<SessionValidationMiddleware> _logger, UserManager<ExtendedIdentityUser> userManager)
         {
             if (context.User.Identity.IsAuthenticated)
             {
                 var userName = context.User.Identity.Name;
                 var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                var user = await _userManager.FindByIdAsync(userId);
+                var user = await userManager.FindByIdAsync(userId);
 
                 if (user == null || !user.isLoggedIn)
                 {
@@ -34,7 +30,17 @@ namespace MemoriesBackend.API.Middlewares
                 }
             }
 
-            await next(context);
+            await _next(context);
+        }
+    }
+
+    public static class SessionValidationMiddlewareExtensions
+    {
+        public static IApplicationBuilder UseSessionValidationMiddleware(
+            this IApplicationBuilder builder
+            )
+        {
+            return builder.UseMiddleware<SessionValidationMiddleware>();
         }
     }
 }
