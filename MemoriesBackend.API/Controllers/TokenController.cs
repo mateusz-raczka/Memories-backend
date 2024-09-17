@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MemoriesBackend.API.Controllers
 {
-    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class TokenController : ControllerBase

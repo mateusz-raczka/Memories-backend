@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using MemoriesBackend.API.DTO.File.Response;
-using MemoriesBackend.API.DTO.FileDetails.Request;
 using MemoriesBackend.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;

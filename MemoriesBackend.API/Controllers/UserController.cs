@@ -46,7 +46,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<AuthResponse> Login([FromBody] LoginResponse loginDto)
+    public async Task<AuthResponse> Login([FromBody] LoginRequest loginDto)
     {
         var loginDomain = _mapper.Map<Login>(loginDto);
 

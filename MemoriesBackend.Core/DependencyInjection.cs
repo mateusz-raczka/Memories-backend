@@ -8,9 +8,9 @@ namespace MemoriesBackend.Application
     {
         public static IServiceCollection AddCore(this IServiceCollection services)
         {
+            services.AddScoped<IUserContextService, UserContextService>();
             services.AddScoped<IFileDatabaseService, FileDatabaseService>();
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IUserContextService, UserContextService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IFileStorageService, FileStorageService>();
             services.AddScoped<IFileManagementService, FileManagementService>();

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using MemoriesBackend.API.DTO.Authentication.Response;
 using MemoriesBackend.Domain.Models;
+using LoginRequest = MemoriesBackend.API.DTO.Authentication.Request.LoginRequest;
 
 namespace MemoriesBackend.API.AutoMapper.Profiles
 {
@@ -8,7 +8,7 @@ namespace MemoriesBackend.API.AutoMapper.Profiles
     {
         public LoginMapperProfiles()
         {
-            CreateMap<Login, LoginResponse>().ReverseMap();
+            CreateMap<Login, LoginRequest>().ReverseMap();
         }
     }
 }

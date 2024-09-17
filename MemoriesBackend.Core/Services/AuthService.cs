@@ -3,7 +3,6 @@ using MemoriesBackend.Domain.Interfaces.Services;
 using MemoriesBackend.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace MemoriesBackend.Application.Services;
 
@@ -80,7 +79,12 @@ public class AuthService : IAuthService
 
     public async Task LogoutAsync()
     {
-        var userData = _userContextService.Current.UserData;
+        var userData = _userContextService.Current?.UserData;
+
+        if (userData == null)
+        {
+            throw new ApplicationException("User data is not available in context.");
+        }
 
         var userId = userData.Id;
 
