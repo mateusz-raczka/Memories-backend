@@ -110,10 +110,10 @@ namespace MemoriesBackend.Application.Services
             return result;
         }
 
-        public async Task<Guid> UploadFileChunkAsync(Stream stream, string absoluteFolderPath)
+        public async Task<Guid> UploadFileChunkAsync(Stream stream, string absoluteFolderPath, Guid fileId)
         {
             Guid fileChunkId = Guid.NewGuid();
-            var absoluteTempFolderPath = Path.Combine(absoluteFolderPath, $"Temp_{fileChunkId}");
+            var absoluteTempFolderPath = Path.Combine(absoluteFolderPath, $"Temp_{fileId}");
             var absoluteFileChunkPath = Path.Combine(absoluteTempFolderPath, fileChunkId.ToString());
 
             if (!Directory.Exists(absoluteTempFolderPath))
@@ -153,12 +153,14 @@ namespace MemoriesBackend.Application.Services
         {
             await MergeFileChunksAsync(uploadProgress, absoluteFolderPath);
 
-            DeleteTempFolder(absoluteFolderPath);
+            var absoluteTempFolderPath = Path.Combine(absoluteFolderPath, $"Temp_{uploadProgress.Id}");
+
+            DeleteTempFolder(absoluteTempFolderPath);
         }
 
-        private void DeleteTempFolder(string absoluteFolderPath)
+        private void DeleteTempFolder(string absoluteTempFolderPath)
         {
-            var tempFolderPath = Path.Combine(absoluteFolderPath, $"Temp_");
+            var tempFolderPath = Path.Combine(absoluteTempFolderPath);
 
             if (Directory.Exists(tempFolderPath))
             {

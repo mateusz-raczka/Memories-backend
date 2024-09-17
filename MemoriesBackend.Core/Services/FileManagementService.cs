@@ -81,7 +81,7 @@ namespace MemoriesBackend.Application.Services
 
             var absoluteFolderPath = _pathService.GetAbsolutePath(currentUploadProgress.RelativePath);
 
-            var fileChunkId = await _fileStorageService.UploadFileChunkAsync(stream, absoluteFolderPath);
+            var fileChunkId = await _fileStorageService.UploadFileChunkAsync(stream, absoluteFolderPath, currentUploadProgress.Id);
 
             var fileChunk = new FileChunk
             {
