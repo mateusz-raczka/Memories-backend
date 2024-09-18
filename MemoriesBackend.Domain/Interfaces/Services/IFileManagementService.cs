@@ -14,5 +14,8 @@ namespace MemoriesBackend.Domain.Interfaces.Services
         Task<IEnumerable<File>> CopyAndPasteFilesAsync(IEnumerable<Guid> filesIdsToCopy, Guid targetFolderId);
         Task<File> CopyAndPasteFileAsync(File file, Guid targetFolderId);
         Task<File?> AddFileUsingChunksAsync(Stream stream, string fileName, int chunkIndex, int totalChunks, Guid folderId, Guid fileId);
+        Task<IEnumerable<File>> CutAndPasteFilesAsync(IEnumerable<Guid> filesIdsToCopy, Guid targetFolderId);
+        Task<IEnumerable<File>> CutAndPasteFilesAsync(IEnumerable<File> filesToCopy, Guid targetFolderId);
+        Task<File> CutAndPasteFileAsync(File file, Guid targetFolderId);
     }
 }

@@ -10,16 +10,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MemoriesBackend.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api")]
     [ApiController]
-    public class CopyController : Controller
+    public class OperationsController : Controller
     {
 
         IFolderAndFileManagementService _folderAndFileManagementService;
         IFolderManagementService _folderManagementService;
         IFileManagementService _fileManagementService;
         IMapper _mapper;
-        public CopyController(
+        public OperationsController(
             IFolderAndFileManagementService folderAndFileManagementService,
             IMapper mapper
             )
@@ -28,7 +28,7 @@ namespace MemoriesBackend.API.Controllers
             _mapper = mapper;
         }
 
-        [HttpPost("file")]
+        [HttpPost("copy/file")]
         public async Task<IEnumerable<FileCopyPasteResponse>> CopyAndPaste(FileCopyAndPasteRequest fileCopyAndPasteRequest)
         {
             var filesDomain = await _fileManagementService.CopyAndPasteFilesAsync(fileCopyAndPasteRequest.FilesIds, fileCopyAndPasteRequest.TargetFolderId);
@@ -38,7 +38,7 @@ namespace MemoriesBackend.API.Controllers
             return response;
         }
 
-        [HttpPost("folder")]
+        [HttpPost("copy/folder")]
         public async Task<FolderCopyAndPasteResponse> CopyAndPaste([FromBody] FolderCopyAndPasteRequest folderCopyAndPasteDto)
         {
             var folderDomain = await _folderManagementService.CopyAndPasteFolderAsync(folderCopyAndPasteDto.SourceFolderId, folderCopyAndPasteDto.TargetFolderId);
@@ -48,8 +48,8 @@ namespace MemoriesBackend.API.Controllers
             return response;
         }
 
-        [HttpPost("foldersandfiles")]
-        public async Task<FolderAndFileCopyAndPasteResponse> CopyAndPaste([FromBody] FolderAndFileCopyAndPasteRequest foldersAndFilesCopyAndPasteDto)
+        [HttpPost("copy/foldersandfiles")]
+        public async Task<FoldersAndFilesCopyAndPasteResponse> CopyAndPaste([FromBody] FoldersAndFilesCopyAndPasteRequest foldersAndFilesCopyAndPasteDto)
         {
             var folderDomain = await _folderAndFileManagementService.CopyAndPasteFoldersAndFilesAsync(
                 foldersAndFilesCopyAndPasteDto.FilesIds,
@@ -57,7 +57,41 @@ namespace MemoriesBackend.API.Controllers
                 foldersAndFilesCopyAndPasteDto.TargetFolderId
                 );
 
-            var response = _mapper.Map<FolderAndFileCopyAndPasteResponse>(folderDomain);
+            var response = _mapper.Map<FoldersAndFilesCopyAndPasteResponse>(folderDomain);
+
+            return response;
+        }
+
+        [HttpPost("cut/file")]
+        public async Task<IEnumerable<FileCutAndPasteResponse>> CutAndPaste(FileCutAndPasteRequest fileCutAndPasteRequest)
+        {
+            var filesDomain = await _fileManagementService.CutAndPasteFilesAsync(fileCutAndPasteRequest.FilesIds, fileCutAndPasteRequest.TargetFolderId);
+
+            var response = _mapper.Map<IEnumerable<FileCutAndPasteResponse>>(filesDomain);
+
+            return response;
+        }
+
+        [HttpPost("cut/folder")]
+        public async Task<FolderCutAndPasteResponse> CutAndPaste([FromBody] FolderCutAndPasteRequest folderCutAndPasteDto)
+        {
+            var folderDomain = await _folderManagementService.CutAndPasteFolderAsync(folderCutAndPasteDto.SourceFolderId, folderCutAndPasteDto.TargetFolderId);
+
+            var response = _mapper.Map<FolderCutAndPasteResponse>(folderDomain);
+
+            return response;
+        }
+
+        [HttpPost("cut/foldersandfiles")]
+        public async Task<FoldersAndFilesCutAndPasteResponse> CutAndPaste([FromBody] FoldersAndFilesCutAndPasteRequest foldersAndFilesCutAndPasteDto)
+        {
+            var folderDomain = await _folderAndFileManagementService.CutAndPasteFoldersAndFilesAsync(
+                foldersAndFilesCutAndPasteDto.FilesIds,
+                foldersAndFilesCutAndPasteDto.FoldersIds,
+                foldersAndFilesCutAndPasteDto.TargetFolderId
+                );
+
+            var response = _mapper.Map<FoldersAndFilesCutAndPasteResponse>(folderDomain);
 
             return response;
         }

@@ -64,6 +64,7 @@ namespace MemoriesBackend.Application.Services
             };
 
             var createdFile = await _fileDatabaseService.CreateFileAsync(file);
+            await _fileDatabaseService.SaveAsync();
 
             return createdFile;
         }
@@ -118,6 +119,7 @@ namespace MemoriesBackend.Application.Services
                 };
 
                 await _fileDatabaseService.CreateFileAsync(file);
+                await _fileDatabaseService.SaveAsync();
                 await _fileUploadProgressRepository.Delete(fileId);
                 foreach(var chunk in currentUploadProgress.FileChunks)
                 {
@@ -148,6 +150,7 @@ namespace MemoriesBackend.Application.Services
 
             await _fileDatabaseService.DeleteFileAsync(fileId);
             _fileStorageService.DeleteFile(absoluteFilePath);
+            await _fileDatabaseService.SaveAsync();
         }
 
         public async Task<FileContentResult> DownloadFileAsync(Guid fileId)
@@ -198,9 +201,9 @@ namespace MemoriesBackend.Application.Services
             if (targetFolder == null)
                 throw new ApplicationException("Target folder not found");
 
-            var folderAbsolutePath = await _pathService.GetFolderAbsolutePathAsync(targetFolderId);
+            var targetFolderAbsolutePath = await _pathService.GetFolderAbsolutePathAsync(targetFolderId);
             var fileAbsolutePath = await _pathService.GetFileAbsolutePathAsync(file.Id);
-            var pastedFileId = await _fileStorageService.CopyAndPasteFileAsync(fileAbsolutePath, folderAbsolutePath);
+            var pastedFileId = await _fileStorageService.CopyAndPasteFileAsync(fileAbsolutePath, targetFolderAbsolutePath);
 
             var fileCopy = new File
             {
@@ -215,7 +218,62 @@ namespace MemoriesBackend.Application.Services
                 }
             };
 
-            return await _fileDatabaseService.CreateFileAsync(fileCopy);
+            var pastedFile = await _fileDatabaseService.CreateFileAsync(fileCopy);
+            await _fileDatabaseService.SaveAsync();
+
+            return pastedFile;
+        }
+
+        public async Task<IEnumerable<File>> CutAndPasteFilesAsync(IEnumerable<Guid> filesIdsToCopy, Guid targetFolderId)
+        {
+            var targetFolder = await _folderDatabaseService.GetFolderByIdAsync(targetFolderId);
+            if (targetFolder == null)
+                throw new ApplicationException("Target folder not found");
+
+            var pastedFiles = new List<File>();
+
+            foreach (var fileId in filesIdsToCopy)
+            {
+                var file = await _fileDatabaseService.GetFileByIdAsync(fileId);
+                var pastedFile = await CutAndPasteFileAsync(file, targetFolderId);
+                pastedFiles.Add(pastedFile);
+            }
+
+            return pastedFiles;
+        }
+
+        public async Task<IEnumerable<File>> CutAndPasteFilesAsync(IEnumerable<File> filesToCopy, Guid targetFolderId)
+        {
+            var targetFolder = await _folderDatabaseService.GetFolderByIdAsync(targetFolderId);
+            if (targetFolder == null)
+                throw new ApplicationException("Target folder not found");
+
+            var pastedFiles = new List<File>();
+
+            foreach (var file in filesToCopy)
+            {
+                var pastedFile = await CutAndPasteFileAsync(file, targetFolderId);
+                pastedFiles.Add(pastedFile);
+            }
+
+            return pastedFiles;
+        }
+
+        public async Task<File> CutAndPasteFileAsync(File file, Guid targetFolderId)
+        {
+            var targetFolder = await _folderDatabaseService.GetFolderByIdAsync(targetFolderId);
+            if (targetFolder == null)
+                throw new ApplicationException("Target folder not found");
+
+            var folderAbsolutePath = await _pathService.GetFolderAbsolutePathAsync(targetFolderId);
+            var fileAbsolutePath = await _pathService.GetFileAbsolutePathAsync(file.Id);
+            await _fileStorageService.CutAndPasteFileAsync(fileAbsolutePath,folderAbsolutePath);
+
+            file.FolderId = targetFolderId;
+
+            await _folderDatabaseService.SaveAsync();
+
+            return file;
         }
 
         private async Task<FileUploadProgress> GetOrInitializeUploadProgressAsync(int chunkIndex, int totalChunks, Guid folderId, Guid fileId, string fileName)

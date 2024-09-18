@@ -21,6 +21,7 @@ namespace MemoriesBackend.API.AutoMapper.Profiles
             CreateMap<FolderWithAncestors, FolderGetByIdWithPathResponse>()
                 .ForMember(dest => dest.Path, opt => opt.MapFrom(src => src.Ancestors))
                 .ReverseMap();
+            CreateMap<Folder, FolderCutAndPasteResponse>().ReverseMap();
         }
     }
 }

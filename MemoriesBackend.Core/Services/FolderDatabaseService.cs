@@ -25,8 +25,6 @@ namespace MemoriesBackend.Application.Services
 
             var createdFolder = await _folderRepository.Create(folder);
 
-            await _folderRepository.Save();
-
             return createdFolder;
         }
 
@@ -88,8 +86,6 @@ namespace MemoriesBackend.Application.Services
                 folder.HierarchyId = await GenerateHierarchyId(folder.ParentFolderId);
 
             var createdFolder = await _folderRepository.Create(folder);
-            
-            await _folderRepository.Save();
 
             return createdFolder;
         }
@@ -103,7 +99,7 @@ namespace MemoriesBackend.Application.Services
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(f => f.ParentFolderId == null);
 
-            if (rootFolder == null)
+            if (rootFolder == null) 
             {
                 throw new ApplicationException("Critical error - root folder was not found");
             }
@@ -162,7 +158,10 @@ namespace MemoriesBackend.Application.Services
             }
 
             await _folderRepository.Delete(folderId);
+        }
 
+        public async Task SaveAsync()
+        {
             await _folderRepository.Save();
         }
     }

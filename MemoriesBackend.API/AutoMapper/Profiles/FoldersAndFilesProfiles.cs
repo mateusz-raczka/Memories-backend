@@ -8,7 +8,8 @@ namespace MemoriesBackend.API.AutoMapper.Profiles
     {
         public FoldersAndFilesProfiles()
         {
-            CreateMap<FoldersAndFiles, FolderAndFileCopyAndPasteResponse>().ReverseMap();
+            CreateMap<FoldersAndFiles, FoldersAndFilesCopyAndPasteResponse>().ReverseMap();
+            CreateMap<FoldersAndFiles, FoldersAndFilesCutAndPasteResponse>().ReverseMap();
         }
     }
 }

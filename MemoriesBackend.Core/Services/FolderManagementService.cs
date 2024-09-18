@@ -84,6 +84,54 @@ namespace MemoriesBackend.Application.Services
             return pastedFolders;
         }
 
+        public async Task<Folder> CutAndPasteFolderAsync(Guid sourceFolderId, Guid targetFolderId)
+        {
+            var sourceFolder = await _folderDatabaseService.GetFolderByIdWithRelations(sourceFolderId);
+
+            if (sourceFolder == null)
+            {
+                throw new ApplicationException($"Source folder with ID {sourceFolderId} not found.");
+            }
+
+            var targetFolder = await _folderDatabaseService.GetFolderByIdAsync(targetFolderId);
+
+            if (targetFolder == null)
+            {
+                throw new ApplicationException($"Target folder with ID {targetFolderId} not found.");
+            }
+
+            sourceFolder.ParentFolderId = targetFolderId;
+
+            await _folderDatabaseService.SaveAsync();
+
+            var targetFolderAbsolutePath = await _pathService.GetFolderAbsolutePathAsync(targetFolderId);
+
+            var sourceFolderAbsolutePath = await _pathService.GetFolderAbsolutePathAsync(sourceFolderId);
+
+            await _folderStorageService.MoveFolderAsync(sourceFolderAbsolutePath, targetFolderAbsolutePath);
+
+            return sourceFolder;
+        }
+
+        public async Task<IEnumerable<Folder>> CutAndPasteFoldersAsync(IEnumerable<Guid> folderIds, Guid targetFolderId)
+        {
+            var targetFolder = await _folderDatabaseService.GetFolderByIdAsync(targetFolderId);
+            if (targetFolder == null)
+            {
+                throw new ApplicationException("Target folder not found");
+            }
+
+            var pastedFolders = new List<Folder>();
+
+            foreach (var folderId in folderIds)
+            {
+                var pastedFolder = await CutAndPasteFolderAsync(folderId, targetFolderId);
+                pastedFolders.Add(pastedFolder);
+            }
+
+            return pastedFolders;
+        }
+
         public async Task DeleteFolderAsync(Guid folderId)
         {
             var folder = await _folderDatabaseService.GetFolderByIdAsync(folderId);

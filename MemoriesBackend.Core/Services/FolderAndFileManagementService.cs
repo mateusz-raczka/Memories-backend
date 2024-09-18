@@ -33,5 +33,23 @@ namespace MemoriesBackend.Application.Services
 
             return copyAndPasteFoldersAndFilesResult;
         }
+
+        public async Task<FoldersAndFiles> CutAndPasteFoldersAndFilesAsync(
+            IEnumerable<Guid> filesIds,
+            IEnumerable<Guid> foldersIds,
+            Guid targetFolderId
+            )
+        {
+            var pastedFiles = await _fileManagementService.CutAndPasteFilesAsync(filesIds, targetFolderId);
+            var pastedFolders = await _folderManagementService.CutAndPasteFoldersAsync(foldersIds, targetFolderId);
+
+            var cutAndPasteFoldersAndFilesResult = new FoldersAndFiles
+            {
+                Folders = pastedFolders,
+                Files = pastedFiles,
+            };
+
+            return cutAndPasteFoldersAndFilesResult;
+        }
     }
 }

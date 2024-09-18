@@ -36,5 +36,7 @@ namespace MemoriesBackend.Domain.Interfaces.Services
         Task<FolderWithAncestors> GetFolderByIdWithRelationsAndPath(Guid folderId, bool asNoTracking = true);
 
         Task DeleteFolderAsync(Guid folderId);
+
+        Task SaveAsync();
     }
 }

@@ -3,7 +3,7 @@ using MemoriesBackend.API.DTO.Folder.Response;
 
 namespace MemoriesBackend.API.DTO.FolderAndFile.Response
 {
-    public class FolderAndFileCopyAndPasteResponse
+    public class FoldersAndFilesCutAndPasteResponse
     {
         public IEnumerable<FolderCopyAndPasteResponse> Folders { get; set; }
         public IEnumerable<FileCopyPasteResponse> Files { get; set; }

@@ -19,20 +19,17 @@ namespace MemoriesBackend.Application.Services
         public async Task<File> CreateFileAsync(File file)
         {
             var createdFile = await _fileRepository.Create(file);
-            await _fileRepository.Save();
             return createdFile;
         }
 
         public async Task DeleteFileAsync(Guid id)
         {
             await _fileRepository.Delete(id);
-            await _fileRepository.Save();
         }
 
         public async Task DeleteFileAsync(File file)
         {
             _fileRepository.Delete(file);
-            await _fileRepository.Save();
         }
 
         public async Task<File> GetFileByIdAsync(Guid id)
@@ -67,6 +64,10 @@ namespace MemoriesBackend.Application.Services
             {
                 await _fileRepository.Create(file);
             }
+        }
+
+        public async Task SaveAsync()
+        {
             await _fileRepository.Save();
         }
     }
