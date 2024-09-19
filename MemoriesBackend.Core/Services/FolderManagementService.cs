@@ -13,12 +13,14 @@ namespace MemoriesBackend.Application.Services
         public FolderManagementService(
             IFileManagementService fileManagementService,
             IFolderDatabaseService folderDatabaseService,
-            IPathService pathService
+            IPathService pathService,
+            IFolderStorageService folderStorageService
             )
         {
             _fileManagementService = fileManagementService;
             _folderDatabaseService = folderDatabaseService;
             _pathService = pathService;
+            _folderStorageService = folderStorageService;
         }
 
         public async Task<Folder> CopyAndPasteFolderAsync(Guid sourceFolderId, Guid targetFolderId)

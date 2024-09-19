@@ -103,8 +103,10 @@ namespace MemoriesBackend.Application.Services
 
             var fileIdWithExtension = Path.GetFileName(fileAbsolutePath);
             var destinationFilePath = Path.Combine(destinationFolderAbsolutePath, fileIdWithExtension);
+            var fileName = Path.GetFileName(fileAbsolutePath);
+            var newFileAbsolutePath = Path.Combine(fileAbsolutePath, fileName);
 
-            await Task.Run(() => File.Move(fileAbsolutePath, destinationFilePath, overwrite: true));
+            await Task.Run(() => File.Move(fileAbsolutePath, newFileAbsolutePath, overwrite: true));
         }
 
         public async Task<FileStreamResult> StreamFileAsync(string absoluteFilePath)

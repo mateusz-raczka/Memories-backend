@@ -46,7 +46,7 @@ public class FolderController : ControllerBase
     [HttpGet("path/{id:Guid}")]
     public async Task<FolderGetByIdWithPathResponse> GetByIdWithPath(Guid id)
     {
-        var folderDomain = await _folderDatabaseService.GetFolderByIdWithRelationsAndPath(id);
+        var folderDomain = await _folderDatabaseService.GetFolderByIdWithRelationsAndAncestors(id);
 
         var response = _mapper.Map<FolderGetByIdWithPathResponse>(folderDomain);
 
@@ -59,6 +59,8 @@ public class FolderController : ControllerBase
         var folderDomain = _mapper.Map<Folder>(folderCreateDto);
 
         var createdFolderDomain = await _folderDatabaseService.CreateFolderAsync(folderDomain);
+
+        await _folderDatabaseService.SaveAsync();
 
         var response = _mapper.Map<FolderAddResponse>(createdFolderDomain);
 

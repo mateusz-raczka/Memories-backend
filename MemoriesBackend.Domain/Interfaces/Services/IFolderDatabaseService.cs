@@ -23,7 +23,7 @@ namespace MemoriesBackend.Domain.Interfaces.Services
 
         Task<Folder> GetRootFolderAsync(bool asNoTracking = true);
 
-        Task<IEnumerable<Folder>> GetFolderAncestorsAsync(Folder folder, bool asNoTracking = true);
+        Task<List<Folder>> GetFolderAncestorsAsync(Folder folder, bool asNoTracking = true);
 
         Task<List<Folder>> GetFolderAncestorsAsync(Guid folderId, bool asNoTracking = true);
 
@@ -33,7 +33,7 @@ namespace MemoriesBackend.Domain.Interfaces.Services
 
         Task<Folder> GetFolderByIdWithRelations(Guid folderId, bool asNoTracking = true);
 
-        Task<FolderWithAncestors> GetFolderByIdWithRelationsAndPath(Guid folderId, bool asNoTracking = true);
+        Task<FolderWithAncestors> GetFolderByIdWithRelationsAndAncestors(Guid folderId, bool asNoTracking = true);
 
         Task DeleteFolderAsync(Guid folderId);
 

@@ -25,6 +25,8 @@ namespace MemoriesBackend.Application.Services
 
             var createdFolder = await _folderRepository.Create(folder);
 
+            await SaveAsync();
+
             return createdFolder;
         }
 
@@ -62,7 +64,7 @@ namespace MemoriesBackend.Application.Services
             return folderWithRelations;
         }
 
-        public async Task<FolderWithAncestors> GetFolderByIdWithRelationsAndPath(Guid folderId, bool asNoTracking = true)
+        public async Task<FolderWithAncestors> GetFolderByIdWithRelationsAndAncestors(Guid folderId, bool asNoTracking = true)
         {
             var folder = await GetFolderByIdWithRelations(folderId, asNoTracking);
 
@@ -107,8 +109,13 @@ namespace MemoriesBackend.Application.Services
             return rootFolder;
         }
 
-        public async Task<IEnumerable<Folder>> GetFolderAncestorsAsync(Folder folder, bool asNoTracking = true)
+        public async Task<List<Folder>> GetFolderAncestorsAsync(Folder folder, bool asNoTracking = true)
         {
+            if (folder == null)
+            {
+                throw new ApplicationException("Failed to get folder's ancestors - folder does not exist");
+            }
+
             return await _folderRepository
                 .GetQueryable(asNoTracking)
                 .Where(f => folder.HierarchyId.IsDescendantOf(f.HierarchyId))
@@ -119,6 +126,11 @@ namespace MemoriesBackend.Application.Services
         public async Task<List<Folder>> GetFolderAncestorsAsync(Guid folderId, bool asNoTracking = true)
         {
             var folder = await GetFolderByIdAsync(folderId, asNoTracking);
+
+            if(folder == null)
+            {
+                throw new ApplicationException("Failed to get folder's ancestors - folder does not exist");
+            }
 
             return await _folderRepository
                 .GetQueryable(asNoTracking)
@@ -142,6 +154,12 @@ namespace MemoriesBackend.Application.Services
                 return HierarchyId.GetRoot();
 
             var parentFolder = await GetFolderByIdAsync(parentFolderId.Value);
+
+            if(parentFolder == null)
+            {
+                throw new ApplicationException("Failed to generate hierarchy id - parent folder was not found");
+            }
+
             var lastSibling = await GetFolderLastSiblingAsync(parentFolderId.Value);
 
             return lastSibling == null

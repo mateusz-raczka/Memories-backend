@@ -28,6 +28,10 @@ namespace MemoriesBackend.Application.Services
             if (!Directory.Exists(destinationFolderAbsolutePath))
                 Directory.CreateDirectory(destinationFolderAbsolutePath);
 
+            var sourceFolderName = Path.GetFileName(sourceFolderAbsolutePath.TrimEnd(Path.DirectorySeparatorChar));
+
+            var newSourceFolderAbsolutePath = Path.Combine(sourceFolderAbsolutePath, sourceFolderName);
+
             await Task.Run(() => Directory.Move(sourceFolderAbsolutePath, destinationFolderAbsolutePath));
         }
     }
