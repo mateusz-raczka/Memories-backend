@@ -55,32 +55,32 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d036b977-8ada-4c51-af5e-2c173978e598"),
+                            Id = new Guid("c1711c90-ea77-43b4-9b95-c92a89a4f8fa"),
                             Name = "Edit"
                         },
                         new
                         {
-                            Id = new Guid("931bc9aa-2854-472f-8c0f-8322da5c824f"),
+                            Id = new Guid("13512e42-ef9a-47b7-94f0-53f732272d53"),
                             Name = "Share"
                         },
                         new
                         {
-                            Id = new Guid("c1149117-fdad-410a-b17e-29c4ad336cb3"),
+                            Id = new Guid("6d106de9-a68e-4e04-aa7b-7abe67f3887b"),
                             Name = "Transfer"
                         },
                         new
                         {
-                            Id = new Guid("0a15857d-938d-4f7f-8e24-f1b7592a7ee7"),
+                            Id = new Guid("7178af47-35e0-4863-95d7-b92f465eb83c"),
                             Name = "Create"
                         },
                         new
                         {
-                            Id = new Guid("7735a4d5-a9ed-4aec-a659-c85484bb7b0b"),
+                            Id = new Guid("d489d08a-27c9-479f-b714-bf7bf6456396"),
                             Name = "Delete"
                         },
                         new
                         {
-                            Id = new Guid("5b3332e6-e098-4efd-8017-729a3d748511"),
+                            Id = new Guid("f6a81f3d-261c-4c34-b134-ff0cee0636b7"),
                             Name = "Open"
                         });
                 });
@@ -345,19 +345,19 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1d48439c-d12c-4469-b1fa-0f5d8740aba5",
+                            Id = "5e82c579-21df-4242-94a3-795bde1e37db",
                             Name = "USER",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "a4c265cd-739c-4e03-9a8b-b544806074b0",
+                            Id = "43c943e0-f8d9-4720-b47a-32a1d8c2d57b",
                             Name = "OWNER",
                             NormalizedName = "OWNER"
                         },
                         new
                         {
-                            Id = "717e0ac6-865f-4b4f-a90d-07c7011a6571",
+                            Id = "8fed9ec6-2d7d-477e-bd2f-7a522c19e8f3",
                             Name = "ADMIN",
                             NormalizedName = "ADMIN"
                         });

@@ -1,4 +1,5 @@
 ﻿using MemoriesBackend.Domain.Interfaces.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MemoriesBackend.Domain.Entities
@@ -11,6 +12,7 @@ namespace MemoriesBackend.Domain.Entities
         public Guid OwnerId { get; set; }
 
         // Navigation properties
+        [Required]
         [ForeignKey(nameof(FolderId))]
         public virtual Folder Folder { get; set; }
         public virtual List<Tag>? Tags { get; set; }

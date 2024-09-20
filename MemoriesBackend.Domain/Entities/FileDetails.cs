@@ -1,4 +1,5 @@
 ﻿using MemoriesBackend.Domain.Interfaces.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MemoriesBackend.Domain.Entities
@@ -17,6 +18,7 @@ namespace MemoriesBackend.Domain.Entities
         public DateTime? LastModifiedDate { get; set; }
 
         //Navigation properties
+        [Required]
         [ForeignKey(nameof(Id))]
         public virtual File File { get; set; }
     }

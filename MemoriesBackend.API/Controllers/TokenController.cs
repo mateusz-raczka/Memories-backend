@@ -8,6 +8,7 @@ namespace MemoriesBackend.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous]
     public class TokenController : ControllerBase
     {
         private readonly ITokenService _tokenService;
