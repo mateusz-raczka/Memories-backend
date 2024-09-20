@@ -105,6 +105,8 @@ namespace MemoriesBackend.Application.Services
 
             sourceFolder.ParentFolderId = targetFolderId;
 
+            _folderDatabaseService.UpdateFolderAsync(sourceFolder);
+
             await _folderDatabaseService.SaveAsync();
 
             var targetFolderAbsolutePath = await _pathService.GetFolderAbsolutePathAsync(targetFolderId);

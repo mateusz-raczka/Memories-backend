@@ -178,6 +178,16 @@ namespace MemoriesBackend.Application.Services
             await _folderRepository.Delete(folderId);
         }
 
+        public void UpdateFolderAsync(Folder folder)
+        {
+            if (folder == null)
+            {
+                throw new ApplicationException("Failed to update folder - folder does not exist");
+            }
+
+            _folderRepository.Update(folder);
+        }
+
         public async Task SaveAsync()
         {
             await _folderRepository.Save();

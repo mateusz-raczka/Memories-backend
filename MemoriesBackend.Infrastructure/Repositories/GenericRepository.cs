@@ -94,12 +94,27 @@ namespace MemoriesBackend.Infrastructure.Repositories
         public virtual async Task Delete(Guid id)
         {
             var entityToDelete = await GetById(id, asNoTracking: false);
+
             if(entityToDelete == null)
             {
                 throw new ApplicationException($"Cannot delete entity with Id {id} - it was not found");
             }
 
-            Delete(entityToDelete);
+            if (typeof(IOwnerId).IsAssignableFrom(entityToDelete.GetType()))
+            {
+                var currentUserId = _userContextService.Current.UserData.Id;
+                if(((IOwnerId)entityToDelete).OwnerId != currentUserId)
+                {
+                    throw new UnauthorizedAccessException("Cannot delete an entity that does not belong to the current user");
+                }
+            }
+
+            if (_context.Entry(entityToDelete).State == EntityState.Detached)
+            {
+                _dbSet.Attach(entityToDelete);
+            }
+
+            _dbSet.Remove(entityToDelete);
         }
 
         public virtual void Delete(TEntity entityToDelete)
@@ -107,6 +122,15 @@ namespace MemoriesBackend.Infrastructure.Repositories
             if (entityToDelete == null)
             {
                 throw new ApplicationException($"Cannot delete entity - it was not found");
+            }
+
+            if (typeof(IOwnerId).IsAssignableFrom(entityToDelete.GetType()))
+            {
+                var currentUserId = _userContextService.Current.UserData.Id;
+                if (((IOwnerId)entityToDelete).OwnerId != currentUserId)
+                {
+                    throw new UnauthorizedAccessException("Cannot delete an entity that does not belong to the current user");
+                }
             }
 
             if (_context.Entry(entityToDelete).State == EntityState.Detached)
@@ -124,7 +148,7 @@ namespace MemoriesBackend.Infrastructure.Repositories
                 var currentUserId = _userContextService.Current.UserData.Id;
                 if (((IOwnerId)entityToUpdate).OwnerId != currentUserId)
                 {
-                    throw new UnauthorizedAccessException("Cannot modify an entity that does not belong to the current user.");
+                    throw new UnauthorizedAccessException("Cannot modify an entity that does not belong to the current user");
                 }
             }
 

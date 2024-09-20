@@ -37,6 +37,8 @@ namespace MemoriesBackend.Domain.Interfaces.Services
 
         Task DeleteFolderAsync(Guid folderId);
 
+        void UpdateFolderAsync(Folder folder);
+
         Task SaveAsync();
     }
 }
