@@ -61,7 +61,9 @@ namespace MemoriesBackend.Infrastructure.Repositories
 
         public virtual async Task<TEntity?> GetById(Guid id, bool asNoTracking = true)
         {
-            var query = GetQueryable(asNoTracking).Where(e => ((IEntity)e).Id == id);
+            var query = GetQueryable(asNoTracking)
+                .IgnoreAutoIncludes()
+                .Where(e => ((IEntity)e).Id == id);
             var entity = await query.FirstOrDefaultAsync();
 
             var currentUserId = _userContextService.Current.UserData.Id;

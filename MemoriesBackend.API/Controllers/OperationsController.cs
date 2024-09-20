@@ -15,10 +15,10 @@ namespace MemoriesBackend.API.Controllers
     public class OperationsController : Controller
     {
 
-        IFolderAndFileManagementService _folderAndFileManagementService;
-        IFolderManagementService _folderManagementService;
-        IFileManagementService _fileManagementService;
-        IMapper _mapper;
+        private readonly IFolderAndFileManagementService _folderAndFileManagementService;
+        private readonly IFolderManagementService _folderManagementService;
+        private readonly IFileManagementService _fileManagementService;
+        private readonly IMapper _mapper;
         public OperationsController(
             IFolderAndFileManagementService folderAndFileManagementService,
             IMapper mapper

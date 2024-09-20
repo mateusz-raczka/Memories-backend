@@ -39,18 +39,6 @@ namespace MemoriesBackend.Application.Services
             return file;
         }
 
-        public async Task<File> GetFileByIdWithRelations(Guid id, bool asNoTracking = true)
-        {
-            var file = await _fileRepository
-                .GetQueryable(asNoTracking)
-                .Include(f => f.FileDetails)
-                .Where(f => f.Id == id)
-                .FirstOrDefaultAsync();
-
-            if (file == null) throw new ApplicationException("Failed to fetch - There was no file found with the given id.");
-            return file;
-        }
-
         public async Task<IEnumerable<File>> GetAllFilesAsync(
             int? pageNumber,
             int? pageSize,

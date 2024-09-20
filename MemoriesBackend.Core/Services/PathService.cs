@@ -67,7 +67,7 @@ namespace MemoriesBackend.Application.Services
 
         public string GetAbsolutePath(string path)
         {
-            return Path.Combine(_configuration["Storage:Path"], path);
+            return Path.Combine(_configuration["Storage:Path"] ?? "", path);
         }
     }
 }

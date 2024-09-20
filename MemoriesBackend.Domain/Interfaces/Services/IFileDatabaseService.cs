@@ -17,7 +17,6 @@ namespace MemoriesBackend.Domain.Interfaces.Services
             bool asNoTracking = true
             );
         Task BatchCreateFilesAsync(IEnumerable<File> files);
-        Task<File> GetFileByIdWithRelations(Guid id, bool asNoTracking = true);
         Task SaveAsync();
     }
 }
