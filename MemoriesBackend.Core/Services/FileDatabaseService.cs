@@ -32,9 +32,21 @@ namespace MemoriesBackend.Application.Services
             _fileRepository.Delete(file);
         }
 
-        public async Task<File> GetFileByIdAsync(Guid id)
+        public async Task<File> GetFileByIdAsync(Guid id, bool asNoTracking = true)
         {
-            var file = await _fileRepository.GetById(id);
+            var file = await _fileRepository.GetById(id, asNoTracking);
+            if (file == null) throw new ApplicationException("Failed to fetch - There was no file found with the given id.");
+            return file;
+        }
+
+        public async Task<File> GetFileByIdWithRelations(Guid id, bool asNoTracking = true)
+        {
+            var file = await _fileRepository
+                .GetQueryable(asNoTracking)
+                .Include(f => f.FileDetails)
+                .Where(f => f.Id == id)
+                .FirstOrDefaultAsync();
+
             if (file == null) throw new ApplicationException("Failed to fetch - There was no file found with the given id.");
             return file;
         }

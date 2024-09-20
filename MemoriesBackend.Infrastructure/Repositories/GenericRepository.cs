@@ -23,10 +23,10 @@ namespace MemoriesBackend.Infrastructure.Repositories
 
         private IQueryable<TEntity> ApplyOwnershipFilter(IQueryable<TEntity> query)
         {
-            if (typeof(IOwnerId).IsAssignableFrom(typeof(TEntity)))
+            if (typeof(IOwned).IsAssignableFrom(typeof(TEntity)))
             {
                 var currentUserId = _userContextService.Current.UserData.Id;
-                query = query.Where(e => ((IOwnerId)e).OwnerId == currentUserId);
+                query = query.Where(e => ((IOwned)e).OwnerId == currentUserId);
             }
             return query;
         }
@@ -71,7 +71,7 @@ namespace MemoriesBackend.Infrastructure.Repositories
                 return entity;
             }
 
-            if (((IOwnerId)entity).OwnerId != currentUserId)
+            if (((IOwned)entity).OwnerId != currentUserId)
             {
                 throw new UnauthorizedAccessException("You don't have access to this entity");
             }
@@ -81,10 +81,10 @@ namespace MemoriesBackend.Infrastructure.Repositories
 
         public virtual async Task<TEntity> Create(TEntity entity)
         {
-            if (typeof(IOwnerId).IsAssignableFrom(entity.GetType()))
+            if (typeof(IOwned).IsAssignableFrom(entity.GetType()))
             {
                 var currentUserId = _userContextService.Current.UserData.Id;
-                ((IOwnerId)entity).SetOwnerId(currentUserId);
+                ((IOwned)entity).OwnerId = currentUserId;
             }
 
             await _dbSet.AddAsync(entity);
@@ -100,10 +100,10 @@ namespace MemoriesBackend.Infrastructure.Repositories
                 throw new ApplicationException($"Cannot delete entity with Id {id} - it was not found");
             }
 
-            if (typeof(IOwnerId).IsAssignableFrom(entityToDelete.GetType()))
+            if (typeof(IOwned).IsAssignableFrom(entityToDelete.GetType()))
             {
                 var currentUserId = _userContextService.Current.UserData.Id;
-                if(((IOwnerId)entityToDelete).OwnerId != currentUserId)
+                if(((IOwned)entityToDelete).OwnerId != currentUserId)
                 {
                     throw new UnauthorizedAccessException("Cannot delete an entity that does not belong to the current user");
                 }
@@ -124,10 +124,10 @@ namespace MemoriesBackend.Infrastructure.Repositories
                 throw new ApplicationException($"Cannot delete entity - it was not found");
             }
 
-            if (typeof(IOwnerId).IsAssignableFrom(entityToDelete.GetType()))
+            if (typeof(IOwned).IsAssignableFrom(entityToDelete.GetType()))
             {
                 var currentUserId = _userContextService.Current.UserData.Id;
-                if (((IOwnerId)entityToDelete).OwnerId != currentUserId)
+                if (((IOwned)entityToDelete).OwnerId != currentUserId)
                 {
                     throw new UnauthorizedAccessException("Cannot delete an entity that does not belong to the current user");
                 }
@@ -143,10 +143,10 @@ namespace MemoriesBackend.Infrastructure.Repositories
 
         public virtual void Update(TEntity entityToUpdate)
         {
-            if (typeof(IOwnerId).IsAssignableFrom(entityToUpdate.GetType()))
+            if (typeof(IOwned).IsAssignableFrom(entityToUpdate.GetType()))
             {
                 var currentUserId = _userContextService.Current.UserData.Id;
-                if (((IOwnerId)entityToUpdate).OwnerId != currentUserId)
+                if (((IOwned)entityToUpdate).OwnerId != currentUserId)
                 {
                     throw new UnauthorizedAccessException("Cannot modify an entity that does not belong to the current user");
                 }

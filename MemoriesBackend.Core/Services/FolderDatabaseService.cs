@@ -38,7 +38,10 @@ namespace MemoriesBackend.Application.Services
             bool asNoTracking = true
         )
         {
-            return await _folderRepository.GetAll(filter, orderBy, pageNumber, pageSize, asNoTracking).ToListAsync();
+            return await _folderRepository
+                .GetAll(filter, orderBy, pageNumber, pageSize, asNoTracking)
+                .Include(f => f.FolderDetails)
+                .ToListAsync();
         }
 
         public async Task<Folder> GetFolderByIdAsync(Guid folderId, bool asNoTracking = true)
@@ -50,6 +53,7 @@ namespace MemoriesBackend.Application.Services
         {
             var folderWithRelations = await _folderRepository
                 .GetQueryable(asNoTracking)
+                .Include(f => f.FolderDetails)
                 .Include(f => f.ChildFolders)
                 .Include(f => f.Files)
                 .AsSplitQuery()
@@ -96,6 +100,7 @@ namespace MemoriesBackend.Application.Services
         {
             var rootFolder = await _folderRepository
                 .GetQueryable(asNoTracking)
+                .Include(f => f.FolderDetails)
                 .Include(f => f.Files)
                 .Include(f => f.ChildFolders)
                 .AsSplitQuery()
@@ -143,6 +148,7 @@ namespace MemoriesBackend.Application.Services
         {
             return await _folderRepository
                 .GetQueryable(asNoTracking)
+                .Include(f => f.FolderDetails)
                 .Where(f => f.ParentFolderId == parentFolderId)
                 .OrderByDescending(f => f.HierarchyId)
                 .FirstOrDefaultAsync();

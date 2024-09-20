@@ -1,8 +1,9 @@
 ﻿using MemoriesBackend.Domain.Interfaces.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MemoriesBackend.Domain.Entities
 {
-    public class File : IOwnerId, IEntity
+    public class File : IOwned, IEntity
     {
         public Guid Id { get; set; }
         public Guid FolderId { get; set; }
@@ -10,15 +11,11 @@ namespace MemoriesBackend.Domain.Entities
         public Guid OwnerId { get; set; }
 
         // Navigation properties
-        public Folder Folder { get; set; }
-        public List<Tag>? Tags { get; set; }
-        public Category? Category { get; set; }
-        public FileDetails FileDetails { get; set; }
-        public List<FileActivity> FileActivities { get; set; }
-
-        void IOwnerId.SetOwnerId(Guid ownerId)
-        {
-            OwnerId = ownerId;
-        }
+        [ForeignKey(nameof(FolderId))]
+        public virtual Folder Folder { get; set; }
+        public virtual List<Tag>? Tags { get; set; }
+        public virtual Category? Category { get; set; }
+        public virtual FileDetails FileDetails { get; set; }
+        public virtual List<FileActivity>? FileActivities { get; set; }
     }
 }

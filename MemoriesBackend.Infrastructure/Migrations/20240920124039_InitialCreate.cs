@@ -48,6 +48,7 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     Discriminator = table.Column<string>(type: "nvarchar(21)", maxLength: 21, nullable: false),
                     RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RefreshTokenExpiry = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    isLoggedIn = table.Column<bool>(type: "bit", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -241,11 +242,10 @@ namespace MemoriesBackend.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FileUploadProgressId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Size = table.Column<long>(type: "bigint", nullable: false),
                     ChunkIndex = table.Column<int>(type: "int", nullable: false),
-                    OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FileUploadProgressId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -254,7 +254,8 @@ namespace MemoriesBackend.Infrastructure.Migrations
                         name: "FK_FileChunks_FileUploadProgress_FileUploadProgressId",
                         column: x => x.FileUploadProgressId,
                         principalTable: "FileUploadProgress",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -287,6 +288,7 @@ namespace MemoriesBackend.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FolderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsStared = table.Column<bool>(type: "bit", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -298,8 +300,8 @@ namespace MemoriesBackend.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_FolderDetails", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FolderDetails_Folders_Id",
-                        column: x => x.Id,
+                        name: "FK_FolderDetails_Folders_FolderId",
+                        column: x => x.FolderId,
                         principalTable: "Folders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -310,9 +312,9 @@ namespace MemoriesBackend.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ActivityTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FileId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -327,7 +329,8 @@ namespace MemoriesBackend.Infrastructure.Migrations
                         name: "FK_FileActivities_Files_FileId",
                         column: x => x.FileId,
                         principalTable: "Files",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -384,12 +387,12 @@ namespace MemoriesBackend.Infrastructure.Migrations
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("1ea837d4-099b-4d8f-aa1f-a9c81c185ddf"), "Open" },
-                    { new Guid("4e8db2e6-b5aa-4a4e-a6d0-eefb5148e330"), "Share" },
-                    { new Guid("592538cb-b8c7-4f5e-823d-3777fb9e316a"), "Edit" },
-                    { new Guid("7d1d718c-a74b-4498-a3e2-76653df74d91"), "Transfer" },
-                    { new Guid("9cb5e6df-264b-4e7b-b758-d93702f0d0b8"), "Delete" },
-                    { new Guid("c52e7f68-5618-4efe-9241-063018d5a5fd"), "Create" }
+                    { new Guid("039309c6-64b0-4cc3-b485-7136e2572371"), "Transfer" },
+                    { new Guid("0735fe18-b572-4289-85a6-0d83c73cea23"), "Delete" },
+                    { new Guid("07ec3029-dbe2-4a17-8636-29339ac01756"), "Share" },
+                    { new Guid("911de485-e100-443d-8d81-e80c88a5ec1f"), "Open" },
+                    { new Guid("9352049d-bb77-4400-bfeb-48fcee446fa4"), "Edit" },
+                    { new Guid("ac3c3979-c434-4dd1-8198-a5d0ea07c4d8"), "Create" }
                 });
 
             migrationBuilder.InsertData(
@@ -397,9 +400,9 @@ namespace MemoriesBackend.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "30e5912d-1756-492d-bd19-0792ad5be4c3", null, "OWNER", "OWNER" },
-                    { "356537eb-cd03-41b2-a98b-f9ad5c3e91e4", null, "ADMIN", "ADMIN" },
-                    { "b338e502-9ed1-43da-86e1-924dad51229e", null, "USER", "USER" }
+                    { "1b81981c-52ed-4778-ad0b-49d4aec3bde1", null, "ADMIN", "ADMIN" },
+                    { "d764d693-6a71-45f8-a2b2-bbc070dfabf5", null, "USER", "USER" },
+                    { "d7fac6a6-1776-47e4-8024-228f1aebed4f", null, "OWNER", "OWNER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -444,7 +447,8 @@ namespace MemoriesBackend.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_FileActivities_ActivityTypeId",
                 table: "FileActivities",
-                column: "ActivityTypeId");
+                column: "ActivityTypeId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_FileActivities_FileId",
@@ -470,6 +474,12 @@ namespace MemoriesBackend.Infrastructure.Migrations
                 name: "IX_FileTag_TagsId",
                 table: "FileTag",
                 column: "TagsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FolderDetails_FolderId",
+                table: "FolderDetails",
+                column: "FolderId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Folders_ParentFolderId",

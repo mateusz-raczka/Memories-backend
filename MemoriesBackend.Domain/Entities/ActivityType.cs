@@ -6,5 +6,8 @@ namespace MemoriesBackend.Domain.Entities
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+
+        // Navigation properties
+        public virtual FileActivity FileActivity { get; set; }
     }
 }

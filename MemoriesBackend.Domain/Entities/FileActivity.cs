@@ -7,9 +7,12 @@ namespace MemoriesBackend.Domain.Entities
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
+        public Guid ActivityTypeId { get; set; }
         public DateTime Date { get; set; }
 
         // Navigation properties
-        public ActivityType ActivityType { get; set; }
+        [ForeignKey(nameof(ActivityTypeId))]
+        public virtual ActivityType ActivityType { get; set; }
+        public virtual File File { get; set; }
     }
 }

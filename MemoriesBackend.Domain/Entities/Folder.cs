@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MemoriesBackend.Domain.Entities
 {
-    public class Folder : IOwnerId, IEntity
+    public class Folder : IOwned, IEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
@@ -14,14 +14,10 @@ namespace MemoriesBackend.Domain.Entities
         public HierarchyId? OldHierarchyId { get; set; }
 
         // Navigation properties
-        public FolderDetails FolderDetails { get; set; }
-        public Folder ParentFolder { get; set; }
-        public List<Folder>? ChildFolders { get; set; }
-        public List<File>? Files { get; set; }
-
-        void IOwnerId.SetOwnerId(Guid ownerId)
-        {
-            OwnerId = ownerId;
-        }
+        public virtual FolderDetails? FolderDetails { get; set; }
+        [ForeignKey(nameof(ParentFolderId))]
+        public virtual Folder ParentFolder { get; set; }
+        public virtual List<Folder>? ChildFolders { get; set; }
+        public virtual List<File>? Files { get; set; }
     }
 }

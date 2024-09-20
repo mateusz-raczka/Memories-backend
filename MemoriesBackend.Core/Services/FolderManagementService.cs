@@ -25,7 +25,7 @@ namespace MemoriesBackend.Application.Services
 
         public async Task<Folder> CopyAndPasteFolderAsync(Guid sourceFolderId, Guid targetFolderId)
         {
-            var sourceFolder = await _folderDatabaseService.GetFolderByIdWithRelations(sourceFolderId);
+            var sourceFolder = await _folderDatabaseService.GetFolderByIdAsync(sourceFolderId);
 
             if (sourceFolder == null)
             {
@@ -89,7 +89,7 @@ namespace MemoriesBackend.Application.Services
 
         public async Task<Folder> CutAndPasteFolderAsync(Guid sourceFolderId, Guid targetFolderId)
         {
-            var sourceFolder = await _folderDatabaseService.GetFolderByIdWithRelations(sourceFolderId);
+            var sourceFolder = await _folderDatabaseService.GetFolderByIdAsync(sourceFolderId);
 
             if (sourceFolder == null)
             {
@@ -148,6 +148,7 @@ namespace MemoriesBackend.Application.Services
             var absoluteFolderPath = await _pathService.GetFolderAbsolutePathAsync(folderId);
 
             await _folderDatabaseService.DeleteFolderAsync(folderId);
+            await _folderDatabaseService.SaveAsync();
             await _folderStorageService.DeleteFolderAsync(absoluteFolderPath);
         }
     }

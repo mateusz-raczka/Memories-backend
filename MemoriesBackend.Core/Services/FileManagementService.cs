@@ -87,13 +87,13 @@ namespace MemoriesBackend.Application.Services
             var fileChunk = new FileChunk
             {
                 Id = fileChunkId,
-                FileId = fileId,
+                FileUploadProgressId = fileId,
                 Size = stream.Length,
                 ChunkIndex = chunkIndex
             };
 
-            var newFileChunk = await _fileChunkRepository.Create(fileChunk);
-            currentUploadProgress.FileChunks.Add(newFileChunk);
+            await _fileChunkRepository.Create(fileChunk);
+            await _fileChunkRepository.Save();
 
             currentUploadProgress.LastModifiedDate = DateTime.UtcNow;
             currentUploadProgress.Size += stream.Length;
@@ -121,10 +121,6 @@ namespace MemoriesBackend.Application.Services
                 await _fileDatabaseService.CreateFileAsync(file);
                 await _fileDatabaseService.SaveAsync();
                 await _fileUploadProgressRepository.Delete(fileId);
-                foreach(var chunk in currentUploadProgress.FileChunks)
-                {
-                    await _fileChunkRepository.Delete(chunk.Id);
-                }
             }
             else
             {

@@ -13,7 +13,7 @@ using Microsoft.SqlServer.Types;
 namespace MemoriesBackend.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240915182642_InitialCreate")]
+    [Migration("20240920124039_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -58,32 +58,32 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("592538cb-b8c7-4f5e-823d-3777fb9e316a"),
+                            Id = new Guid("9352049d-bb77-4400-bfeb-48fcee446fa4"),
                             Name = "Edit"
                         },
                         new
                         {
-                            Id = new Guid("4e8db2e6-b5aa-4a4e-a6d0-eefb5148e330"),
+                            Id = new Guid("07ec3029-dbe2-4a17-8636-29339ac01756"),
                             Name = "Share"
                         },
                         new
                         {
-                            Id = new Guid("7d1d718c-a74b-4498-a3e2-76653df74d91"),
+                            Id = new Guid("039309c6-64b0-4cc3-b485-7136e2572371"),
                             Name = "Transfer"
                         },
                         new
                         {
-                            Id = new Guid("c52e7f68-5618-4efe-9241-063018d5a5fd"),
+                            Id = new Guid("ac3c3979-c434-4dd1-8198-a5d0ea07c4d8"),
                             Name = "Create"
                         },
                         new
                         {
-                            Id = new Guid("9cb5e6df-264b-4e7b-b758-d93702f0d0b8"),
+                            Id = new Guid("0735fe18-b572-4289-85a6-0d83c73cea23"),
                             Name = "Delete"
                         },
                         new
                         {
-                            Id = new Guid("1ea837d4-099b-4d8f-aa1f-a9c81c185ddf"),
+                            Id = new Guid("911de485-e100-443d-8d81-e80c88a5ec1f"),
                             Name = "Open"
                         });
                 });
@@ -139,12 +139,13 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("FileId")
+                    b.Property<Guid>("FileId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActivityTypeId");
+                    b.HasIndex("ActivityTypeId")
+                        .IsUnique();
 
                     b.HasIndex("FileId");
 
@@ -160,10 +161,7 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.Property<int>("ChunkIndex")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("FileId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("FileUploadProgressId")
+                    b.Property<Guid>("FileUploadProgressId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("OwnerId")
@@ -285,6 +283,9 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("FolderId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool?>("IsStared")
                         .HasColumnType("bit");
 
@@ -302,6 +303,9 @@ namespace MemoriesBackend.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FolderId")
+                        .IsUnique();
 
                     b.ToTable("FolderDetails");
                 });
@@ -350,19 +354,19 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "b338e502-9ed1-43da-86e1-924dad51229e",
+                            Id = "d764d693-6a71-45f8-a2b2-bbc070dfabf5",
                             Name = "USER",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "30e5912d-1756-492d-bd19-0792ad5be4c3",
+                            Id = "d7fac6a6-1776-47e4-8024-228f1aebed4f",
                             Name = "OWNER",
                             NormalizedName = "OWNER"
                         },
                         new
                         {
-                            Id = "356537eb-cd03-41b2-a98b-f9ad5c3e91e4",
+                            Id = "1b81981c-52ed-4778-ad0b-49d4aec3bde1",
                             Name = "ADMIN",
                             NormalizedName = "ADMIN"
                         });
@@ -559,6 +563,9 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     b.Property<DateTime>("RefreshTokenExpiry")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("isLoggedIn")
+                        .HasColumnType("bit");
+
                     b.HasDiscriminator().HasValue("ExtendedIdentityUser");
                 });
 
@@ -597,23 +604,31 @@ namespace MemoriesBackend.Infrastructure.Migrations
             modelBuilder.Entity("MemoriesBackend.Domain.Entities.FileActivity", b =>
                 {
                     b.HasOne("MemoriesBackend.Domain.Entities.ActivityType", "ActivityType")
-                        .WithMany()
-                        .HasForeignKey("ActivityTypeId")
+                        .WithOne("FileActivity")
+                        .HasForeignKey("MemoriesBackend.Domain.Entities.FileActivity", "ActivityTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MemoriesBackend.Domain.Entities.File", null)
+                    b.HasOne("MemoriesBackend.Domain.Entities.File", "File")
                         .WithMany("FileActivities")
-                        .HasForeignKey("FileId");
+                        .HasForeignKey("FileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ActivityType");
+
+                    b.Navigation("File");
                 });
 
             modelBuilder.Entity("MemoriesBackend.Domain.Entities.FileChunk", b =>
                 {
-                    b.HasOne("MemoriesBackend.Domain.Entities.FileUploadProgress", null)
+                    b.HasOne("MemoriesBackend.Domain.Entities.FileUploadProgress", "FileUploadProgress")
                         .WithMany("FileChunks")
-                        .HasForeignKey("FileUploadProgressId");
+                        .HasForeignKey("FileUploadProgressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FileUploadProgress");
                 });
 
             modelBuilder.Entity("MemoriesBackend.Domain.Entities.FileDetails", b =>
@@ -640,7 +655,7 @@ namespace MemoriesBackend.Infrastructure.Migrations
                 {
                     b.HasOne("MemoriesBackend.Domain.Entities.Folder", "Folder")
                         .WithOne("FolderDetails")
-                        .HasForeignKey("MemoriesBackend.Domain.Entities.FolderDetails", "Id")
+                        .HasForeignKey("MemoriesBackend.Domain.Entities.FolderDetails", "FolderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -698,6 +713,12 @@ namespace MemoriesBackend.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("MemoriesBackend.Domain.Entities.ActivityType", b =>
+                {
+                    b.Navigation("FileActivity")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("MemoriesBackend.Domain.Entities.Category", b =>
                 {
                     b.Navigation("Files");
@@ -722,8 +743,7 @@ namespace MemoriesBackend.Infrastructure.Migrations
 
                     b.Navigation("Files");
 
-                    b.Navigation("FolderDetails")
-                        .IsRequired();
+                    b.Navigation("FolderDetails");
                 });
 #pragma warning restore 612, 618
         }

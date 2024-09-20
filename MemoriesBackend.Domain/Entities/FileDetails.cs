@@ -17,6 +17,7 @@ namespace MemoriesBackend.Domain.Entities
         public DateTime? LastModifiedDate { get; set; }
 
         //Navigation properties
-        public File File { get; set; }
+        [ForeignKey(nameof(Id))]
+        public virtual File File { get; set; }
     }
 }

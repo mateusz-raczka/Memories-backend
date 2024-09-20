@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MemoriesBackend.Domain.Entities
 {
-    public class FileUploadProgress : IOwnerId, IEntity
+    public class FileUploadProgress : IOwned, IEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
@@ -15,11 +15,7 @@ namespace MemoriesBackend.Domain.Entities
         public DateTime? LastModifiedDate { get; set; }
         public Guid OwnerId { get; set; }
 
-        public List<FileChunk> FileChunks { get; set; }
-
-        void IOwnerId.SetOwnerId(Guid ownerId)
-        {
-            OwnerId = ownerId;
-        }
+        // Navigation properties
+        public virtual List<FileChunk>? FileChunks { get; set; }
     }
 }
