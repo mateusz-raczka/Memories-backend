@@ -40,7 +40,7 @@ namespace MemoriesBackend.Application.Services
         {
             return await _folderRepository
                 .GetAll(filter, orderBy, pageNumber, pageSize, asNoTracking)
-                .Include(f => f.FolderDetails)
+                .Include(folder => folder.FolderDetails)
                 .ToListAsync();
         }
 
@@ -53,11 +53,13 @@ namespace MemoriesBackend.Application.Services
         {
             var folderWithRelations = await _folderRepository
                 .GetQueryable(asNoTracking)
-                .Include(f => f.FolderDetails)
-                .Include(f => f.ChildFolders)
-                .Include(f => f.Files)
+                .Include(folder => folder.FolderDetails)
+                .Include(folder => folder.ChildFolders)
+                    .ThenInclude(childfolder => childfolder.FolderDetails)
+                .Include(folder => folder.Files)
+                    .ThenInclude(file => file.FileDetails)
                 .AsSplitQuery()
-                .Where(f => f.Id == folderId)
+                .Where(folder => folder.Id == folderId)
                 .FirstOrDefaultAsync();
 
             if (folderWithRelations == null)
@@ -100,9 +102,11 @@ namespace MemoriesBackend.Application.Services
         {
             var rootFolder = await _folderRepository
                 .GetQueryable(asNoTracking)
-                .Include(f => f.FolderDetails)
-                .Include(f => f.Files)
-                .Include(f => f.ChildFolders)
+                .Include(folder => folder.FolderDetails)
+                .Include(folder => folder.Files)
+                    .ThenInclude(file => file.FileDetails)
+                .Include(folder => folder.ChildFolders)
+                    .ThenInclude(childfolder => childfolder.FolderDetails)
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(f => f.ParentFolderId == null);
 
@@ -123,8 +127,8 @@ namespace MemoriesBackend.Application.Services
 
             return await _folderRepository
                 .GetQueryable(asNoTracking)
-                .Where(f => folder.HierarchyId.IsDescendantOf(f.HierarchyId))
-                .OrderBy(f => f.HierarchyId)
+                .Where(folder => folder.HierarchyId.IsDescendantOf(folder.HierarchyId))
+                .OrderBy(folder => folder.HierarchyId)
                 .ToListAsync();
         }
 
@@ -139,8 +143,8 @@ namespace MemoriesBackend.Application.Services
 
             return await _folderRepository
                 .GetQueryable(asNoTracking)
-                .Where(f => folder.HierarchyId.IsDescendantOf(f.HierarchyId))
-                .OrderBy(f => f.HierarchyId)
+                .Where(folder => folder.HierarchyId.IsDescendantOf(folder.HierarchyId))
+                .OrderBy(folder => folder.HierarchyId)
                 .ToListAsync();
         }
 
@@ -148,9 +152,9 @@ namespace MemoriesBackend.Application.Services
         {
             return await _folderRepository
                 .GetQueryable(asNoTracking)
-                .Include(f => f.FolderDetails)
-                .Where(f => f.ParentFolderId == parentFolderId)
-                .OrderByDescending(f => f.HierarchyId)
+                .Include(folder => folder.FolderDetails)
+                .Where(folder => folder.ParentFolderId == parentFolderId)
+                .OrderByDescending(folder => folder.HierarchyId)
                 .FirstOrDefaultAsync();
         }
 
