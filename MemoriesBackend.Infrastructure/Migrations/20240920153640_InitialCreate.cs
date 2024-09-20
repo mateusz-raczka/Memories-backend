@@ -288,7 +288,6 @@ namespace MemoriesBackend.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FolderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsStared = table.Column<bool>(type: "bit", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -300,8 +299,8 @@ namespace MemoriesBackend.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_FolderDetails", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FolderDetails_Folders_FolderId",
-                        column: x => x.FolderId,
+                        name: "FK_FolderDetails_Folders_Id",
+                        column: x => x.Id,
                         principalTable: "Folders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -387,12 +386,12 @@ namespace MemoriesBackend.Infrastructure.Migrations
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("039309c6-64b0-4cc3-b485-7136e2572371"), "Transfer" },
-                    { new Guid("0735fe18-b572-4289-85a6-0d83c73cea23"), "Delete" },
-                    { new Guid("07ec3029-dbe2-4a17-8636-29339ac01756"), "Share" },
-                    { new Guid("911de485-e100-443d-8d81-e80c88a5ec1f"), "Open" },
-                    { new Guid("9352049d-bb77-4400-bfeb-48fcee446fa4"), "Edit" },
-                    { new Guid("ac3c3979-c434-4dd1-8198-a5d0ea07c4d8"), "Create" }
+                    { new Guid("0a15857d-938d-4f7f-8e24-f1b7592a7ee7"), "Create" },
+                    { new Guid("5b3332e6-e098-4efd-8017-729a3d748511"), "Open" },
+                    { new Guid("7735a4d5-a9ed-4aec-a659-c85484bb7b0b"), "Delete" },
+                    { new Guid("931bc9aa-2854-472f-8c0f-8322da5c824f"), "Share" },
+                    { new Guid("c1149117-fdad-410a-b17e-29c4ad336cb3"), "Transfer" },
+                    { new Guid("d036b977-8ada-4c51-af5e-2c173978e598"), "Edit" }
                 });
 
             migrationBuilder.InsertData(
@@ -400,9 +399,9 @@ namespace MemoriesBackend.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "1b81981c-52ed-4778-ad0b-49d4aec3bde1", null, "ADMIN", "ADMIN" },
-                    { "d764d693-6a71-45f8-a2b2-bbc070dfabf5", null, "USER", "USER" },
-                    { "d7fac6a6-1776-47e4-8024-228f1aebed4f", null, "OWNER", "OWNER" }
+                    { "1d48439c-d12c-4469-b1fa-0f5d8740aba5", null, "USER", "USER" },
+                    { "717e0ac6-865f-4b4f-a90d-07c7011a6571", null, "ADMIN", "ADMIN" },
+                    { "a4c265cd-739c-4e03-9a8b-b544806074b0", null, "OWNER", "OWNER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -474,12 +473,6 @@ namespace MemoriesBackend.Infrastructure.Migrations
                 name: "IX_FileTag_TagsId",
                 table: "FileTag",
                 column: "TagsId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FolderDetails_FolderId",
-                table: "FolderDetails",
-                column: "FolderId",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Folders_ParentFolderId",

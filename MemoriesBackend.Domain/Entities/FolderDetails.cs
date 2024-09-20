@@ -7,7 +7,6 @@ namespace MemoriesBackend.Domain.Entities
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
-        public Guid FolderId { get; set; }
         public string Name { get; set; }
         public bool? IsStared { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
@@ -16,7 +15,7 @@ namespace MemoriesBackend.Domain.Entities
         public Guid OwnerId { get; set; }
 
         //Navigation properties
-        [ForeignKey(nameof(FolderId))]
+        [ForeignKey(nameof(Id))]
         public virtual Folder Folder { get; set; }
     }
 }

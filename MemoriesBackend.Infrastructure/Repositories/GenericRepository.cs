@@ -59,7 +59,7 @@ namespace MemoriesBackend.Infrastructure.Repositories
             return query;
         }
 
-        public virtual async Task<TEntity?> GetById(Guid id, bool asNoTracking = true)
+        public virtual async Task<TEntity> GetById(Guid id, bool asNoTracking = true)
         {
             var query = GetQueryable(asNoTracking)
                 .IgnoreAutoIncludes()
