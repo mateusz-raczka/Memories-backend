@@ -30,9 +30,9 @@ namespace MemoriesBackend.Application.Services
 
             var sourceFolderName = Path.GetFileName(sourceFolderAbsolutePath.TrimEnd(Path.DirectorySeparatorChar));
 
-            var newSourceFolderAbsolutePath = Path.Combine(sourceFolderAbsolutePath, sourceFolderName);
+            var newSourceFolderAbsolutePath = Path.Combine(destinationFolderAbsolutePath, sourceFolderName);
 
-            await Task.Run(() => Directory.Move(sourceFolderAbsolutePath, destinationFolderAbsolutePath));
+            await Task.Run(() => Directory.Move(sourceFolderAbsolutePath, newSourceFolderAbsolutePath));
         }
     }
 }

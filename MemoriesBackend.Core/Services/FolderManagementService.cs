@@ -53,6 +53,7 @@ namespace MemoriesBackend.Application.Services
             };
 
             var folderPasted = await _folderDatabaseService.CreateFolderAsync(folderToPaste);
+            await _folderDatabaseService.SaveAsync();
 
             foreach (var file in sourceFolder.Files)
             {

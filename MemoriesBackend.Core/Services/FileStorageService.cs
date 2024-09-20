@@ -101,8 +101,6 @@ namespace MemoriesBackend.Application.Services
             if (!Directory.Exists(destinationFolderAbsolutePath))
                 Directory.CreateDirectory(destinationFolderAbsolutePath);
 
-            var fileIdWithExtension = Path.GetFileName(fileAbsolutePath);
-            var destinationFilePath = Path.Combine(destinationFolderAbsolutePath, fileIdWithExtension);
             var fileName = Path.GetFileName(fileAbsolutePath);
             var newFileAbsolutePath = Path.Combine(fileAbsolutePath, fileName);
 
