@@ -49,7 +49,7 @@ public class FolderController : ControllerBase
     [HttpGet("path/{id:Guid}")]
     public async Task<FolderGetByIdWithPathResponse> GetByIdWithPath(Guid id)
     {
-        var folderDomain = await _folderDatabaseService.GetFolderByIdWithRelationsAndAncestors(id);
+        var folderDomain = await _folderDatabaseService.GetFolderByIdWithRelationsAndDescendants(id);
 
         var response = _mapper.Map<FolderGetByIdWithPathResponse>(folderDomain);
 

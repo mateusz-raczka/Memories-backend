@@ -56,7 +56,7 @@ namespace MemoriesBackend.Application.Services
 
         public async Task<string> GetFolderRelativePathAsync(Guid folderId)
         {
-            var folderHierarchy = await _folderDatabaseService.GetFolderAncestorsAsync(folderId);
+            var folderHierarchy = await _folderDatabaseService.GetFolderDescendantsAsync(folderId);
 
             var folderIds = folderHierarchy.Select(x => x.Id);
 

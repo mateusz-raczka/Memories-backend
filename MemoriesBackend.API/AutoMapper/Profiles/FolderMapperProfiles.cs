@@ -18,8 +18,8 @@ namespace MemoriesBackend.API.AutoMapper.Profiles
             CreateMap<Folder, FolderPathSegmentResposne>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.FolderDetails.Name))
                 .ReverseMap();
-            CreateMap<FolderWithAncestors, FolderGetByIdWithPathResponse>()
-                .ForMember(dest => dest.Path, opt => opt.MapFrom(src => src.Ancestors))
+            CreateMap<FolderWithDescendants, FolderGetByIdWithPathResponse>()
+                .ForMember(dest => dest.Path, opt => opt.MapFrom(src => src.Descendants))
                 .ReverseMap();
             CreateMap<Folder, FolderCutAndPasteResponse>().ReverseMap();
         }

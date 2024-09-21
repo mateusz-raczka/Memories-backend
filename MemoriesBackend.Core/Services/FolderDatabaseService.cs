@@ -66,19 +66,19 @@ namespace MemoriesBackend.Application.Services
             return folderWithRelations;
         }
 
-        public async Task<FolderWithAncestors> GetFolderByIdWithRelationsAndAncestors(Guid folderId, bool asNoTracking = true)
+        public async Task<FolderWithDescendants> GetFolderByIdWithRelationsAndDescendants(Guid folderId, bool asNoTracking = true)
         {
             var folder = await GetFolderByIdWithRelations(folderId, asNoTracking);
 
-            var ancestors = await GetFolderAncestorsAsync(folder, asNoTracking);
+            var descendants = await GetFolderDescendantsAsync(folder, asNoTracking);
 
-            var folderWithAncestors = new FolderWithAncestors
+            var folderWithDescendants = new FolderWithDescendants
             {
                 Folder = folder,
-                Ancestors = ancestors,
+                Descendants = descendants,
             };
 
-            return folderWithAncestors;
+            return folderWithDescendants;
         }
 
         public async Task<Folder> CreateFolderAsync(Folder folder)
@@ -111,7 +111,7 @@ namespace MemoriesBackend.Application.Services
             return rootFolder;
         }
 
-        public async Task<List<Folder>> GetFolderAncestorsAsync(Folder folder, bool asNoTracking = true)
+        public async Task<List<Folder>> GetFolderDescendantsAsync(Folder folder, bool asNoTracking = true)
         {
             if (folder == null)
             {
@@ -124,8 +124,7 @@ namespace MemoriesBackend.Application.Services
                 .OrderBy(f => f.HierarchyId)
                 .ToListAsync();
         }
-
-        public async Task<List<Folder>> GetFolderAncestorsAsync(Guid folderId, bool asNoTracking = true)
+        public async Task<List<Folder>> GetFolderDescendantsAsync(Guid folderId, bool asNoTracking = true)
         {
             var folder = await GetFolderByIdAsync(folderId, asNoTracking);
 
@@ -137,6 +136,36 @@ namespace MemoriesBackend.Application.Services
             return await _folderRepository
                 .GetQueryable(asNoTracking)
                 .Where(f => folder.HierarchyId.IsDescendantOf(f.HierarchyId))
+                .OrderBy(f => f.HierarchyId)
+                .ToListAsync();
+        }
+
+        public async Task<List<Folder>> GetFolderAncestorsAsync(Folder folder, bool asNoTracking = true)
+        {
+            if (folder == null)
+            {
+                throw new ApplicationException("Failed to get folder's ancestors - folder does not exist");
+            }
+
+            return await _folderRepository
+                .GetQueryable(asNoTracking)
+                .Where(f => f.HierarchyId.IsDescendantOf(folder.HierarchyId))
+                .OrderBy(f => f.HierarchyId)
+                .ToListAsync();
+        }
+
+        public async Task<List<Folder>> GetFolderAncestorsAsync(Guid folderId, bool asNoTracking = true)
+        {
+            var folder = await GetFolderByIdAsync(folderId, asNoTracking);
+
+            if (folder == null)
+            {
+                throw new ApplicationException("Failed to get folder's ancestors - folder does not exist");
+            }
+
+            return await _folderRepository
+                .GetQueryable(asNoTracking)
+                .Where(f => f.HierarchyId.IsDescendantOf(folder.HierarchyId))
                 .OrderBy(f => f.HierarchyId)
                 .ToListAsync();
         }
@@ -177,7 +206,12 @@ namespace MemoriesBackend.Application.Services
                 throw new ApplicationException($"Failed to delete - folder with Id {folderId} was not found");
             }
 
-            await _folderRepository.Delete(folderId);
+            var folderAncestors = await GetFolderAncestorsAsync(folder);
+
+            foreach ( var ancestor in folderAncestors)
+            {
+                _folderRepository.Delete(ancestor);
+            }
         }
 
         public void UpdateFolderAsync(Folder folder)

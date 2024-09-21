@@ -2,9 +2,9 @@
 
 namespace MemoriesBackend.Domain.Models
 {
-    public class FolderWithAncestors
+    public class FolderWithDescendants
     {
         public Folder Folder { get; set; }
-        public IEnumerable<Folder> Ancestors { get; set; }
+        public IEnumerable<Folder> Descendants { get; set; }
     }
 }
