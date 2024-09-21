@@ -90,7 +90,7 @@ namespace MemoriesBackend.Infrastructure.Repositories
             }
 
             await _dbSet.AddAsync(entity);
-            return entity;
+            return entity; 
         }
 
         public virtual async Task Delete(Guid id)

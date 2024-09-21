@@ -13,7 +13,6 @@ namespace MemoriesBackend.Domain.Entities
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public DateTime? LastOpenedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
-        public Guid OwnerId { get; set; }
 
         //Navigation properties
         [Required]

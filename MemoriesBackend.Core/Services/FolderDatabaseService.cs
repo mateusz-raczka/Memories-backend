@@ -120,8 +120,8 @@ namespace MemoriesBackend.Application.Services
 
             return await _folderRepository
                 .GetQueryable(asNoTracking)
-                .Where(folder => folder.HierarchyId.IsDescendantOf(folder.HierarchyId))
-                .OrderBy(folder => folder.HierarchyId)
+                .Where(f => folder.HierarchyId.IsDescendantOf(f.HierarchyId))
+                .OrderBy(f => f.HierarchyId)
                 .ToListAsync();
         }
 
@@ -136,8 +136,8 @@ namespace MemoriesBackend.Application.Services
 
             return await _folderRepository
                 .GetQueryable(asNoTracking)
-                .Where(folder => folder.HierarchyId.IsDescendantOf(folder.HierarchyId))
-                .OrderBy(folder => folder.HierarchyId)
+                .Where(f => folder.HierarchyId.IsDescendantOf(f.HierarchyId))
+                .OrderBy(f => f.HierarchyId)
                 .ToListAsync();
         }
 
