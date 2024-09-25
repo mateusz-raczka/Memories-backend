@@ -11,5 +11,6 @@ namespace MemoriesBackend.Domain.Interfaces.Repositories
         Task<List<Folder>> GetFolderDescendantsAsync(Folder folder, bool asNoTracking = true);
         Task<List<Folder>> GetFolderDescendantsAsync(Guid folderId, bool asNoTracking = true);
         Task<Folder> GetFolderByIdWithDetails(Guid folderId, bool asNoTracking = true);
+        Task<List<Folder>> GetFoldersByIdsWithContentAsync(IEnumerable<Guid> folderIds, bool asNoTracking = true);
     }
 }

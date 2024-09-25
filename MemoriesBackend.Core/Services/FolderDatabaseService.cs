@@ -115,6 +115,11 @@ namespace MemoriesBackend.Application.Services
             return await _folderRepository.GetFolderLastSiblingAsync(parentFolderId, asNoTracking);
         }
 
+        public async Task<List<Folder>> GetFoldersByIdsWithContentAsync(IEnumerable<Guid> folderIds, bool asNoTracking = true)
+        {
+            return await _folderRepository.GetFoldersByIdsWithContentAsync(folderIds, asNoTracking);
+        }
+
         public async Task<HierarchyId> GenerateHierarchyId(Guid? parentFolderId)
         {
             if (parentFolderId == null)

@@ -2,6 +2,7 @@
 using MemoriesBackend.Domain.Interfaces.Repositories;
 using MemoriesBackend.Domain.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace MemoriesBackend.Application.Services
 {
@@ -25,70 +26,11 @@ namespace MemoriesBackend.Application.Services
             _folderStorageService = folderStorageService;
         }
 
-        public async Task<Folder> CopyAndPasteFolderAsync(Guid sourceFolderId, Guid targetFolderId)
-        {
-            var sourceFolder = await _folderDatabaseService.GetFolderByIdWithContent(sourceFolderId);
-
-            if (sourceFolder == null)
-            {
-                throw new ApplicationException($"Source folder with ID {sourceFolderId} not found.");
-            }
-
-            var targetFolder = await _folderDatabaseService.GetFolderByIdAsync(targetFolderId);
-
-            if (targetFolder == null)
-            {
-                throw new ApplicationException($"Target folder with ID {targetFolderId} not found.");
-            }
-
-            var newFolderId = Guid.NewGuid();
-
-            var folderToPaste = new Folder
-            {
-                Id = newFolderId,
-                ParentFolderId = targetFolderId,
-                FolderDetails = new FolderDetails
-                {
-                    Id = newFolderId,
-                    Name = sourceFolder.FolderDetails.Name
-                },
-            };
-
-            folderToPaste.HierarchyId = await _folderDatabaseService.GenerateHierarchyId(targetFolderId);
-
-            var folderPasted = await _folderDatabaseService.CreateFolderAsync(folderToPaste);
-
-            await _folderDatabaseService.SaveAsync();
-
-            if (sourceFolder.Files.Any())
-            {
-                await _fileManagementService.CopyAndPasteFilesAsync(sourceFolder.Files, folderPasted.Id);
-            }
-
-            if (sourceFolder.ChildFolders.Any())
-            {
-                await CopyAndPasteFoldersAsync(sourceFolder.ChildFolders, folderPasted.Id);
-            }
-
-            return folderPasted;
-        }
-
         public async Task<IEnumerable<Folder>> CopyAndPasteFoldersAsync(IEnumerable<Guid> folderIds, Guid targetFolderId)
         {
-            var foldersToCopy = await _folderDatabaseService.GetAllFoldersAsync(
-                f => folderIds.Contains(f.Id)
-                );
+            var foldersToCopy = await _folderDatabaseService.GetFoldersByIdsWithContentAsync(folderIds);
 
-            var pastedFolders = new List<Folder>();
-
-            if (foldersToCopy.Any())
-            {
-                foreach(var folderToCopy in foldersToCopy)
-                {
-                    var pastedFolder = await CopyAndPasteFolderAsync(folderToCopy.Id, targetFolderId);
-                    pastedFolders.Add(pastedFolder);
-                }
-            }
+            var pastedFolders = await CopyAndPasteFoldersAsync(foldersToCopy, targetFolderId);
 
             return pastedFolders;
         }
@@ -146,11 +88,13 @@ namespace MemoriesBackend.Application.Services
         {
             var pastedFolders = new List<Folder>();
 
+            var targetFolder = await _folderDatabaseService.GetFolderByIdAsync(targetFolderId);
+
             if (foldersToCopy.Any())
             {
                 foreach (var folderToCopy in foldersToCopy)
                 {
-                    var pastedFolder = await CopyAndPasteFolderAsync(folderToCopy.Id, targetFolderId);
+                    var pastedFolder = await CopyAndPasteFolderAsync(folderToCopy, targetFolder);
                     pastedFolders.Add(pastedFolder);
                 }
             }
@@ -174,11 +118,52 @@ namespace MemoriesBackend.Application.Services
                 throw new ApplicationException($"Target folder with ID {targetFolderId} not found.");
             }
 
-            sourceFolder.ParentFolderId = targetFolderId;
+            var movedFolder = MoveFolder(sourceFolder, targetFolder);
 
-            _folderDatabaseService.UpdateFolderAsync(sourceFolder);
+            return movedFolder;
+        }
 
-            return sourceFolder;
+        private Folder MoveFolder(Folder folder, Folder targetFolder)
+        {
+            folder.ParentFolderId = targetFolder.Id;
+
+            _folderDatabaseService.UpdateFolderAsync(folder);
+
+            return folder;
+        }
+
+        private async Task<Folder> CopyAndPasteFolderAsync(Folder sourceFolder, Folder targetFolder)
+        {
+            var newFolderId = Guid.NewGuid();
+
+            var folderToPaste = new Folder
+            {
+                Id = newFolderId,
+                ParentFolderId = targetFolder.Id,
+                FolderDetails = new FolderDetails
+                {
+                    Id = newFolderId,
+                    Name = sourceFolder.FolderDetails.Name
+                },
+            };
+
+            folderToPaste.HierarchyId = await _folderDatabaseService.GenerateHierarchyId(targetFolder.Id);
+
+            var folderPasted = await _folderDatabaseService.CreateFolderAsync(folderToPaste);
+
+            await _folderDatabaseService.SaveAsync();
+
+            if (sourceFolder.Files.Any())
+            {
+                await _fileManagementService.CopyAndPasteFilesAsync(sourceFolder.Files, folderPasted.Id);
+            }
+
+            if (sourceFolder.ChildFolders.Any())
+            {
+                await CopyAndPasteFoldersAsync(sourceFolder.ChildFolders, folderPasted.Id);
+            }
+
+            return folderPasted;
         }
     }
 }

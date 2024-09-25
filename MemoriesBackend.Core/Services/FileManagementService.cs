@@ -179,9 +179,7 @@ namespace MemoriesBackend.Application.Services
 
         public async Task<IEnumerable<File>> CopyAndPasteFilesAsync(IEnumerable<Guid> filesIdsToCopy, Guid targetFolderId)
         {
-            var filesToCopy = await _fileDatabaseService.GetAllFilesAsync(
-                f => filesIdsToCopy.Contains(f.Id)
-                );
+            var filesToCopy = await _fileDatabaseService.GetFilesByIdsWithDetailsAsync(filesIdsToCopy);
 
             var pastedFiles = await CopyAndPasteFilesAsync(filesToCopy, targetFolderId);
 
@@ -194,9 +192,7 @@ namespace MemoriesBackend.Application.Services
             if (targetFolder == null)
                 throw new ApplicationException("Target folder not found");
 
-            var filesToCopy = await _fileDatabaseService.GetAllFilesAsync(
-                    f => filesIdsToCopy.Contains(f.Id)
-                );
+            var filesToCopy = await _fileDatabaseService.GetFilesByIdsWithDetailsAsync(filesIdsToCopy);
 
             var pastedFiles = new List<File>();
 

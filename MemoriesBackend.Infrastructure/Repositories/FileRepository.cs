@@ -26,4 +26,19 @@ public class FileRepository : GenericRepository<File>, IFileRepository
         return file;
     }
 
+    public async Task<List<File>> GetFilesByIdsWithDetailsAsync(IEnumerable<Guid> fileIds, bool asNoTracking = true)
+    {
+        var files = await GetQueryable(asNoTracking)
+            .Where(f => fileIds.Contains(f.Id))
+            .Include(f => f.FileDetails)
+            .ToListAsync();
+
+        if (files == null || !files.Any())
+        {
+            throw new ApplicationException("Failed to fetch - No files found with the provided IDs.");
+        }
+
+        return files;
+    }
+
 }

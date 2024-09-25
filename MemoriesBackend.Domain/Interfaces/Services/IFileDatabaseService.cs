@@ -10,6 +10,8 @@ namespace MemoriesBackend.Domain.Interfaces.Services
         void DeleteFileAsync(File file);
         Task<File> GetFileByIdAsync(Guid fileId, bool asNoTracking = true);
         Task<File> GetFileByIdWithDetailsAsync(Guid fileId, bool asNoTracking = true);
+
+        Task<List<File>> GetFilesByIdsWithDetailsAsync(IEnumerable<Guid> fileIds, bool asNoTracking = true);
         Task<IEnumerable<File>> GetAllFilesAsync(
             Expression<Func<File, bool>> filter,
             int? pageNumber = null,

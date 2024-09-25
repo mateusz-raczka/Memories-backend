@@ -41,6 +41,8 @@ namespace MemoriesBackend.Domain.Interfaces.Services
 
         Task<FolderWithDescendants> GetFolderByIdWithContentAndDescendants(Guid folderId, bool asNoTracking = true);
 
+        Task<List<Folder>> GetFoldersByIdsWithContentAsync(IEnumerable<Guid> folderIds, bool asNoTracking = true);
+
         Task DeleteFolderAsync(Guid folderId);
 
         void UpdateFolderAsync(Folder folder);

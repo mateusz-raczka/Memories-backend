@@ -60,6 +60,11 @@ namespace MemoriesBackend.Application.Services
             return await _fileRepository.GetFileByIdWithDetailsAsync(fileId, asNoTracking);
         }
 
+        public async Task<List<File>> GetFilesByIdsWithDetailsAsync(IEnumerable<Guid> fileIds, bool asNoTracking = true)
+        {
+            return await _fileRepository.GetFilesByIdsWithDetailsAsync(fileIds, asNoTracking);
+        }
+
         public async Task<IEnumerable<File>> GetAllFilesAsync(
             Expression<Func<File, bool>> filter,
             int? pageNumber,

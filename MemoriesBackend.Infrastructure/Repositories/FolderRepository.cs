@@ -106,4 +106,24 @@ public class FolderRepository : GenericRepository<Folder>, IFolderRepository
 
         return folderWithDetails;
     }
+
+    public async Task<List<Folder>> GetFoldersByIdsWithContentAsync(IEnumerable<Guid> folderIds, bool asNoTracking = true)
+    {
+        var folders = await GetQueryable(asNoTracking)
+            .Where(f => folderIds.Contains(f.Id))
+            .Include(folder => folder.ChildFolders)
+                .ThenInclude(childFolder => childFolder.FolderDetails)
+            .Include(folder => folder.Files)
+                .ThenInclude(file => file.FileDetails)
+            .Include(folder => folder.FolderDetails)
+            .AsSplitQuery()
+            .ToListAsync();
+
+        if (folders == null || !folders.Any())
+        {
+            throw new ApplicationException("Failed to fetch - No folders found with the provided IDs.");
+        }
+
+        return folders;
+    }
 }

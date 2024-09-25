@@ -57,8 +57,23 @@ namespace MemoriesBackend.Application.Services
             Guid targetFolderId
             )
         {
-            var pastedFiles = await _fileManagementService.MoveFilesAsync(filesIds, targetFolderId);
-            var pastedFolders = await _folderManagementService.MoveFoldersAsync(foldersIds, targetFolderId);
+            IEnumerable<File> pastedFiles = [];
+            IEnumerable<Folder> pastedFolders = [];
+
+            if (filesIds.Any() )
+            {
+                pastedFiles = await _fileManagementService.MoveFilesAsync(filesIds, targetFolderId);
+            }
+
+            if(foldersIds.Any() )
+            {
+                pastedFolders = await _folderManagementService.MoveFoldersAsync(foldersIds, targetFolderId);
+            }
+
+            if(!filesIds.Any() && !foldersIds.Any())
+            {
+                throw new ApplicationException("Failed to move - there were no files or folders provided");
+            }
 
             var cutAndPasteFoldersAndFilesResult = new FoldersAndFiles
             {
