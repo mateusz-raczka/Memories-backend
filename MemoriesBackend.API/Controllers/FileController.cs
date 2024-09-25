@@ -56,7 +56,7 @@ public class FileController : ControllerBase
     [HttpGet("{id:Guid}")]
     public async Task<FileGetByIdResponse> GetById(Guid id)
     {
-        var fileDomain = await _fileDatabaseService.GetFileByIdAsync(id);
+        var fileDomain = await _fileDatabaseService.GetFileByIdWithDetailsAsync(id);
 
         var response = _mapper.Map<FileGetByIdResponse>(fileDomain);
 
