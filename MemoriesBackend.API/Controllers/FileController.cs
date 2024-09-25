@@ -76,13 +76,15 @@ public class FileController : ControllerBase
     [HttpPost("chunk")]
     public async Task<FileAddResponse> AddChunk(IFormFile fileData, [FromForm] string fileName, [FromForm] int chunkIndex, [FromForm] int totalChunks, [FromForm] Guid folderId, [FromForm] Guid fileId)
     {
-        var stream = fileData.OpenReadStream();
+        using (var stream = fileData.OpenReadStream())
+        {
 
-        var fileDomain = await _fileManagementService.AddFileUsingChunksAsync(stream, fileName, chunkIndex, totalChunks, folderId, fileId);
+            var fileDomain = await _fileManagementService.AddFileUsingChunksAsync(stream, fileName, chunkIndex, totalChunks, folderId, fileId);
 
-        var response = _mapper.Map<FileAddResponse>(fileDomain);
+            var response = _mapper.Map<FileAddResponse>(fileDomain);
 
-        return response;
+            return response;
+        }
     }
 
     [HttpDelete("{id:Guid}")]
