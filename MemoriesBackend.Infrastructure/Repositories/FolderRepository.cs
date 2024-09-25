@@ -21,13 +21,13 @@ public class FolderRepository : GenericRepository<Folder>, IFolderRepository
                 .ThenInclude(file => file.FileDetails)
             .Include(folder => folder.FolderDetails)
             .AsSplitQuery()
-            .FirstOrDefaultAsync(f => f.Id == folderId);
+            .FirstOrDefaultAsync(folder => folder.Id == folderId);
     }
 
     public async Task<Folder?> GetFolderLastSiblingAsync(Guid parentFolderId, bool asNoTracking = true)
     {
         return await GetQueryable(asNoTracking)
-            .Include(f => f.FolderDetails)
+            .Include(folder => folder.FolderDetails)
             .Where(folder => folder.ParentFolderId == parentFolderId)
             .OrderByDescending(folder => folder.HierarchyId)
             .FirstOrDefaultAsync();
@@ -53,12 +53,12 @@ public class FolderRepository : GenericRepository<Folder>, IFolderRepository
     {
         var rootFolder = await GetQueryable(asNoTracking)
             .Include(folder => folder.Files)
-            .ThenInclude(file => file.FileDetails)
+                .ThenInclude(file => file.FileDetails)
             .Include(folder => folder.ChildFolders)
-            .ThenInclude(childFolder => childFolder.FolderDetails)
+                .ThenInclude(childFolder => childFolder.FolderDetails)
             .Include(folder => folder.FolderDetails)
             .AsSplitQuery()
-            .FirstOrDefaultAsync(f => f.ParentFolderId == null);
+            .FirstOrDefaultAsync(folder => folder.ParentFolderId == null);
 
         if (rootFolder == null)
         {
@@ -76,7 +76,7 @@ public class FolderRepository : GenericRepository<Folder>, IFolderRepository
         }
 
         return await GetQueryable(asNoTracking)
-            .Include(f => folder.FolderDetails)
+            .Include(f => f.FolderDetails)
             .Where(f => folder.HierarchyId.IsDescendantOf(f.HierarchyId))
             .OrderBy(f => f.HierarchyId)
             .ToListAsync();
