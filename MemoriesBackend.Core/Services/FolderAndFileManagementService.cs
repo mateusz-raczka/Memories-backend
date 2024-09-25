@@ -1,5 +1,7 @@
-﻿using MemoriesBackend.Domain.Interfaces.Services;
+﻿using MemoriesBackend.Domain.Entities;
+using MemoriesBackend.Domain.Interfaces.Services;
 using MemoriesBackend.Domain.Models;
+using File = MemoriesBackend.Domain.Entities.File;
 
 namespace MemoriesBackend.Application.Services
 {
@@ -22,8 +24,23 @@ namespace MemoriesBackend.Application.Services
             Guid targetFolderId
             )
         {
-            var pastedFiles = await _fileManagementService.CopyAndPasteFilesAsync(filesIds, targetFolderId);
-            var pastedFolders = await _folderManagementService.CopyAndPasteFoldersAsync(foldersIds, targetFolderId);
+            IEnumerable<File> pastedFiles = [];
+            IEnumerable<Folder> pastedFolders = [];
+
+            if (foldersIds.Any())
+            {
+                pastedFolders = await _folderManagementService.CopyAndPasteFoldersAsync(foldersIds, targetFolderId);
+            }
+
+            if (filesIds.Any())
+            {
+                pastedFiles = await _fileManagementService.CopyAndPasteFilesAsync(filesIds, targetFolderId);
+            }
+
+            if(!filesIds.Any() && !foldersIds.Any())
+            {
+                throw new ApplicationException("Failed to copy - there were no files or folders provided");
+            }
 
             var copyAndPasteFoldersAndFilesResult = new FoldersAndFiles
             {
@@ -34,14 +51,14 @@ namespace MemoriesBackend.Application.Services
             return copyAndPasteFoldersAndFilesResult;
         }
 
-        public async Task<FoldersAndFiles> CutAndPasteFoldersAndFilesAsync(
+        public async Task<FoldersAndFiles> MoveFoldersAndFilesAsync(
             IEnumerable<Guid> filesIds,
             IEnumerable<Guid> foldersIds,
             Guid targetFolderId
             )
         {
-            var pastedFiles = await _fileManagementService.CutAndPasteFilesAsync(filesIds, targetFolderId);
-            var pastedFolders = await _folderManagementService.CutAndPasteFoldersAsync(foldersIds, targetFolderId);
+            var pastedFiles = await _fileManagementService.MoveFilesAsync(filesIds, targetFolderId);
+            var pastedFolders = await _folderManagementService.MoveFoldersAsync(foldersIds, targetFolderId);
 
             var cutAndPasteFoldersAndFilesResult = new FoldersAndFiles
             {
@@ -50,6 +67,22 @@ namespace MemoriesBackend.Application.Services
             };
 
             return cutAndPasteFoldersAndFilesResult;
+        }
+
+        public async Task DeleteFoldersAndFilesAsync(
+            IEnumerable<Guid> filesIds,
+            IEnumerable<Guid> foldersIds
+            )
+        {
+            foreach(var fileId in filesIds)
+            {
+                await _fileManagementService.DeleteFileAsync(fileId);
+            }
+
+            foreach(var folderId in foldersIds )
+            {
+                await _folderManagementService.DeleteFolderAsync(folderId);
+            }
         }
     }
 }

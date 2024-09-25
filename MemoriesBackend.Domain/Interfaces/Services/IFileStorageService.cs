@@ -15,6 +15,6 @@ namespace MemoriesBackend.Domain.Interfaces.Services
         Task<Guid> UploadFileChunkAsync(Stream stream, string absoluteFolderPath, Guid fileId);
         Task MergeAndDeleteFileChunksAsync(FileUploadProgress uploadProgress, string absoluteFolderPath);
         Task MergeFileChunksAsync(FileUploadProgress uploadProgress, string absoluteFolderPath);
-        Task CutAndPasteFileAsync(string fileAbsolutePath, string destinationFolderAbsolutePath);
+        Task MoveFileAsync(string fileAbsolutePath, string destinationFolderAbsolutePath);
     }
 }

@@ -9,21 +9,18 @@ namespace MemoriesBackend.Application.Services
 {
     public class FolderDatabaseService : IFolderDatabaseService
     {
-        private readonly IGenericRepository<Folder> _folderRepository;
+        private readonly IFolderRepository _folderRepository;
 
-        public FolderDatabaseService(IGenericRepository<Folder> folderRepository)
+        public FolderDatabaseService(IFolderRepository folderRepository)
         {
             _folderRepository = folderRepository;
         }
 
         public async Task<Folder> CreateRootFolderAsync()
         {
-            var folder = new Folder
-            {
-                HierarchyId = await GenerateHierarchyId(null)
-            };
+            var folder = new Folder();
 
-            var createdFolder = await _folderRepository.Create(folder);
+            var createdFolder = await CreateFolderAsync(folder);
 
             await SaveAsync();
 
@@ -31,9 +28,9 @@ namespace MemoriesBackend.Application.Services
         }
 
         public async Task<IEnumerable<Folder>> GetAllFoldersAsync(
+            Expression<Func<Folder, bool>>? filter = null,
             int? pageNumber = null,
             int? pageSize = null,
-            Expression<Func<Folder, bool>>? filter = null,
             Func<IQueryable<Folder>, IOrderedQueryable<Folder>>? orderBy = null,
             bool asNoTracking = true
         )
@@ -48,27 +45,19 @@ namespace MemoriesBackend.Application.Services
             return await _folderRepository.GetById(folderId, asNoTracking);
         }
 
-        public async Task<Folder> GetFolderByIdWithRelations(Guid folderId, bool asNoTracking = true)
+        public async Task<Folder> GetFolderByIdWithContent(Guid folderId, bool asNoTracking = true)
         {
-            var folderWithRelations = await _folderRepository
-                .GetQueryable(asNoTracking)
-                .Include(folder => folder.ChildFolders)
-                .Include(folder => folder.Files)
-                .AsSplitQuery()
-                .Where(folder => folder.Id == folderId)
-                .FirstOrDefaultAsync();
-
-            if (folderWithRelations == null)
-            {
-                throw new ApplicationException($"Folder with ID {folderId} was not found");
-            }
-
-            return folderWithRelations;
+            return await _folderRepository.GetFolderByIdWithContent(folderId, asNoTracking);
         }
 
-        public async Task<FolderWithDescendants> GetFolderByIdWithRelationsAndDescendants(Guid folderId, bool asNoTracking = true)
+        public async Task<Folder> GetFolderByIdWithDetails(Guid folderId, bool asNoTracking = true)
         {
-            var folder = await GetFolderByIdWithRelations(folderId, asNoTracking);
+            return await _folderRepository.GetFolderByIdWithDetails(folderId, asNoTracking);
+        }
+
+        public async Task<FolderWithDescendants> GetFolderByIdWithContentAndDescendants(Guid folderId, bool asNoTracking = true)
+        {
+            var folder = await GetFolderByIdWithContent(folderId, asNoTracking);
 
             var descendants = await GetFolderDescendantsAsync(folder, asNoTracking);
 
@@ -83,11 +72,13 @@ namespace MemoriesBackend.Application.Services
 
         public async Task<Folder> CreateFolderAsync(Folder folder)
         {
-            if (folder.ParentFolderId == null)
-                throw new ApplicationException("Folder must have a parent folder.");
-
             if(folder.HierarchyId == null)
                 folder.HierarchyId = await GenerateHierarchyId(folder.ParentFolderId);
+
+            if(folder == null)
+            {
+                throw new ApplicationException("Failed to create - folder is null");
+            }
 
             var createdFolder = await _folderRepository.Create(folder);
 
@@ -96,87 +87,32 @@ namespace MemoriesBackend.Application.Services
 
         public async Task<Folder> GetRootFolderAsync(bool asNoTracking = true)
         {
-            var rootFolder = await _folderRepository
-                .GetQueryable(asNoTracking)
-                .Include(folder => folder.Files)
-                .Include(folder => folder.ChildFolders)
-                .AsSplitQuery()
-                .FirstOrDefaultAsync(f => f.ParentFolderId == null);
-
-            if (rootFolder == null) 
-            {
-                throw new ApplicationException("Critical error - root folder was not found");
-            }
-
-            return rootFolder;
+            return await _folderRepository.GetRootFolderAsync(asNoTracking);
         }
 
         public async Task<List<Folder>> GetFolderDescendantsAsync(Folder folder, bool asNoTracking = true)
         {
-            if (folder == null)
-            {
-                throw new ApplicationException("Failed to get folder's ancestors - folder does not exist");
-            }
-
-            return await _folderRepository
-                .GetQueryable(asNoTracking)
-                .Where(f => folder.HierarchyId.IsDescendantOf(f.HierarchyId))
-                .OrderBy(f => f.HierarchyId)
-                .ToListAsync();
+            return await _folderRepository.GetFolderDescendantsAsync(folder, asNoTracking);
         }
+
         public async Task<List<Folder>> GetFolderDescendantsAsync(Guid folderId, bool asNoTracking = true)
         {
-            var folder = await GetFolderByIdAsync(folderId, asNoTracking);
-
-            if(folder == null)
-            {
-                throw new ApplicationException("Failed to get folder's ancestors - folder does not exist");
-            }
-
-            return await _folderRepository
-                .GetQueryable(asNoTracking)
-                .Where(f => folder.HierarchyId.IsDescendantOf(f.HierarchyId))
-                .OrderBy(f => f.HierarchyId)
-                .ToListAsync();
+            return await _folderRepository.GetFolderDescendantsAsync(folderId, asNoTracking);
         }
 
         public async Task<List<Folder>> GetFolderAncestorsAsync(Folder folder, bool asNoTracking = true)
         {
-            if (folder == null)
-            {
-                throw new ApplicationException("Failed to get folder's ancestors - folder does not exist");
-            }
-
-            return await _folderRepository
-                .GetQueryable(asNoTracking)
-                .Where(f => f.HierarchyId.IsDescendantOf(folder.HierarchyId))
-                .OrderBy(f => f.HierarchyId)
-                .ToListAsync();
+            return await _folderRepository.GetFolderAncestorsAsync(folder.Id, asNoTracking);
         }
 
         public async Task<List<Folder>> GetFolderAncestorsAsync(Guid folderId, bool asNoTracking = true)
         {
-            var folder = await GetFolderByIdAsync(folderId, asNoTracking);
-
-            if (folder == null)
-            {
-                throw new ApplicationException("Failed to get folder's ancestors - folder does not exist");
-            }
-
-            return await _folderRepository
-                .GetQueryable(asNoTracking)
-                .Where(f => f.HierarchyId.IsDescendantOf(folder.HierarchyId))
-                .OrderBy(f => f.HierarchyId)
-                .ToListAsync();
+            return await _folderRepository.GetFolderAncestorsAsync(folderId, asNoTracking);
         }
 
         public async Task<Folder?> GetFolderLastSiblingAsync(Guid parentFolderId, bool asNoTracking = true)
         {
-            return await _folderRepository
-                .GetQueryable(asNoTracking)
-                .Where(folder => folder.ParentFolderId == parentFolderId)
-                .OrderByDescending(folder => folder.HierarchyId)
-                .FirstOrDefaultAsync();
+            return await _folderRepository.GetFolderLastSiblingAsync(parentFolderId, asNoTracking);
         }
 
         public async Task<HierarchyId> GenerateHierarchyId(Guid? parentFolderId)
@@ -201,6 +137,7 @@ namespace MemoriesBackend.Application.Services
         public async Task DeleteFolderAsync(Guid folderId)
         {
             var folder = await _folderRepository.GetById(folderId);
+
             if (folder == null)
             {
                 throw new ApplicationException($"Failed to delete - folder with Id {folderId} was not found");

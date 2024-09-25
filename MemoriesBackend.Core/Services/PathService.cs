@@ -1,4 +1,5 @@
 ﻿using MemoriesBackend.Domain.Interfaces.Services;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 
 namespace MemoriesBackend.Application.Services
@@ -31,7 +32,7 @@ namespace MemoriesBackend.Application.Services
 
         public async Task<string> GetFileRelativePathAsync(Guid fileId)
         {
-            var file = await _fileDatabaseService.GetFileByIdAsync(fileId);
+            var file = await _fileDatabaseService.GetFileByIdWithDetailsAsync(fileId);
 
             if (file == null) throw new ApplicationException("Cannot find file with a given id");
             var fileExtension = Path.GetExtension(file.FileDetails.Name);

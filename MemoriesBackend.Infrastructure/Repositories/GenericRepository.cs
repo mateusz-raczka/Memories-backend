@@ -38,7 +38,7 @@ namespace MemoriesBackend.Infrastructure.Repositories
         }
 
         public IQueryable<TEntity> GetAll(
-            Expression<Func<TEntity, bool>>? filter = null,
+            Expression<Func<TEntity, bool>> filter,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
             int? pageNumber = null,
             int? pageSize = null,
@@ -62,7 +62,6 @@ namespace MemoriesBackend.Infrastructure.Repositories
         public virtual async Task<TEntity> GetById(Guid id, bool asNoTracking = true)
         {
             var query = GetQueryable(asNoTracking)
-                .IgnoreAutoIncludes()
                 .Where(e => ((IEntity)e).Id == id);
             var entity = await query.FirstOrDefaultAsync();
 

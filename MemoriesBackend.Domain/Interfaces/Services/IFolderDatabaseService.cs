@@ -10,9 +10,9 @@ namespace MemoriesBackend.Domain.Interfaces.Services
         Task<Folder> CreateRootFolderAsync();
 
         Task<IEnumerable<Folder>> GetAllFoldersAsync(
+            Expression<Func<Folder, bool>>? filter = null,
             int? pageNumber = null,
             int? pageSize = null,
-            Expression<Func<Folder, bool>>? filter = null,
             Func<IQueryable<Folder>, IOrderedQueryable<Folder>>? orderBy = null,
             bool asNoTracking = true
         );
@@ -35,9 +35,11 @@ namespace MemoriesBackend.Domain.Interfaces.Services
 
         Task<HierarchyId> GenerateHierarchyId(Guid? parentFolderId);
 
-        Task<Folder> GetFolderByIdWithRelations(Guid folderId, bool asNoTracking = true);
+        Task<Folder> GetFolderByIdWithDetails(Guid folderId, bool asNoTracking = true);
 
-        Task<FolderWithDescendants> GetFolderByIdWithRelationsAndDescendants(Guid folderId, bool asNoTracking = true);
+        Task<Folder> GetFolderByIdWithContent(Guid folderId, bool asNoTracking = true);
+
+        Task<FolderWithDescendants> GetFolderByIdWithContentAndDescendants(Guid folderId, bool asNoTracking = true);
 
         Task DeleteFolderAsync(Guid folderId);
 

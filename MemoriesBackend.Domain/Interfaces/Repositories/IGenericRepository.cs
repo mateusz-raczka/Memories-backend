@@ -7,7 +7,7 @@ namespace MemoriesBackend.Domain.Interfaces.Repositories
         IQueryable<TEntity> GetQueryable(bool asNoTracking = true);
 
         IQueryable<TEntity> GetAll(
-            Expression<Func<TEntity, bool>>? filter = null,
+            Expression<Func<TEntity, bool>> filter,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
             int? pageNumber = null,
             int? pageSize = null,

@@ -23,6 +23,7 @@ public static class DependencyInjection
         var dbUser = Environment.GetEnvironmentVariable("DB_USER");
         var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
         var connectionString = $"Server={dbServer};Database={dbName};User Id={dbUser};Password={dbPassword};TrustServerCertificate=True;";
+        //var connectionString = "Server=MATI\\MSSQLSERVER03;Database=memories;Integrated Security=True;TrustServerCertificate=True;";
 
         //Database context
         services.AddDbContext<ApplicationDbContext>(options =>
@@ -33,6 +34,8 @@ public static class DependencyInjection
                 options.EnableRetryOnFailure(3);
             });
         });
+
+        services.AddDbContextFactory<ApplicationDbContext>();
 
         services.Configure<IdentityOptions>(options =>
         {
@@ -45,14 +48,14 @@ public static class DependencyInjection
             options.SignIn.RequireConfirmedEmail = false;
         });
 
-        //Repositories
-        services.AddScoped<IGenericRepository<File>, GenericRepository<File>>();
+        //Scoped repositories
+        services.AddScoped<IFileRepository, FileRepository>();
         services.AddScoped<IGenericRepository<FileDetails>, GenericRepository<FileDetails>>();
         services.AddScoped<IGenericRepository<Category>, GenericRepository<Category>>();
         services.AddScoped<IGenericRepository<Tag>, GenericRepository<Tag>>();
         services.AddScoped<IGenericRepository<FileActivity>, GenericRepository<FileActivity>>();
-        services.AddScoped<IGenericRepository<Folder>, GenericRepository<Folder>>();
-        services.AddScoped<IGenericRepository<FileUploadProgress>, GenericRepository<FileUploadProgress>>();
+        services.AddScoped<IFolderRepository, FolderRepository>();
+        services.AddScoped<IFileUploadProgressRepository, FileUploadProgressRepository>();
         services.AddScoped<IGenericRepository<FileChunk>, GenericRepository<FileChunk>>();
 
         //Transactions

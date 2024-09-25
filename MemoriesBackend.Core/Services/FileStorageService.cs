@@ -87,7 +87,7 @@ namespace MemoriesBackend.Application.Services
             return fileId;
         }
 
-        public async Task CutAndPasteFileAsync(string fileAbsolutePath, string destinationFolderAbsolutePath)
+        public async Task MoveFileAsync(string fileAbsolutePath, string destinationFolderAbsolutePath)
         {
             if (string.IsNullOrWhiteSpace(fileAbsolutePath))
                 throw new ArgumentException("File path cannot be null or empty", nameof(fileAbsolutePath));

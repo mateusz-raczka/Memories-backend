@@ -41,10 +41,11 @@ public class FileController : ControllerBase
             query.OrderBy(entity => entity.FileDetails.Name);
 
         var filesDomain = await _fileDatabaseService.GetAllFilesAsync(
+            filter,
             pageNumber,
             pageSize,
-            filter,
-            orderBy
+            orderBy,
+            true
         );
 
         var response = _mapper.Map<IEnumerable<FileGetAllResponse>>(filesDomain);

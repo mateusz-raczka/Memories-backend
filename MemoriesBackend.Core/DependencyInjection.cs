@@ -1,4 +1,5 @@
-﻿using MemoriesBackend.Application.Services;
+﻿using MemoriesBackend.Application.Interfaces;
+using MemoriesBackend.Application.Services;
 using MemoriesBackend.Domain.Interfaces.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,6 +23,8 @@ namespace MemoriesBackend.Application
             services.AddScoped<IPathService, PathService>();
             services.AddScoped<IFolderManagementService, FolderManagementService>();
             services.AddScoped<IFolderAndFileManagementService, FolderAndFileManagementService>();
+            services.AddScoped<IFileUploadProgressDatabaseService, FileUploadProgressDatabaseService>();
+            services.AddScoped<IFileChunkDatabaseService, FileChunkDatabaseService>();
 
             return services;
         }

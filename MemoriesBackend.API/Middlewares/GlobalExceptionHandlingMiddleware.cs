@@ -1,7 +1,5 @@
 ﻿using System.Net;
 using System.Text.Json;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 
 namespace MemoriesBackend.API.Middlewares
 {
@@ -12,7 +10,10 @@ namespace MemoriesBackend.API.Middlewares
         private readonly RequestDelegate _next;
         private readonly ILogger<GlobalExceptionHandlingMiddleware> _logger;
 
-        public GlobalExceptionHandlingMiddleware(RequestDelegate next, ILogger<GlobalExceptionHandlingMiddleware> logger)
+        public GlobalExceptionHandlingMiddleware(
+            RequestDelegate next, 
+            ILogger<GlobalExceptionHandlingMiddleware> logger
+            )
         {
             _next = next;
             _logger = logger;

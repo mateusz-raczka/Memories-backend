@@ -2,8 +2,8 @@
 {
     public class FoldersAndFilesCutAndPasteRequest
     {
-        public IEnumerable<Guid> FilesIds { get; set; }
-        public IEnumerable<Guid> FoldersIds { get; set; }
+        public IEnumerable<Guid> FilesIds { get; set; } = [];
+        public IEnumerable<Guid> FoldersIds { get; set; } = [];
         public Guid TargetFolderId { get; set; }
     }
 }

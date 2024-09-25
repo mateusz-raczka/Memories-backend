@@ -51,19 +51,5 @@ public class ApplicationDbContext : IdentityDbContext
            .WithOne(f => f.Folder)
            .HasForeignKey(f => f.FolderId)
            .OnDelete(DeleteBehavior.Cascade);
-
-        // Auto includes
-
-        modelBuilder.Entity<FileUploadProgress>()
-           .Navigation(e => e.FileChunks)
-           .AutoInclude();
-
-        modelBuilder.Entity<File>()
-            .Navigation(e => e.FileDetails)
-            .AutoInclude();
-
-        modelBuilder.Entity<Folder>()
-            .Navigation(e => e.FolderDetails)
-            .AutoInclude();
     }
 }
