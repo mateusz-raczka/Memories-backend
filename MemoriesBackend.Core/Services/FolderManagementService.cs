@@ -128,9 +128,7 @@ namespace MemoriesBackend.Application.Services
 
             await _folderDatabaseService.MoveFolderSubTreeAsync(sourceFolderSubTree, targetFolder);
 
-            await _folderDatabaseService.SaveAsync();
-
-            return sourceFolderSubTree;
+            return sourceFolder;
         }
 
         private async Task<Folder> CopyAndPasteFolderAsync(Folder sourceFolder, Folder targetFolder)

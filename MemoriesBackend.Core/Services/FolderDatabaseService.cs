@@ -207,7 +207,7 @@ namespace MemoriesBackend.Application.Services
         {
             if (folderSubTreeToMove.ParentFolderId == targetFolder.ParentFolderId)
             {
-                var targetFolderParent = await GetFolderByIdWithContentAsync(targetFolder.Id);
+                var targetFolderParent = await GetFolderByIdWithContentAsync((Guid)targetFolder.ParentFolderId);
 
                 Folder? targetFolderLastSibling = targetFolderParent.ChildFolders.OrderByDescending(f => f.HierarchyId)
                                                            .FirstOrDefault(f => f.Id != targetFolder.Id && f.Id != folderSubTreeToMove.Id);
