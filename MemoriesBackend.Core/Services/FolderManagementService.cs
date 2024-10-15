@@ -42,9 +42,9 @@ namespace MemoriesBackend.Application.Services
                 pastedFolders.Add(pastedFolder);
             }
 
-            await _folderDatabaseService.SaveAsync();
-
             await MoveFoldersInStorageAsync(foldersIdsToMove, targetFolderId);
+
+            await _folderDatabaseService.SaveAsync();
 
             return pastedFolders;
         }
