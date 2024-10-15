@@ -3,6 +3,7 @@ using MemoriesBackend.Domain.Interfaces.Repositories;
 using MemoriesBackend.Domain.Interfaces.Services;
 using MemoriesBackend.Domain.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace MemoriesBackend.Application.Services
@@ -204,14 +205,19 @@ namespace MemoriesBackend.Application.Services
 
         public async Task MoveFolderSubTreeAsync(Folder folderSubTreeToMove, Folder targetFolder)
         {
-            ChangeFolderSubTreeParent(folderSubTreeToMove, targetFolder);
-
-            if(folderSubTreeToMove.ParentFolderId == targetFolder.ParentFolderId)
+            if (folderSubTreeToMove.ParentFolderId == targetFolder.ParentFolderId)
             {
-                targetFolder.HierarchyId = await GenerateHierarchyId(targetFolder.ParentFolderId);
-                
+                var targetFolderParent = await GetFolderByIdWithContentAsync(targetFolder.Id);
+
+                Folder? lastSibling = targetFolderParent.ChildFolders.OrderByDescending(f => f.HierarchyId)
+                                                           .FirstOrDefault(f => f.Id != targetFolder.ParentFolderId && f.Id != folderSubTreeToMove.ParentFolderId);
+
+                targetFolder.HierarchyId = GenerateHierarchyId(targetFolderParent, lastSibling);
+
                 UpdateFolderAsync(targetFolder);
             }
+
+            ChangeFolderSubTreeParent(folderSubTreeToMove, targetFolder);
         }
 
         private void ChangeFolderSubTreeParent(Folder folderSubTreeToMove, Folder targetFolder)
