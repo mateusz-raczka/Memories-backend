@@ -209,10 +209,10 @@ namespace MemoriesBackend.Application.Services
             {
                 var targetFolderParent = await GetFolderByIdWithContentAsync(targetFolder.Id);
 
-                Folder? lastSibling = targetFolderParent.ChildFolders.OrderByDescending(f => f.HierarchyId)
-                                                           .FirstOrDefault(f => f.Id != targetFolder.ParentFolderId && f.Id != folderSubTreeToMove.ParentFolderId);
+                Folder? targetFolderLastSibling = targetFolderParent.ChildFolders.OrderByDescending(f => f.HierarchyId)
+                                                           .FirstOrDefault(f => f.Id != targetFolder.Id && f.Id != folderSubTreeToMove.Id);
 
-                targetFolder.HierarchyId = GenerateHierarchyId(targetFolderParent, lastSibling);
+                targetFolder.HierarchyId = GenerateHierarchyId(targetFolderParent, targetFolderLastSibling);
 
                 UpdateFolderAsync(targetFolder);
             }
@@ -239,12 +239,12 @@ namespace MemoriesBackend.Application.Services
 
         private void ChangeFolderParent(Folder sourceFolder, Folder targetFolder)
         {
-            Folder? lastSibling = targetFolder.ChildFolders.OrderByDescending(f => f.HierarchyId)
+            Folder? sourceFolderLastSibling = targetFolder.ChildFolders.OrderByDescending(f => f.HierarchyId)
                                                            .FirstOrDefault(f => f.Id != sourceFolder.Id);
 
             sourceFolder.ParentFolderId = targetFolder.Id;
 
-            sourceFolder.HierarchyId = GenerateHierarchyId(targetFolder, lastSibling);
+            sourceFolder.HierarchyId = GenerateHierarchyId(targetFolder, sourceFolderLastSibling);
 
             targetFolder.ChildFolders.Add(sourceFolder);
 
