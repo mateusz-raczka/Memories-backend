@@ -276,25 +276,27 @@ namespace MemoriesBackend.Application.Services
             return file;
         }
 
-        private async Task MoveFilesToStorageAsync(IEnumerable<File> filesToCopy, Guid targetFolderId)
+        private async Task MoveFilesToStorageAsync(IEnumerable<File> filesToMove, Guid targetFolderId)
         {
             var folderAbsolutePath = await _pathService.GetFolderAbsolutePathAsync(targetFolderId);
 
-            var pasteFilesToStorageTasks = filesToCopy.Select(file => MoveFileInStorageAsync(file, folderAbsolutePath));
+            var fileSourceFolderAbsolutePath = await _pathService.GetFolderAbsolutePathAsync(filesToMove.First().FolderId);
+
+            var pasteFilesToStorageTasks = filesToMove.Select(file => MoveFileInStorageAsync(file, folderAbsolutePath, fileSourceFolderAbsolutePath));
 
             await Task.WhenAll(pasteFilesToStorageTasks);
         }
 
-        private async Task MoveFileInStorageAsync(File file, string folderAbsolutePath)
+        private async Task MoveFileInStorageAsync(File fileToMove, string folderAbsolutePath, string fileSourceFolderAbsolutePath)
         {
-            var fileAbsolutePath = Path.Combine(folderAbsolutePath, file.Id + file.FileDetails.Extension);
+            var fileAbsolutePath = Path.Combine(fileSourceFolderAbsolutePath, fileToMove.Id + fileToMove.FileDetails.Extension);
 
             await _fileStorageService.MoveFileAsync(fileAbsolutePath, folderAbsolutePath);
         }
 
-        private async Task<PastedFileToStorage> CopyAndPasteFileInStorageAsync(File fileToCopy, string folderAbsolutePath)
+        private async Task<PastedFileToStorage> CopyAndPasteFileInStorageAsync(File fileToCopy, string folderAbsolutePath, string fileSourceFolderAbsolutePath)
         {
-            var fileAbsolutePath = Path.Combine(folderAbsolutePath, fileToCopy.Id + fileToCopy.FileDetails.Extension);
+            var fileAbsolutePath = Path.Combine(fileSourceFolderAbsolutePath, fileToCopy.Id + fileToCopy.FileDetails.Extension);
 
             var pastedFile = new PastedFileToStorage
             {
@@ -309,7 +311,9 @@ namespace MemoriesBackend.Application.Services
         {
             var folderAbsolutePath = await _pathService.GetFolderAbsolutePathAsync(targetFolderId);
 
-            var pasteFilesToStorageTasks = filesToCopy.Select(file => CopyAndPasteFileInStorageAsync(file, folderAbsolutePath));
+            var fileSourceFolderAbsolutePath = await _pathService.GetFolderAbsolutePathAsync(filesToCopy.First().FolderId);
+
+            var pasteFilesToStorageTasks = filesToCopy.Select(file => CopyAndPasteFileInStorageAsync(file, folderAbsolutePath, fileSourceFolderAbsolutePath));
 
             return await Task.WhenAll(pasteFilesToStorageTasks);
         }

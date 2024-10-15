@@ -12,7 +12,7 @@ public class FolderRepository : GenericRepository<Folder>, IFolderRepository
     {
     }
 
-    public async Task<Folder> GetFolderByIdWithContent(Guid folderId, bool asNoTracking = true)
+    public async Task<Folder> GetFolderByIdWithContentAsync(Guid folderId, bool asNoTracking = true)
     {
         return await GetQueryable(asNoTracking)
             .Include(folder => folder.ChildFolders)
@@ -68,6 +68,28 @@ public class FolderRepository : GenericRepository<Folder>, IFolderRepository
         return rootFolder;
     }
 
+    public async Task<Folder> GetFolderSubTreeAsync(Guid folderId, bool asNoTracking = true)
+    {
+        var folder = await GetQueryable(asNoTracking)
+            .Include(folder => folder.ChildFolders)
+            .Include(folder => folder.FolderDetails)
+            .AsSplitQuery()
+            .FirstOrDefaultAsync(folder => folder.Id == folderId);
+
+        if (folder == null)
+        {
+            throw new ApplicationException("Failed to get folder tree - folder in tree does not exist");
+        }
+
+        var getChildFoldersTasks = folder.ChildFolders.Select(f => GetFolderSubTreeAsync(f.Id, asNoTracking));
+
+        var childFolders = await Task.WhenAll(getChildFoldersTasks);
+
+        folder.ChildFolders = childFolders.OrderByDescending(f=> f.HierarchyId).ToList();
+
+        return folder;
+    }
+
     public async Task<List<Folder>> GetFolderDescendantsAsync(Folder folder, bool asNoTracking = true)
     {
         if (folder == null)
@@ -95,16 +117,6 @@ public class FolderRepository : GenericRepository<Folder>, IFolderRepository
             .Where(f => folder.HierarchyId.IsDescendantOf(f.HierarchyId))
             .OrderBy(f => f.HierarchyId)
             .ToListAsync();
-    }
-
-    public async Task<Folder> GetFolderByIdWithDetails(Guid folderId, bool asNoTracking = true)
-    {
-        var folderWithDetails = await GetQueryable(asNoTracking)
-            .Include(folder => folder.FolderDetails)
-            .Where(folder => folder.Id == folderId)
-            .FirstOrDefaultAsync();
-
-        return folderWithDetails;
     }
 
     public async Task<List<Folder>> GetFoldersByIdsWithContentAsync(IEnumerable<Guid> folderIds, bool asNoTracking = true)

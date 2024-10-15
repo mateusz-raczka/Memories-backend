@@ -1,8 +1,5 @@
 ﻿using MemoriesBackend.Domain.Entities;
-using MemoriesBackend.Domain.Interfaces.Repositories;
 using MemoriesBackend.Domain.Interfaces.Services;
-using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
 
 namespace MemoriesBackend.Application.Services
 {
@@ -35,19 +32,19 @@ namespace MemoriesBackend.Application.Services
             return pastedFolders;
         }
 
-        public async Task<IEnumerable<Folder>> MoveFoldersAsync(IEnumerable<Guid> folderIds, Guid targetFolderId)
+        public async Task<IEnumerable<Folder>> MoveFoldersAsync(IEnumerable<Guid> foldersIdsToMove, Guid targetFolderId)
         {
             var pastedFolders = new List<Folder>();
 
-            foreach (var folderId in folderIds)
+            foreach (var folderId in foldersIdsToMove)
             {
                 var pastedFolder = await MoveFolderAsync(folderId, targetFolderId);
                 pastedFolders.Add(pastedFolder);
             }
 
-            await MoveFoldersInStorageAsync(folderIds, targetFolderId);
-
             await _folderDatabaseService.SaveAsync();
+
+            await MoveFoldersInStorageAsync(foldersIdsToMove, targetFolderId);
 
             return pastedFolders;
         }
@@ -67,21 +64,32 @@ namespace MemoriesBackend.Application.Services
             await _folderStorageService.DeleteFolderAsync(absoluteFolderPath);
         }
 
+        private async Task<IEnumerable<Folder>> MoveFoldersAsync(IEnumerable<Folder> foldersToMove, Guid targetFolderId)
+        {
+            IEnumerable<Folder> pastedFolders = [];
+
+            if (foldersToMove.Any())
+            {
+                var foldersIdsToMove = foldersToMove.Select(f => f.Id).ToList();
+
+                pastedFolders = await MoveFoldersAsync(foldersIdsToMove, targetFolderId);
+            }
+
+            return pastedFolders;
+        }
+
         private async Task MoveFoldersInStorageAsync(IEnumerable<Guid> sourceFoldersIds, Guid targetFolderId)
         {
             var targetFolderAbsolutePath = await _pathService.GetFolderAbsolutePathAsync(targetFolderId);
-   
-            foreach(var sourceFolderId in sourceFoldersIds)
+
+            var sourceFoldersAbsolutePathsTasks = sourceFoldersIds.Select(_pathService.GetFolderAbsolutePathAsync);
+
+            var sourceFoldersAbsolutePaths = await Task.WhenAll(sourceFoldersAbsolutePathsTasks);
+
+            foreach (var sourceFolderAbsolutePath in sourceFoldersAbsolutePaths)
             {
-                await MoveFolderInStorageAsync(sourceFolderId, targetFolderAbsolutePath);
+                await _folderStorageService.MoveFolderAsync(sourceFolderAbsolutePath, targetFolderAbsolutePath);
             }
-        }
-
-        private async Task MoveFolderInStorageAsync(Guid sourceFolderId, string targetFolderAbsolutePath)
-        {
-            var sourceFolderAbsolutePath = await _pathService.GetFolderAbsolutePathAsync(sourceFolderId);
-
-            await _folderStorageService.MoveFolderAsync(sourceFolderAbsolutePath, targetFolderAbsolutePath);
         }
 
         private async Task<IEnumerable<Folder>> CopyAndPasteFoldersAsync(IEnumerable<Folder> foldersToCopy, Guid targetFolderId)
@@ -104,32 +112,25 @@ namespace MemoriesBackend.Application.Services
 
         private async Task<Folder> MoveFolderAsync(Guid sourceFolderId, Guid targetFolderId)
         {
-            var sourceFolder = await _folderDatabaseService.GetFolderByIdAsync(sourceFolderId);
-
+            var sourceFolder = await _folderDatabaseService.GetFolderByIdWithContentAsync(sourceFolderId);
             if (sourceFolder == null)
             {
                 throw new ApplicationException($"Source folder with ID {sourceFolderId} not found.");
             }
 
-            var targetFolder = await _folderDatabaseService.GetFolderByIdAsync(targetFolderId);
-
+            var targetFolder = await _folderDatabaseService.GetFolderByIdWithContentAsync(targetFolderId);
             if (targetFolder == null)
             {
                 throw new ApplicationException($"Target folder with ID {targetFolderId} not found.");
             }
 
-            var movedFolder = MoveFolder(sourceFolder, targetFolder);
+            var sourceFolderSubTree = await _folderDatabaseService.GetFolderSubTreeAsync(sourceFolderId);
 
-            return movedFolder;
-        }
+            await _folderDatabaseService.MoveFolderSubTreeAsync(sourceFolderSubTree, targetFolder);
 
-        private Folder MoveFolder(Folder folder, Folder targetFolder)
-        {
-            folder.ParentFolderId = targetFolder.Id;
+            await _folderDatabaseService.SaveAsync();
 
-            _folderDatabaseService.UpdateFolderAsync(folder);
-
-            return folder;
+            return sourceFolderSubTree;
         }
 
         private async Task<Folder> CopyAndPasteFolderAsync(Folder sourceFolder, Folder targetFolder)
@@ -147,8 +148,6 @@ namespace MemoriesBackend.Application.Services
                 },
             };
 
-            folderToPaste.HierarchyId = await _folderDatabaseService.GenerateHierarchyId(targetFolder.Id);
-
             var folderPasted = await _folderDatabaseService.CreateFolderAsync(folderToPaste);
 
             await _folderDatabaseService.SaveAsync();
@@ -160,7 +159,9 @@ namespace MemoriesBackend.Application.Services
 
             if (sourceFolder.ChildFolders.Any())
             {
-                await CopyAndPasteFoldersAsync(sourceFolder.ChildFolders, folderPasted.Id);
+                var childFoldersWithAllContent = await _folderDatabaseService.GetFoldersWithContentAsync(sourceFolder.ChildFolders);
+
+                await CopyAndPasteFoldersAsync(childFoldersWithAllContent, folderPasted.Id);
             }
 
             return folderPasted;

@@ -45,19 +45,14 @@ namespace MemoriesBackend.Application.Services
             return await _folderRepository.GetById(folderId, asNoTracking);
         }
 
-        public async Task<Folder> GetFolderByIdWithContent(Guid folderId, bool asNoTracking = true)
+        public async Task<Folder> GetFolderByIdWithContentAsync(Guid folderId, bool asNoTracking = true)
         {
-            return await _folderRepository.GetFolderByIdWithContent(folderId, asNoTracking);
-        }
-
-        public async Task<Folder> GetFolderByIdWithDetails(Guid folderId, bool asNoTracking = true)
-        {
-            return await _folderRepository.GetFolderByIdWithDetails(folderId, asNoTracking);
+            return await _folderRepository.GetFolderByIdWithContentAsync(folderId, asNoTracking);
         }
 
         public async Task<FolderWithDescendants> GetFolderByIdWithContentAndDescendants(Guid folderId, bool asNoTracking = true)
         {
-            var folder = await GetFolderByIdWithContent(folderId, asNoTracking);
+            var folder = await GetFolderByIdWithContentAsync(folderId, asNoTracking);
 
             var descendants = await GetFolderDescendantsAsync(folder, asNoTracking);
 
@@ -139,6 +134,16 @@ namespace MemoriesBackend.Application.Services
                 : parentFolder.HierarchyId.GetDescendant(lastSibling.HierarchyId, null);
         }
 
+        public HierarchyId GenerateHierarchyId(Folder parentFolder, Folder? childFolderLastSibling)
+        {
+            if (parentFolder == null)
+                return HierarchyId.GetRoot();
+
+            return childFolderLastSibling == null
+                ? parentFolder.HierarchyId.GetDescendant(null, null)
+                : parentFolder.HierarchyId.GetDescendant(childFolderLastSibling.HierarchyId, null);
+        }
+
         public async Task DeleteFolderAsync(Guid folderId)
         {
             var folder = await _folderRepository.GetById(folderId);
@@ -166,9 +171,78 @@ namespace MemoriesBackend.Application.Services
             _folderRepository.Update(folder);
         }
 
+        public async Task<Folder> GetFolderWithContentAsync(Folder folder)
+        {
+            if (folder == null)
+            {
+                throw new ApplicationException("Failed to get folder content - folder does not exist");
+            }
+
+            var folderWithContent = await _folderRepository.GetFolderByIdWithContentAsync(folder.Id);
+
+            return folderWithContent;
+        }
+
+        public async Task<List<Folder>> GetFoldersWithContentAsync(IEnumerable<Folder> folders)
+        {
+            if(!folders.Any() || folders == null)
+            {
+                throw new ApplicationException("Failed to get folders content - provided list of folders is empty or null");
+            }
+
+            var foldersIds = folders.Select(f => f.Id);
+
+            var foldersWithContent = await _folderRepository.GetFoldersByIdsWithContentAsync(foldersIds);
+
+            return foldersWithContent;
+        }
+
+        public async Task<Folder> GetFolderSubTreeAsync(Guid folderId, bool asNoTracking = true)
+        {
+            return await _folderRepository.GetFolderSubTreeAsync(folderId, asNoTracking);
+        }
+
+        public async Task MoveFolderSubTreeAsync(Folder folderSubTreeToMove, Folder targetFolder)
+        {
+            ChangeFolderSubTreeParent(folderSubTreeToMove, targetFolder);
+
+            if(folderSubTreeToMove.ParentFolderId == targetFolder.ParentFolderId)
+            {
+                targetFolder.HierarchyId = await GenerateHierarchyId(targetFolder.ParentFolderId);
+                
+                UpdateFolderAsync(targetFolder);
+            }
+        }
+
+        private void ChangeFolderSubTreeParent(Folder folderSubTreeToMove, Folder targetFolder)
+        {
+            ChangeFolderParent(folderSubTreeToMove, targetFolder);
+
+            var childFolders = folderSubTreeToMove.ChildFolders.ToList();
+
+            foreach (var childFolder in childFolders)
+            {
+                ChangeFolderSubTreeParent(childFolder, folderSubTreeToMove);
+            }
+        }
+
         public async Task SaveAsync()
         {
             await _folderRepository.Save();
+        }
+
+        private void ChangeFolderParent(Folder sourceFolder, Folder targetFolder)
+        {
+            Folder? lastSibling = targetFolder.ChildFolders.OrderByDescending(f => f.HierarchyId)
+                                                           .FirstOrDefault(f => f.Id != sourceFolder.Id);
+
+            sourceFolder.ParentFolderId = targetFolder.Id;
+
+            sourceFolder.HierarchyId = GenerateHierarchyId(targetFolder, lastSibling);
+
+            targetFolder.ChildFolders.Add(sourceFolder);
+
+            UpdateFolderAsync(sourceFolder);
         }
     }
 }

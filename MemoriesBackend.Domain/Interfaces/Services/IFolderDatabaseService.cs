@@ -1,4 +1,5 @@
 ﻿using MemoriesBackend.Domain.Entities;
+using MemoriesBackend.Domain.Interfaces.Repositories;
 using MemoriesBackend.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -35,9 +36,17 @@ namespace MemoriesBackend.Domain.Interfaces.Services
 
         Task<HierarchyId> GenerateHierarchyId(Guid? parentFolderId);
 
-        Task<Folder> GetFolderByIdWithDetails(Guid folderId, bool asNoTracking = true);
+        HierarchyId GenerateHierarchyId(Folder parentFolder, Folder? childFolderLastSibling);
 
-        Task<Folder> GetFolderByIdWithContent(Guid folderId, bool asNoTracking = true);
+        Task<Folder> GetFolderByIdWithContentAsync(Guid folderId, bool asNoTracking = true);
+
+        Task<Folder> GetFolderSubTreeAsync(Guid folderId, bool asNoTracking = true);
+
+        Task MoveFolderSubTreeAsync(Folder folderSubTreeToMove, Folder targetFolder);
+
+        Task<List<Folder>> GetFoldersWithContentAsync(IEnumerable<Folder> folders);
+
+        Task<Folder> GetFolderWithContentAsync(Folder folder);
 
         Task<FolderWithDescendants> GetFolderByIdWithContentAndDescendants(Guid folderId, bool asNoTracking = true);
 

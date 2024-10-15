@@ -39,7 +39,7 @@ public class FolderController : ControllerBase
     [HttpGet("{id:Guid}")]
     public async Task<FolderGetByIdResponse> GetById(Guid id)
     {
-        var folderDomain = await _folderDatabaseService.GetFolderByIdWithContent(id);
+        var folderDomain = await _folderDatabaseService.GetFolderByIdWithContentAsync(id);
 
         var response = _mapper.Map<FolderGetByIdResponse>(folderDomain);
 
