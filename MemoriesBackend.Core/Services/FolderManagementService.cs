@@ -36,15 +36,13 @@ namespace MemoriesBackend.Application.Services
         {
             var pastedFolders = new List<Folder>();
 
+            await MoveFoldersInStorageAsync(foldersIdsToMove, targetFolderId);
+
             foreach (var folderId in foldersIdsToMove)
             {
                 var pastedFolder = await MoveFolderAsync(folderId, targetFolderId);
                 pastedFolders.Add(pastedFolder);
             }
-
-            await MoveFoldersInStorageAsync(foldersIdsToMove, targetFolderId);
-
-            await _folderDatabaseService.SaveAsync();
 
             return pastedFolders;
         }
@@ -127,6 +125,8 @@ namespace MemoriesBackend.Application.Services
             var sourceFolderSubTree = await _folderDatabaseService.GetFolderSubTreeAsync(sourceFolderId);
 
             await _folderDatabaseService.MoveFolderSubTreeAsync(sourceFolderSubTree, targetFolder);
+
+            await _folderDatabaseService.SaveAsync();
 
             return sourceFolder;
         }

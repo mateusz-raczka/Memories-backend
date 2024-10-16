@@ -217,13 +217,13 @@ namespace MemoriesBackend.Application.Services
 
             var pastedFiles = new List<File>();
 
-            foreach( var file in filesToCopy)
+            await MoveFilesToStorageAsync(filesToCopy, targetFolderId);
+
+            foreach ( var file in filesToCopy)
             {
                 var pastedFile = await MoveFileAsync(file, targetFolderId);
                 pastedFiles.Add(pastedFile);
             }
-
-            await MoveFilesToStorageAsync(filesToCopy, targetFolderId);
 
             await _fileDatabaseService.SaveAsync();
 
@@ -263,11 +263,12 @@ namespace MemoriesBackend.Application.Services
         {
             var targetFolder = await _folderDatabaseService.GetFolderByIdAsync(targetFolderId);
             if (targetFolder == null)
-                throw new ApplicationException("Target folder not found");
+                throw new ApplicationException("Failed to move file - target folder was not found");
 
-            var folderAbsolutePath = await _pathService.GetFolderAbsolutePathAsync(targetFolderId);
-            var fileAbsolutePath = await _pathService.GetFileAbsolutePathAsync(file.Id);
-            await _fileStorageService.MoveFileAsync(fileAbsolutePath, folderAbsolutePath);
+            if(file == null)
+            {
+                throw new ApplicationException("Failed to move file - it was not found");
+            }
 
             file.FolderId = targetFolderId;
 
