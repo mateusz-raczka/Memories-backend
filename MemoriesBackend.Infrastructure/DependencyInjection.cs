@@ -22,8 +22,8 @@ public static class DependencyInjection
         var dbName = Environment.GetEnvironmentVariable("DB_NAME");
         var dbUser = Environment.GetEnvironmentVariable("DB_USER");
         var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
-        var connectionString = $"Server={dbServer};Database={dbName};User Id={dbUser};Password={dbPassword};TrustServerCertificate=True;";
-        //var connectionString = "Server=MATI\\MSSQLSERVER03;Database=memories;Integrated Security=True;TrustServerCertificate=True;";
+        //var connectionString = $"Server={dbServer};Database={dbName};User Id={dbUser};Password={dbPassword};TrustServerCertificate=True;";
+        var connectionString = "Server=MATI\\MSSQLSERVER03;Database=memories;Integrated Security=True;TrustServerCertificate=True;";
 
         //Database context
         services.AddDbContext<ApplicationDbContext>(options =>

@@ -196,13 +196,13 @@ namespace MemoriesBackend.Application.Services
 
             var pastedFiles = new List<File>();
 
+            await MoveFilesToStorageAsync(filesToCopy, targetFolderId);
+
             foreach (var file in filesToCopy)
             {
                 var pastedFile = await MoveFileAsync(file, targetFolderId);
                 pastedFiles.Add(pastedFile);
             }
-
-            await MoveFilesToStorageAsync(filesToCopy, targetFolderId);
 
             await _fileDatabaseService.SaveAsync();
 
@@ -216,8 +216,6 @@ namespace MemoriesBackend.Application.Services
                 throw new ApplicationException("Target folder not found");
 
             var pastedFiles = new List<File>();
-
-            await MoveFilesToStorageAsync(filesToCopy, targetFolderId);
 
             foreach ( var file in filesToCopy)
             {

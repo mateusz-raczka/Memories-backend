@@ -102,7 +102,7 @@ namespace MemoriesBackend.Application.Services
                 Directory.CreateDirectory(destinationFolderAbsolutePath);
 
             var fileName = Path.GetFileName(fileAbsolutePath);
-            var newFileAbsolutePath = Path.Combine(fileAbsolutePath, fileName);
+            var newFileAbsolutePath = Path.Combine(destinationFolderAbsolutePath, fileName);
 
             await Task.Run(() => File.Move(fileAbsolutePath, newFileAbsolutePath, overwrite: true));
         }

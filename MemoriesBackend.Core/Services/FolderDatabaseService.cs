@@ -172,19 +172,19 @@ namespace MemoriesBackend.Application.Services
             _folderRepository.Update(folder);
         }
 
-        public async Task<Folder> GetFolderWithContentAsync(Folder folder)
+        public async Task<Folder> GetFolderWithContentAsync(Folder folder, bool asNoTracking = true)
         {
             if (folder == null)
             {
                 throw new ApplicationException("Failed to get folder content - folder does not exist");
             }
 
-            var folderWithContent = await _folderRepository.GetFolderByIdWithContentAsync(folder.Id);
+            var folderWithContent = await _folderRepository.GetFolderByIdWithContentAsync(folder.Id, asNoTracking);
 
             return folderWithContent;
         }
 
-        public async Task<List<Folder>> GetFoldersWithContentAsync(IEnumerable<Folder> folders)
+        public async Task<List<Folder>> GetFoldersWithContentAsync(IEnumerable<Folder> folders, bool asNoTracking = true)
         {
             if(!folders.Any() || folders == null)
             {
@@ -193,7 +193,7 @@ namespace MemoriesBackend.Application.Services
 
             var foldersIds = folders.Select(f => f.Id);
 
-            var foldersWithContent = await _folderRepository.GetFoldersByIdsWithContentAsync(foldersIds);
+            var foldersWithContent = await _folderRepository.GetFoldersByIdsWithContentAsync(foldersIds, asNoTracking);
 
             return foldersWithContent;
         }
@@ -203,7 +203,52 @@ namespace MemoriesBackend.Application.Services
             return await _folderRepository.GetFolderSubTreeAsync(folderId, asNoTracking);
         }
 
-        public async Task MoveFolderSubTreeAsync(Folder folderSubTreeToMove, Folder targetFolder)
+        public async Task<List<Folder>> GetFoldersSubTreesAsync(IEnumerable<Guid> folderIds, bool asNoTracking = true)
+        {
+            var foldersSubTrees = new List<Folder>();
+
+            foreach(var folderId in folderIds)
+            {
+                var folderSubTree = await GetFolderSubTreeAsync(folderId);
+
+                foldersSubTrees.Add(folderSubTree);
+            }
+
+            return foldersSubTrees;
+        }
+
+        public async Task<List<Folder>> MoveFoldersSubTreesAsync(List<Folder> foldersSubTreesToMove, Folder targetFolder)
+        {
+            if (!foldersSubTreesToMove.Any())
+            {
+                throw new ApplicationException("Failed to move folders sub trees - there are no provided folders to move");
+            }
+
+            var foldersSubTreesInTheSameDirectoryAsTargetFolder = foldersSubTreesToMove
+                .Where(f => f.ParentFolderId == targetFolder.ParentFolderId)
+                .ToList();
+
+            if (foldersSubTreesInTheSameDirectoryAsTargetFolder.Any())
+            {
+                var targetFolderParent = await GetFolderByIdWithContentAsync((Guid)targetFolder.ParentFolderId);
+
+                Folder? targetFolderLastSibling = targetFolderParent.ChildFolders.OrderByDescending(f => f.HierarchyId)
+                                                            .FirstOrDefault(f => foldersSubTreesInTheSameDirectoryAsTargetFolder.Contains(f) && f.Id != targetFolder.Id);
+
+                targetFolder.HierarchyId = GenerateHierarchyId(targetFolderParent, targetFolderLastSibling);
+
+                UpdateFolderAsync(targetFolder);
+            }
+
+            foreach(var folderSubTreeToMove in foldersSubTreesToMove)
+            {
+                ChangeFolderSubTreeParent(folderSubTreeToMove, targetFolder);
+            }
+
+            return foldersSubTreesToMove;
+        }
+
+        public async Task<Folder> MoveFolderSubTreeAsync(Folder folderSubTreeToMove, Folder targetFolder)
         {
             if (folderSubTreeToMove.ParentFolderId == targetFolder.ParentFolderId)
             {
@@ -218,6 +263,8 @@ namespace MemoriesBackend.Application.Services
             }
 
             ChangeFolderSubTreeParent(folderSubTreeToMove, targetFolder);
+
+            return folderSubTreeToMove;
         }
 
         private void ChangeFolderSubTreeParent(Folder folderSubTreeToMove, Folder targetFolder)

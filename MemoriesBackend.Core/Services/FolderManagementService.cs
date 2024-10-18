@@ -34,17 +34,26 @@ namespace MemoriesBackend.Application.Services
 
         public async Task<IEnumerable<Folder>> MoveFoldersAsync(IEnumerable<Guid> foldersIdsToMove, Guid targetFolderId)
         {
-            var pastedFolders = new List<Folder>();
+            var foldersSubTreesToMove = await _folderDatabaseService.GetFoldersSubTreesAsync(foldersIdsToMove);
+            var targetFolder = await _folderDatabaseService.GetFolderByIdWithContentAsync(targetFolderId);
+
+            if (!foldersSubTreesToMove.Any()) 
+            {
+                throw new ApplicationException("Failed to move folder/s - no folder was found");
+            }
+
+            if(targetFolder == null)
+            {
+                throw new ApplicationException("Failed to move folder/s - target folder was not found");
+            }
 
             await MoveFoldersInStorageAsync(foldersIdsToMove, targetFolderId);
 
-            foreach (var folderId in foldersIdsToMove)
-            {
-                var pastedFolder = await MoveFolderAsync(folderId, targetFolderId);
-                pastedFolders.Add(pastedFolder);
-            }
+            var movedFolders = await _folderDatabaseService.MoveFoldersSubTreesAsync(foldersSubTreesToMove, targetFolder);
 
-            return pastedFolders;
+            await _folderDatabaseService.SaveAsync();
+
+            return movedFolders;
         }
 
         public async Task DeleteFolderAsync(Guid folderId)
@@ -62,30 +71,13 @@ namespace MemoriesBackend.Application.Services
             await _folderStorageService.DeleteFolderAsync(absoluteFolderPath);
         }
 
-        private async Task<IEnumerable<Folder>> MoveFoldersAsync(IEnumerable<Folder> foldersToMove, Guid targetFolderId)
-        {
-            IEnumerable<Folder> pastedFolders = [];
-
-            if (foldersToMove.Any())
-            {
-                var foldersIdsToMove = foldersToMove.Select(f => f.Id).ToList();
-
-                pastedFolders = await MoveFoldersAsync(foldersIdsToMove, targetFolderId);
-            }
-
-            return pastedFolders;
-        }
-
         private async Task MoveFoldersInStorageAsync(IEnumerable<Guid> sourceFoldersIds, Guid targetFolderId)
         {
             var targetFolderAbsolutePath = await _pathService.GetFolderAbsolutePathAsync(targetFolderId);
 
-            var sourceFoldersAbsolutePathsTasks = sourceFoldersIds.Select(_pathService.GetFolderAbsolutePathAsync);
-
-            var sourceFoldersAbsolutePaths = await Task.WhenAll(sourceFoldersAbsolutePathsTasks);
-
-            foreach (var sourceFolderAbsolutePath in sourceFoldersAbsolutePaths)
+            foreach (var sourceFolderId in sourceFoldersIds)
             {
+                var sourceFolderAbsolutePath = await _pathService.GetFolderAbsolutePathAsync(sourceFolderId);
                 await _folderStorageService.MoveFolderAsync(sourceFolderAbsolutePath, targetFolderAbsolutePath);
             }
         }
@@ -96,39 +88,13 @@ namespace MemoriesBackend.Application.Services
 
             var targetFolder = await _folderDatabaseService.GetFolderByIdAsync(targetFolderId);
 
-            if (foldersToCopy.Any())
+            foreach (var folderToCopy in foldersToCopy)
             {
-                foreach (var folderToCopy in foldersToCopy)
-                {
-                    var pastedFolder = await CopyAndPasteFolderAsync(folderToCopy, targetFolder);
-                    pastedFolders.Add(pastedFolder);
-                }
+                var pastedFolder = await CopyAndPasteFolderAsync(folderToCopy, targetFolder);
+                pastedFolders.Add(pastedFolder);
             }
 
             return pastedFolders;
-        }
-
-        private async Task<Folder> MoveFolderAsync(Guid sourceFolderId, Guid targetFolderId)
-        {
-            var sourceFolder = await _folderDatabaseService.GetFolderByIdWithContentAsync(sourceFolderId);
-            if (sourceFolder == null)
-            {
-                throw new ApplicationException($"Source folder with ID {sourceFolderId} not found.");
-            }
-
-            var targetFolder = await _folderDatabaseService.GetFolderByIdWithContentAsync(targetFolderId);
-            if (targetFolder == null)
-            {
-                throw new ApplicationException($"Target folder with ID {targetFolderId} not found.");
-            }
-
-            var sourceFolderSubTree = await _folderDatabaseService.GetFolderSubTreeAsync(sourceFolderId);
-
-            await _folderDatabaseService.MoveFolderSubTreeAsync(sourceFolderSubTree, targetFolder);
-
-            await _folderDatabaseService.SaveAsync();
-
-            return sourceFolder;
         }
 
         private async Task<Folder> CopyAndPasteFolderAsync(Folder sourceFolder, Folder targetFolder)
