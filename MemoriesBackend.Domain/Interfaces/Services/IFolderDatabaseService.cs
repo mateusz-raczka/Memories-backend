@@ -42,13 +42,11 @@ namespace MemoriesBackend.Domain.Interfaces.Services
 
         Task<Folder> GetFolderSubTreeAsync(Guid folderId, bool asNoTracking = true);
 
-        Task<Folder> MoveFolderSubTreeAsync(Folder folderSubTreeToMove, Folder targetFolder);
-
         Task<List<Folder>> GetFoldersSubTreesAsync(IEnumerable<Guid> folderIds, bool asNoTracking = true);
 
         Task<List<Folder>> GetFoldersWithContentAsync(IEnumerable<Folder> folders, bool asNoTracking = true);
 
-        Task<List<Folder>> MoveFoldersSubTreesAsync(List<Folder> foldersSubTreesToMove, Folder targetFolder);
+        Task<List<Folder>> MoveFoldersSubTreesAsync(IEnumerable<Folder> foldersToMove, Folder targetFolder);
 
         Task<Folder> GetFolderWithContentAsync(Folder folder, bool asNoTracking = true);
 

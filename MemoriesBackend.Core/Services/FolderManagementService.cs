@@ -34,10 +34,10 @@ namespace MemoriesBackend.Application.Services
 
         public async Task<IEnumerable<Folder>> MoveFoldersAsync(IEnumerable<Guid> foldersIdsToMove, Guid targetFolderId)
         {
-            var foldersSubTreesToMove = await _folderDatabaseService.GetFoldersSubTreesAsync(foldersIdsToMove);
+            var foldersToMove = await _folderDatabaseService.GetAllFoldersAsync(filter: f=> foldersIdsToMove.Contains(f.Id));
             var targetFolder = await _folderDatabaseService.GetFolderByIdWithContentAsync(targetFolderId);
 
-            if (!foldersSubTreesToMove.Any()) 
+            if (!foldersToMove.Any()) 
             {
                 throw new ApplicationException("Failed to move folder/s - no folder was found");
             }
@@ -49,7 +49,7 @@ namespace MemoriesBackend.Application.Services
 
             await MoveFoldersInStorageAsync(foldersIdsToMove, targetFolderId);
 
-            var movedFolders = await _folderDatabaseService.MoveFoldersSubTreesAsync(foldersSubTreesToMove, targetFolder);
+            var movedFolders = await _folderDatabaseService.MoveFoldersSubTreesAsync(foldersToMove, targetFolder);
 
             await _folderDatabaseService.SaveAsync();
 

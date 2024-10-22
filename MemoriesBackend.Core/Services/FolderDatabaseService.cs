@@ -217,54 +217,33 @@ namespace MemoriesBackend.Application.Services
             return foldersSubTrees;
         }
 
-        public async Task<List<Folder>> MoveFoldersSubTreesAsync(List<Folder> foldersSubTreesToMove, Folder targetFolder)
+        public async Task<List<Folder>> MoveFoldersSubTreesAsync(IEnumerable<Folder> foldersToMove, Folder targetFolder)
         {
-            if (!foldersSubTreesToMove.Any())
+            var foldersIdsToMove = foldersToMove.Select(f => f.Id).ToList();
+
+            if (!foldersToMove.Any())
             {
                 throw new ApplicationException("Failed to move folders sub trees - there are no provided folders to move");
             }
 
-            var foldersSubTreesInTheSameDirectoryAsTargetFolder = foldersSubTreesToMove
-                .Where(f => f.ParentFolderId == targetFolder.ParentFolderId)
-                .ToList();
+            var foldersSubTreesToMove = await GetFoldersSubTreesAsync(foldersIdsToMove);
 
-            if (foldersSubTreesInTheSameDirectoryAsTargetFolder.Any())
-            {
-                var targetFolderParent = await GetFolderByIdWithContentAsync((Guid)targetFolder.ParentFolderId);
-
-                Folder? targetFolderLastSibling = targetFolderParent.ChildFolders.OrderByDescending(f => f.HierarchyId)
-                                                            .FirstOrDefault(f => foldersSubTreesInTheSameDirectoryAsTargetFolder.Contains(f) && f.Id != targetFolder.Id);
-
-                targetFolder.HierarchyId = GenerateHierarchyId(targetFolderParent, targetFolderLastSibling);
-
-                UpdateFolderAsync(targetFolder);
-            }
-
-            foreach(var folderSubTreeToMove in foldersSubTreesToMove)
-            {
-                ChangeFolderSubTreeParent(folderSubTreeToMove, targetFolder);
-            }
+            ChangeFoldersSubTreesParent(foldersSubTreesToMove, targetFolder);
 
             return foldersSubTreesToMove;
         }
 
-        public async Task<Folder> MoveFolderSubTreeAsync(Folder folderSubTreeToMove, Folder targetFolder)
+        public async Task SaveAsync()
         {
-            if (folderSubTreeToMove.ParentFolderId == targetFolder.ParentFolderId)
+            await _folderRepository.Save();
+        }
+
+        private void ChangeFoldersSubTreesParent(IEnumerable<Folder> foldersSubTreesToMove, Folder targetFolder)
+        {
+            foreach (var folderSubTreeToMove in foldersSubTreesToMove)
             {
-                var targetFolderParent = await GetFolderByIdWithContentAsync((Guid)targetFolder.ParentFolderId);
-
-                Folder? targetFolderLastSibling = targetFolderParent.ChildFolders.OrderByDescending(f => f.HierarchyId)
-                                                           .FirstOrDefault(f => f.Id != targetFolder.Id && f.Id != folderSubTreeToMove.Id);
-
-                targetFolder.HierarchyId = GenerateHierarchyId(targetFolderParent, targetFolderLastSibling);
-
-                UpdateFolderAsync(targetFolder);
+                ChangeFolderSubTreeParent(folderSubTreeToMove, targetFolder);
             }
-
-            ChangeFolderSubTreeParent(folderSubTreeToMove, targetFolder);
-
-            return folderSubTreeToMove;
         }
 
         private void ChangeFolderSubTreeParent(Folder folderSubTreeToMove, Folder targetFolder)
@@ -277,11 +256,6 @@ namespace MemoriesBackend.Application.Services
             {
                 ChangeFolderSubTreeParent(childFolder, folderSubTreeToMove);
             }
-        }
-
-        public async Task SaveAsync()
-        {
-            await _folderRepository.Save();
         }
 
         private void ChangeFolderParent(Folder sourceFolder, Folder targetFolder)

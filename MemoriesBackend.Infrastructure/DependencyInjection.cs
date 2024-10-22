@@ -8,8 +8,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using File = MemoriesBackend.Domain.Entities.File;
 
 namespace MemoriesBackend.Infrastructure;
 
@@ -35,6 +33,7 @@ public static class DependencyInjection
             });
         });
 
+        //Registration validation
         services.Configure<IdentityOptions>(options =>
         {
             options.Password.RequiredLength = 8;
@@ -46,7 +45,7 @@ public static class DependencyInjection
             options.SignIn.RequireConfirmedEmail = false;
         });
 
-        //Scoped repositories
+        //Repositories
         services.AddScoped<IFileRepository, FileRepository>();
         services.AddScoped<IGenericRepository<FileDetails>, GenericRepository<FileDetails>>();
         services.AddScoped<IGenericRepository<Category>, GenericRepository<Category>>();
