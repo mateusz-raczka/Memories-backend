@@ -18,7 +18,7 @@ namespace MemoriesBackend.Domain.Entities
         public virtual FolderDetails FolderDetails { get; set; }
         [ForeignKey(nameof(ParentFolderId))]
         public virtual Folder ParentFolder { get; set; }
-        public virtual List<Folder>? ChildFolders { get; set; }
-        public virtual List<File>? Files { get; set; }
+        public virtual List<Folder> ChildFolders { get; set; } = new List<Folder>();
+        public virtual List<File> Files { get; set; } = new List<File>();
     }
 }

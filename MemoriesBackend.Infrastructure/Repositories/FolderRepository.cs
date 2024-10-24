@@ -70,24 +70,31 @@ public class FolderRepository : GenericRepository<Folder>, IFolderRepository
 
     public async Task<Folder> GetFolderSubTreeAsync(Guid folderId, bool asNoTracking = true)
     {
-        var folder = await GetQueryable(asNoTracking)
-            .Include(folder => folder.ChildFolders)
-            .Include(folder => folder.FolderDetails)
-            .AsSplitQuery()
-            .FirstOrDefaultAsync(folder => folder.Id == folderId);
+        var rootFolder = await GetById(folderId);
 
-        if (folder == null)
+        if (rootFolder == null)
         {
-            throw new ApplicationException("Failed to get folder tree - folder in tree does not exist");
+            throw new ApplicationException("Failed to get folder tree - folder does not exist");
         }
 
-        var getChildFoldersTasks = folder.ChildFolders.Select(f => GetFolderSubTreeAsync(f.Id, asNoTracking));
+        var folderFlatSubTree = await GetQueryable(asNoTracking)
+            .Where(f => f.HierarchyId.IsDescendantOf(rootFolder.HierarchyId) || f.Id == folderId)
+            .Include(f => f.FolderDetails)
+            .AsSplitQuery()
+            .OrderBy(f => f.HierarchyId)
+            .ToListAsync();
 
-        var childFolders = await Task.WhenAll(getChildFoldersTasks);
+        var folderDictionary = folderFlatSubTree.ToDictionary(f => f.Id);
 
-        folder.ChildFolders = childFolders.OrderByDescending(f=> f.HierarchyId).ToList();
+        foreach (var folder in folderFlatSubTree)
+        {
+            if (folder.ParentFolderId.HasValue && folderDictionary.ContainsKey(folder.ParentFolderId.Value))
+            {
+                folderDictionary[folder.ParentFolderId.Value].ChildFolders.Add(folder);
+            }
+        }
 
-        return folder;
+        return folderDictionary[folderId];
     }
 
     public async Task<List<Folder>> GetFolderDescendantsAsync(Folder folder, bool asNoTracking = true)

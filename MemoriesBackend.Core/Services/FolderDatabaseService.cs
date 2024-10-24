@@ -162,7 +162,7 @@ namespace MemoriesBackend.Application.Services
             }
         }
 
-        public void UpdateFolderAsync(Folder folder)
+        public void UpdateFolder(Folder folder)
         {
             if (folder == null)
             {
@@ -242,34 +242,38 @@ namespace MemoriesBackend.Application.Services
         {
             foreach (var folderSubTreeToMove in foldersSubTreesToMove)
             {
-                ChangeFolderSubTreeParent(folderSubTreeToMove, targetFolder);
+                folderSubTreeToMove.ParentFolderId = targetFolder.Id;
+
+                Folder? sourceFolderLastSibling = targetFolder.ChildFolders.OrderByDescending(f => f.HierarchyId)
+                                                           .FirstOrDefault(f => f.Id != folderSubTreeToMove.Id);
+
+                folderSubTreeToMove.HierarchyId = GenerateHierarchyId(targetFolder, sourceFolderLastSibling);
+
+                targetFolder.ChildFolders.Add(folderSubTreeToMove);
+
+                foreach (var childFolderSubTree in folderSubTreeToMove.ChildFolders)
+                {
+                    UpdateHierarchyIdsForSubTree(childFolderSubTree, folderSubTreeToMove);
+                }
+
+                UpdateFolder(folderSubTreeToMove);
             }
         }
 
-        private void ChangeFolderSubTreeParent(Folder folderSubTreeToMove, Folder targetFolder)
+        private void UpdateHierarchyIdsForSubTree(Folder folderSubTreeToMove, Folder targetFolder)
         {
-            ChangeFolderParent(folderSubTreeToMove, targetFolder);
+            var oldParentHierarchyId = folderSubTreeToMove.HierarchyId.GetAncestor(1);
+            var newParentHierarchyId = targetFolder.HierarchyId;
 
-            var childFolders = folderSubTreeToMove.ChildFolders.ToList();
+            folderSubTreeToMove.HierarchyId = folderSubTreeToMove.HierarchyId
+                .GetReparentedValue(oldParentHierarchyId, newParentHierarchyId);
 
-            foreach (var childFolder in childFolders)
+            foreach (var childFolder in folderSubTreeToMove.ChildFolders)
             {
-                ChangeFolderSubTreeParent(childFolder, folderSubTreeToMove);
+                UpdateHierarchyIdsForSubTree(childFolder, folderSubTreeToMove);
             }
-        }
 
-        private void ChangeFolderParent(Folder sourceFolder, Folder targetFolder)
-        {
-            Folder? sourceFolderLastSibling = targetFolder.ChildFolders.OrderByDescending(f => f.HierarchyId)
-                                                           .FirstOrDefault(f => f.Id != sourceFolder.Id);
-
-            sourceFolder.ParentFolderId = targetFolder.Id;
-
-            sourceFolder.HierarchyId = GenerateHierarchyId(targetFolder, sourceFolderLastSibling);
-
-            targetFolder.ChildFolders.Add(sourceFolder);
-
-            UpdateFolderAsync(sourceFolder);
+            UpdateFolder(folderSubTreeToMove);
         }
     }
 }
