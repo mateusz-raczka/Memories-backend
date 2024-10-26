@@ -10,6 +10,6 @@ namespace MemoriesBackend.Domain.Entities
         public string Name { get; set; }
 
         // Navigation properties
-        public virtual IEnumerable<File> Files { get; set; }
+        public IEnumerable<File> Files { get; set; }
     }
 }

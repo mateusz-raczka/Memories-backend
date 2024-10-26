@@ -339,8 +339,8 @@ namespace MemoriesBackend.Infrastructure.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Size = table.Column<long>(type: "bigint", nullable: false),
                     Extension = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsStared = table.Column<bool>(type: "bit", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsStared = table.Column<bool>(type: "bit", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastOpenedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -385,12 +385,12 @@ namespace MemoriesBackend.Infrastructure.Migrations
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("3a23c6a0-f5d2-42f9-99f3-26a4bc34d1b2"), "Edit" },
-                    { new Guid("458302ce-5379-454c-8002-e3e3b1a43b61"), "Transfer" },
-                    { new Guid("56041c5c-6c90-4599-8680-5d6e032b1796"), "Share" },
-                    { new Guid("571ae623-01af-4f7b-b005-20ea1146842a"), "Open" },
-                    { new Guid("c339b586-b715-41d8-9bfc-dc9d564db317"), "Create" },
-                    { new Guid("df5efdb4-7fea-4371-8451-76d99bb5ab95"), "Delete" }
+                    { new Guid("2062e433-6aab-4687-a812-fa0c4d9c5069"), "Edit" },
+                    { new Guid("50f2d7c3-280b-42be-a0cb-11a15a05d26e"), "Transfer" },
+                    { new Guid("562ad87b-5929-4fb6-8d7f-8243886ef1f9"), "Delete" },
+                    { new Guid("7e63cfe2-4963-4163-95f5-1f2d1b496a3b"), "Create" },
+                    { new Guid("c82b696c-7aa4-4eaf-819a-d3cb531200bd"), "Open" },
+                    { new Guid("fb3edc8a-8eb2-4e18-8d3c-5f4af55008dd"), "Share" }
                 });
 
             migrationBuilder.InsertData(
@@ -398,9 +398,9 @@ namespace MemoriesBackend.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "0799cf7e-b67c-4e00-8c3b-1be28181bfa9", null, "ADMIN", "ADMIN" },
-                    { "44e4b9ec-24d9-48cf-820f-da6d73b1cb24", null, "USER", "USER" },
-                    { "eae3e174-8392-4615-954d-0d3a4dc5d007", null, "OWNER", "OWNER" }
+                    { "42f59d1c-886f-4665-bc36-72d36582ab89", null, "ADMIN", "ADMIN" },
+                    { "a6b3a162-fbaa-4e17-8c71-68b1f2deb48c", null, "USER", "USER" },
+                    { "c9d6fc19-66cf-4788-8527-5c3f7f78ed57", null, "OWNER", "OWNER" }
                 });
 
             migrationBuilder.CreateIndex(

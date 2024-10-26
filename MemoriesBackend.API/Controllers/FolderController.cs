@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using MemoriesBackend.API.DTO.Folder.Request;
 using MemoriesBackend.API.DTO.Folder.Response;
+using MemoriesBackend.API.DTO.FolderDetails.Request;
 using MemoriesBackend.Domain.Entities;
 using MemoriesBackend.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 
 namespace MemoriesBackend.API.Controllers;
 
@@ -26,6 +28,30 @@ public class FolderController : ControllerBase
         _mapper = mapper;
     }
 
+    [HttpPatch("Rename")]
+    public async Task RenameFolder([FromBody] FolderDetailsNamePatchRequest folderDetailsDto)
+    {
+        var folderDetailsDomain = _mapper.Map<FolderDetails>(folderDetailsDto);
+
+        _folderDatabaseService.PatchFolderDetails(folderDetailsDomain, 
+            fd => fd.Name
+            );
+
+        await _folderDatabaseService.SaveAsync();
+    }
+
+    [HttpPatch("Star")]
+    public async Task ChangeFolderIsStared([FromBody] FolderDetailsIsStaredPatchRequest folderDetailsDto)
+    {
+        var folderDetailsDomain = _mapper.Map<FolderDetails>(folderDetailsDto);
+
+        _folderDatabaseService.PatchFolderDetails(folderDetailsDomain,
+            fd => fd.IsStared
+            );
+
+        await _folderDatabaseService.SaveAsync();
+    }
+
     [HttpGet]
     public async Task<FolderGetByIdResponse> GetRootFolder()
     {
@@ -37,7 +63,7 @@ public class FolderController : ControllerBase
     }
 
     [HttpGet("{id:Guid}")]
-    public async Task<FolderGetByIdResponse> GetById(Guid id)
+    public async Task<FolderGetByIdResponse> GetFolderById(Guid id)
     {
         var folderDomain = await _folderDatabaseService.GetFolderByIdWithContentAsync(id);
 
@@ -46,8 +72,8 @@ public class FolderController : ControllerBase
         return response;
     }
 
-    [HttpGet("path/{id:Guid}")]
-    public async Task<FolderGetByIdWithPathResponse> GetByIdWithPath(Guid id)
+    [HttpGet("Path/{id:Guid}")]
+    public async Task<FolderGetByIdWithPathResponse> GetFolderByIdWithPath(Guid id)
     {
         var folderDomain = await _folderDatabaseService.GetFolderByIdWithContentAndDescendants(id);
 
@@ -57,7 +83,7 @@ public class FolderController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<FolderAddResponse> Create([FromBody] FolderAddRequest folderCreateDto)
+    public async Task<FolderAddResponse> CreateFolder([FromBody] FolderAddRequest folderCreateDto)
     {
         var folderDomain = _mapper.Map<Folder>(folderCreateDto);
 
@@ -71,7 +97,7 @@ public class FolderController : ControllerBase
     }
 
     [HttpDelete("{id:Guid}")]
-    public async Task Delete(Guid id)
+    public async Task DeleteFolder(Guid id)
     {
         await _folderManagementService.DeleteFolderAsync(id);
     }

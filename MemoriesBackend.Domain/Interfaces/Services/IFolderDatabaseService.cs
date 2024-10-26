@@ -58,6 +58,8 @@ namespace MemoriesBackend.Domain.Interfaces.Services
 
         void UpdateFolder(Folder folder);
 
+        void PatchFolderDetails(FolderDetails folderDetails, params Expression<Func<FolderDetails, object>>[] updatedProperties);
+
         Task SaveAsync();
     }
 }

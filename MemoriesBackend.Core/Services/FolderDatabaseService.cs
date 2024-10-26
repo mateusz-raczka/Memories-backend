@@ -1,4 +1,5 @@
 ﻿using MemoriesBackend.Domain.Entities;
+using MemoriesBackend.Domain.Interfaces.Models;
 using MemoriesBackend.Domain.Interfaces.Repositories;
 using MemoriesBackend.Domain.Interfaces.Services;
 using MemoriesBackend.Domain.Models;
@@ -11,10 +12,15 @@ namespace MemoriesBackend.Application.Services
     public class FolderDatabaseService : IFolderDatabaseService
     {
         private readonly IFolderRepository _folderRepository;
+        private readonly IGenericRepository<FolderDetails> _folderDetailsRepository;
 
-        public FolderDatabaseService(IFolderRepository folderRepository)
+        public FolderDatabaseService(
+            IFolderRepository folderRepository,
+            IGenericRepository<FolderDetails> folderDetailsRepository
+            )
         {
             _folderRepository = folderRepository;
+            _folderDetailsRepository = folderDetailsRepository;
         }
 
         public async Task<Folder> CreateRootFolderAsync()
@@ -168,8 +174,17 @@ namespace MemoriesBackend.Application.Services
             {
                 throw new ApplicationException("Failed to update folder - folder does not exist");
             }
-
             _folderRepository.Update(folder);
+        }
+
+        public void PatchFolderDetails(FolderDetails folderDetails, params Expression<Func<FolderDetails, object>>[] updatedProperties)
+        {
+            if (folderDetails == null)
+            {
+                throw new ApplicationException("Failed to update folder details - folder does not exist");
+            }
+
+            _folderDetailsRepository.Patch(folderDetails, updatedProperties);
         }
 
         public async Task<Folder> GetFolderWithContentAsync(Folder folder, bool asNoTracking = true)

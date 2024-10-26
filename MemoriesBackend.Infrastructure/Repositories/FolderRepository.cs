@@ -12,6 +12,11 @@ public class FolderRepository : GenericRepository<Folder>, IFolderRepository
     {
     }
 
+    public override Task<Folder> GetById(Guid id, bool asNoTracking = true)
+    {
+        return base.GetById(id, asNoTracking);
+    }
+
     public async Task<Folder> GetFolderByIdWithContentAsync(Guid folderId, bool asNoTracking = true)
     {
         return await GetQueryable(asNoTracking)

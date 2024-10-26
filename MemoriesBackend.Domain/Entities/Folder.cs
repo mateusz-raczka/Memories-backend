@@ -15,10 +15,10 @@ namespace MemoriesBackend.Domain.Entities
         public HierarchyId? OldHierarchyId { get; set; }
 
         // Navigation properties
-        public virtual FolderDetails FolderDetails { get; set; }
+        public FolderDetails FolderDetails { get; set; }
         [ForeignKey(nameof(ParentFolderId))]
-        public virtual Folder ParentFolder { get; set; }
-        public virtual List<Folder> ChildFolders { get; set; } = new List<Folder>();
-        public virtual List<File> Files { get; set; } = new List<File>();
+        public Folder ParentFolder { get; set; }
+        public List<Folder> ChildFolders { get; set; } = new List<Folder>();
+        public List<File> Files { get; set; } = new List<File>();
     }
 }

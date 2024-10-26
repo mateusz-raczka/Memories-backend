@@ -10,10 +10,15 @@ namespace MemoriesBackend.Application.Services
     public class FileDatabaseService : IFileDatabaseService
     {
         private readonly IFileRepository _fileRepository;
+        private readonly IGenericRepository<FileDetails> _fileDetailsRepository;
 
-        public FileDatabaseService(IFileRepository fileRepository)
+        public FileDatabaseService(
+            IFileRepository fileRepository,
+            IGenericRepository<FileDetails> fileDetailsRepository
+            )
         {
             _fileRepository = fileRepository;
+            _fileDetailsRepository = fileDetailsRepository;
         }
 
         public async Task<File> CreateFileAsync(File file)
@@ -92,10 +97,20 @@ namespace MemoriesBackend.Application.Services
         {
             if(file == null)
             {
-                throw new ApplicationException("Failed to update - file is null");
+                throw new ApplicationException("Failed to update file - file does not exists");
             }
 
             _fileRepository.Update(file);
+        }
+
+        public void PatchFileDetails(FileDetails fileDetails, params Expression<Func<FileDetails, object>>[] updatedProperties)
+        {
+            if (fileDetails == null)
+            {
+                throw new ApplicationException("Failed to update file details - file does not exists");
+            }
+
+            _fileDetailsRepository.Patch(fileDetails, updatedProperties);
         }
 
         public async Task SaveAsync()

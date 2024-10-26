@@ -54,6 +54,7 @@ public static class DependencyInjection
         services.AddScoped<IFolderRepository, FolderRepository>();
         services.AddScoped<IFileUploadProgressRepository, FileUploadProgressRepository>();
         services.AddScoped<IGenericRepository<FileChunk>, GenericRepository<FileChunk>>();
+        services.AddScoped<IGenericRepository<FolderDetails>, GenericRepository<FolderDetails>>();
 
         //Transactions
         services.AddScoped<ITransactionHandler, TransactionHandler>();

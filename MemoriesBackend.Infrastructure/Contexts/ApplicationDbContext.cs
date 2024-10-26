@@ -33,23 +33,5 @@ public class ApplicationDbContext : IdentityDbContext
 
         modelBuilder.SeedRoles();
         modelBuilder.SeedActivityTypes();
-
-        // Cascade delete configuration for 1:1
-
-        modelBuilder.Entity<File>()
-                .HasOne(e => e.FileDetails)
-                .WithOne(e => e.File)
-                .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<Folder>()
-            .HasOne(e => e.FolderDetails)
-            .WithOne(e => e.Folder)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<Folder>()
-           .HasMany(f => f.Files)
-           .WithOne(f => f.Folder)
-           .HasForeignKey(f => f.FolderId)
-           .OnDelete(DeleteBehavior.Cascade);
     }
 }

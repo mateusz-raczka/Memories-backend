@@ -12,6 +12,8 @@ namespace MemoriesBackend.API.AutoMapper.Profiles
             CreateMap<FolderDetails, FolderDetailsAddRequest>().ReverseMap();
             CreateMap<FolderDetails, FolderDetailsResponse>().ReverseMap();
             CreateMap<FolderDetailsAddRequest, FolderDetailsResponse>().ReverseMap();
+            CreateMap<FolderDetailsNamePatchRequest, FolderDetails>().ReverseMap();
+            CreateMap<FolderDetailsIsStaredPatchRequest, FolderDetails>().ReverseMap();
         }
     }
 }

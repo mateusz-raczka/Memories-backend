@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using MemoriesBackend.Domain.Entities;
+using System.Linq.Expressions;
 using File = MemoriesBackend.Domain.Entities.File;
 
 namespace MemoriesBackend.Domain.Interfaces.Services
@@ -21,6 +22,7 @@ namespace MemoriesBackend.Domain.Interfaces.Services
         );
         Task BatchCreateFilesAsync(IEnumerable<File> files);
         void UpdateFile(File file);
+        void PatchFileDetails(FileDetails fileDetails, params Expression<Func<FileDetails, object>>[] updatedProperties);
         Task SaveAsync();
     }
 }

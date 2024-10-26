@@ -12,12 +12,11 @@ namespace MemoriesBackend.Domain.Entities
         public Guid OwnerId { get; set; }
 
         // Navigation properties
-        [Required]
         [ForeignKey(nameof(FolderId))]
-        public virtual Folder Folder { get; set; }
-        public virtual List<Tag>? Tags { get; set; }
-        public virtual Category? Category { get; set; }
-        public virtual FileDetails FileDetails { get; set; }
-        public virtual List<FileActivity>? FileActivities { get; set; }
+        public Folder Folder { get; set; }
+        public List<Tag>? Tags { get; set; }
+        public Category? Category { get; set; }
+        public FileDetails FileDetails { get; set; }
+        public List<FileActivity>? FileActivities { get; set; }
     }
 }

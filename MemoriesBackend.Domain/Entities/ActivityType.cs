@@ -8,6 +8,6 @@ namespace MemoriesBackend.Domain.Entities
         public string Name { get; set; }
 
         // Navigation properties
-        public virtual FileActivity FileActivity { get; set; }
+        public FileActivity FileActivity { get; set; }
     }
 }

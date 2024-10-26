@@ -23,6 +23,8 @@ namespace MemoriesBackend.Domain.Interfaces.Repositories
 
         void Update(TEntity entityToUpdate);
 
+        void Patch(TEntity entityToPatch, params Expression<Func<TEntity, object>>[] updatedProperties);
+
         Task Save();
     }
 }

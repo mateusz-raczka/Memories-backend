@@ -1,4 +1,5 @@
-﻿using MemoriesBackend.Domain.Interfaces.Models;
+﻿using MemoriesBackend.Domain.Entities;
+using MemoriesBackend.Domain.Interfaces.Models;
 using MemoriesBackend.Domain.Interfaces.Repositories;
 using MemoriesBackend.Domain.Interfaces.Services;
 using MemoriesBackend.Infrastructure.Contexts;
@@ -154,6 +155,25 @@ namespace MemoriesBackend.Infrastructure.Repositories
             }
 
             _context.Entry(entityToUpdate).State = EntityState.Modified;
+        }
+
+        public virtual void Patch(TEntity entityToPatch, params Expression<Func<TEntity, object>>[] updatedProperties)
+        {
+            if (typeof(IOwned).IsAssignableFrom(entityToPatch.GetType()))
+            {
+                var currentUserId = _userContextService.Current.UserData.Id;
+                if (((IOwned)entityToPatch).OwnerId != currentUserId)
+                {
+                    throw new UnauthorizedAccessException("Cannot modify an entity that does not belong to the current user");
+                }
+            }
+
+            _context.Attach(entityToPatch);
+
+            foreach (var property in updatedProperties)
+            {
+                _context.Entry(entityToPatch).Property(property).IsModified = true;
+            }
         }
 
         public virtual async Task Save()

@@ -23,8 +23,8 @@ namespace MemoriesBackend.API.Controllers
             _mapper = mapper;
         }
 
-        [HttpPost("copy/foldersandfiles")]
-        public async Task<FoldersAndFilesCopyAndPasteResponse> CopyAndPaste([FromBody] FoldersAndFilesCopyAndPasteRequest foldersAndFilesCopyAndPasteDto)
+        [HttpPost("Copy/FoldersAndFiles")]
+        public async Task<FoldersAndFilesCopyAndPasteResponse> CopyAndPasteFoldersAndFiles([FromBody] FoldersAndFilesCopyAndPasteRequest foldersAndFilesCopyAndPasteDto)
         {
             var folderDomain = await _folderAndFileManagementService.CopyAndPasteFoldersAndFilesAsync(
                 foldersAndFilesCopyAndPasteDto.FilesIds,
@@ -37,8 +37,8 @@ namespace MemoriesBackend.API.Controllers
             return response;
         }
 
-        [HttpPost("cut/foldersandfiles")]
-        public async Task<FoldersAndFilesCutAndPasteResponse> Move([FromBody] FoldersAndFilesCutAndPasteRequest foldersAndFilesCutAndPasteDto)
+        [HttpPost("Cut/FoldersAndFiles")]
+        public async Task<FoldersAndFilesCutAndPasteResponse> MoveFoldersAndFiles([FromBody] FoldersAndFilesCutAndPasteRequest foldersAndFilesCutAndPasteDto)
         {
             var folderDomain = await _folderAndFileManagementService.MoveFoldersAndFilesAsync(
                 foldersAndFilesCutAndPasteDto.FilesIds,
@@ -51,8 +51,8 @@ namespace MemoriesBackend.API.Controllers
             return response;
         }
 
-        [HttpDelete("delete/foldersandfiles")]
-        public async Task Delete([FromBody] FoldersAndFilesDeleteRequest foldersAndFilesDeleteDto)
+        [HttpDelete("Delete/FoldersAndFiles")]
+        public async Task DeleteFoldersAndFiles([FromBody] FoldersAndFilesDeleteRequest foldersAndFilesDeleteDto)
         {
             await _folderAndFileManagementService.DeleteFoldersAndFilesAsync(
                 foldersAndFilesDeleteDto.FilesIds,

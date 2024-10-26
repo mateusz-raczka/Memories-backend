@@ -12,9 +12,8 @@ namespace MemoriesBackend.Domain.Entities
         public DateTime Date { get; set; }
 
         // Navigation properties
-        [Required]
         [ForeignKey(nameof(ActivityTypeId))]
-        public virtual ActivityType ActivityType { get; set; }
-        public virtual File File { get; set; }
+        public ActivityType ActivityType { get; set; }
+        public File File { get; set; }
     }
 }

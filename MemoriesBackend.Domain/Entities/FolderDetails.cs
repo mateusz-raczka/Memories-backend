@@ -1,5 +1,4 @@
 ﻿using MemoriesBackend.Domain.Interfaces.Models;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MemoriesBackend.Domain.Entities
@@ -9,14 +8,13 @@ namespace MemoriesBackend.Domain.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public bool? IsStared { get; set; }
+        public bool IsStared { get; set; } = false;
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public DateTime? LastOpenedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
 
         //Navigation properties
-        [Required]
         [ForeignKey(nameof(Id))]
-        public virtual Folder Folder { get; set; }
+        public Folder Folder { get; set; }
     }
 }

@@ -13,8 +13,7 @@ namespace MemoriesBackend.Domain.Entities
         public Guid OwnerId { get; set; }
 
         // Navigation properties
-        [Required]
         [ForeignKey(nameof(FileUploadProgressId))]
-        public virtual FileUploadProgress FileUploadProgress { get; set; }
+        public FileUploadProgress FileUploadProgress { get; set; }
     }
 }

@@ -16,6 +16,6 @@ namespace MemoriesBackend.Domain.Entities
         public Guid OwnerId { get; set; }
 
         // Navigation properties
-        public virtual List<FileChunk> FileChunks { get; set; }
+        public List<FileChunk> FileChunks { get; set; }
     }
 }
