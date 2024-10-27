@@ -9,6 +9,7 @@ namespace MemoriesBackend.Domain.Interfaces.Services
         Task<File> AddFileAsync(IFormFile fileData, Guid folderId);
         Task DeleteFileAsync(Guid fileId);
         Task<FileContentResult> DownloadFileAsync(Guid fileId);
+        Task<FileContentResult> DownloadFilesAsync(IEnumerable<Guid> filesIds);
         Task<FileStreamResult> StreamFileAsync(Guid fileId);
         Task<IEnumerable<File>> CopyAndPasteFilesAsync(IEnumerable<File> filesToCopy, Guid targetFolderId);
         Task<IEnumerable<File>> CopyAndPasteFilesAsync(IEnumerable<Guid> filesIdsToCopy, Guid targetFolderId);

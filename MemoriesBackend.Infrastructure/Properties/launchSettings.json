@@ -3,7 +3,7 @@
     "MemoriesBackend.Infrastructure": {
       "commandName": "Project",
       "environmentVariables": {
-        "DB_SERVER": "147.185.221.22, 39143",
+        "DB_SERVER": "209.25.141.76, 1433",
         "DB_NAME": "memories",
         "DB_USER": "sa",
         "DB_PASSWORD": "PicklePie2022!",

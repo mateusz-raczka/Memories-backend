@@ -16,5 +16,6 @@ namespace MemoriesBackend.Domain.Interfaces.Services
         Task MergeAndDeleteFileChunksAsync(FileUploadProgress uploadProgress, string absoluteFolderPath);
         Task MergeFileChunksAsync(FileUploadProgress uploadProgress, string absoluteFolderPath);
         Task MoveFileAsync(string fileAbsolutePath, string destinationFolderAbsolutePath);
+        Task<FileContentResult> DownloadFilesAsZipAsync(IEnumerable<string> absoluteFilePaths);
     }
 }

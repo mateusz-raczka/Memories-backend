@@ -156,6 +156,22 @@ namespace MemoriesBackend.Application.Services
             return await _fileStorageService.DownloadFileAsync(absoluteFilePath);
         }
 
+        public async Task<FileContentResult> DownloadFilesAsync(IEnumerable<Guid> filesIds)
+        {
+            var absoluteFilePaths = new List<string>();
+
+            foreach(var fileId in filesIds)
+            {
+                var absoluteFilePath = await _pathService.GetFileAbsolutePathAsync(fileId);
+
+                absoluteFilePaths.Add(absoluteFilePath);
+            }
+
+            var zipFile = await _fileStorageService.DownloadFilesAsZipAsync(absoluteFilePaths);
+
+            return zipFile;
+        }
+
         public async Task<IEnumerable<File>> CopyAndPasteFilesAsync(IEnumerable<File> filesToCopy, Guid targetFolderId)
         {
             var targetFolder = await _folderDatabaseService.GetFolderByIdAsync(targetFolderId);

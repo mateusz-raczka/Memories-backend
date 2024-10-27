@@ -137,6 +137,12 @@ public class FileController : ControllerBase
         return await _fileManagementService.DownloadFileAsync(id);
     }
 
+    [HttpPost("Download-Zip")]
+    public async Task<FileContentResult> DownloadFilesAsZip([FromBody] IEnumerable<Guid> fileIds)
+    {
+        return await _fileManagementService.DownloadFilesAsync(fileIds);
+    }
+
     [HttpGet("Preview/{id:Guid}")]
     public async Task<FileStreamResult> PreviewFile(Guid id)
     {

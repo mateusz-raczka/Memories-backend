@@ -23,7 +23,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\MemoriesBackend.Domain\MemoriesBackend.Domain.csproj" />
-		<ProjectReference Include="..\MemoriesBackend.Core\MemoriesBackend.Application.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

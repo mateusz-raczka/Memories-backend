@@ -3,7 +3,9 @@ using MemoriesBackend.Domain.Interfaces.Services;
 using MemoriesBackend.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters.Internal;
 using Microsoft.AspNetCore.StaticFiles;
+using System.IO.Compression;
 using File = System.IO.File;
 
 namespace MemoriesBackend.Application.Services
@@ -52,6 +54,35 @@ namespace MemoriesBackend.Application.Services
             return new FileContentResult(fileBytes, contentType)
             {
                 FileDownloadName = fileName
+            };
+        }
+
+        public async Task<FileContentResult> DownloadFilesAsZipAsync(IEnumerable<string> absoluteFilePaths)
+        {
+            var files = new Dictionary<string, byte[]>();
+
+            foreach(var filePath in absoluteFilePaths)
+            {
+                if (File.Exists(filePath))
+                {
+                    var fileBytes = await File.ReadAllBytesAsync(filePath);
+                    var fileName = Path.GetFileName(filePath);
+                    files.Add(fileName, fileBytes);
+                }
+            }
+
+            if (files.Count == 0)
+            {
+                throw new ApplicationException("No files found to download.");
+            }
+
+            var zipBytes = CreateZipArchive(files);
+            var zipFileName = $"{DateTime.Now:yyyyMMdd_HHmmss}.zip";
+            var contentType = "application/zip";
+
+            return new FileContentResult(zipBytes, contentType)
+            {
+                FileDownloadName = zipFileName
             };
         }
 
@@ -185,6 +216,26 @@ namespace MemoriesBackend.Application.Services
             if (Directory.Exists(tempFolderPath))
             {
                 Directory.Delete(tempFolderPath, true);
+            }
+        }
+
+        private byte[] CreateZipArchive(Dictionary<string, byte[]> files)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var zipArchive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+                {
+                    foreach (var file in files)
+                    {
+                        var zipEntry = zipArchive.CreateEntry(file.Key, CompressionLevel.Fastest);
+                        using (var entryStream = zipEntry.Open())
+                        {
+                            entryStream.Write(file.Value, 0, file.Value.Length);
+                        }
+                    }
+                }
+
+                return memoryStream.ToArray();
             }
         }
     }
