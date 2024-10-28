@@ -60,6 +60,8 @@ namespace MemoriesBackend.Domain.Interfaces.Services
 
         void PatchFolderDetails(FolderDetails folderDetails, params Expression<Func<FolderDetails, object>>[] updatedProperties);
 
+        Task SwitchFolderStarAsync(Guid folderId);
+
         Task SaveAsync();
     }
 }

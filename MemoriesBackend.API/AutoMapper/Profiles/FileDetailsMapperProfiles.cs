@@ -13,7 +13,6 @@ namespace MemoriesBackend.API.AutoMapper.Profiles
             CreateMap<FileDetails, FileDetailsDescriptionPatchRequest>().ReverseMap();
             CreateMap<FileDetailsDescriptionPatchRequest, FileDetails>().ReverseMap();
             CreateMap<FileDetailsNamePatchRequest, FileDetails>().ReverseMap();
-            CreateMap<FileDetailsIsStaredPatchRequest, FileDetails>().ReverseMap();
         }
     }
 }

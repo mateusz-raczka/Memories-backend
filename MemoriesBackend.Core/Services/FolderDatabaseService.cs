@@ -187,6 +187,19 @@ namespace MemoriesBackend.Application.Services
             _folderDetailsRepository.Patch(folderDetails, updatedProperties);
         }
 
+        public async Task SwitchFolderStarAsync(Guid folderId)
+        {
+            var folderDetailsToUpdate = await _folderDetailsRepository.GetById(folderId);
+
+            if (folderDetailsToUpdate == null)
+            {
+                throw new ApplicationException("Failed to update folder details - folder does not exist");
+            }
+
+            folderDetailsToUpdate.IsStared = !folderDetailsToUpdate.IsStared;
+
+            _folderDetailsRepository.Update(folderDetailsToUpdate);
+        }
         public async Task<Folder> GetFolderWithContentAsync(Folder folder, bool asNoTracking = true)
         {
             if (folder == null)

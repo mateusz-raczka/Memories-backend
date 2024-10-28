@@ -78,37 +78,24 @@ public class FileController : ControllerBase
     [HttpPost("Chunk")]
     public async Task<FileAddResponse> AddFileChunk(IFormFile fileData, [FromForm] string fileName, [FromForm] int chunkIndex, [FromForm] int totalChunks, [FromForm] Guid folderId, [FromForm] Guid fileId)
     {
-        using (var stream = fileData.OpenReadStream())
-        {
+        var fileDomain = await _fileManagementService.AddFileUsingChunksAsync(fileData, fileName, chunkIndex, totalChunks, folderId, fileId);
 
-            var fileDomain = await _fileManagementService.AddFileUsingChunksAsync(stream, fileName, chunkIndex, totalChunks, folderId, fileId);
+        var response = _mapper.Map<FileAddResponse>(fileDomain);
 
-            var response = _mapper.Map<FileAddResponse>(fileDomain);
-
-            return response;
-        }
+        return response;
     }
 
     [HttpPatch("Rename")]
     public async Task RenameFile([FromBody] FileDetailsNamePatchRequest fileDetailsDto)
     {
-        var fileDetailsDomain = _mapper.Map<FileDetails>(fileDetailsDto);
-
-        _fileDatabaseService.PatchFileDetails(fileDetailsDomain,
-            fd => fd.Name
-            );
-
-        await _fileDatabaseService.SaveAsync();
+        await _fileManagementService.RenameFileAsync(fileDetailsDto.Id, fileDetailsDto.Name);
     }
 
-    [HttpPatch("Star")]
-    public async Task ChangeFileIsStared([FromBody] FileDetailsIsStaredPatchRequest fileDetailsDto)
+    [HttpPatch("Star/{id:Guid}")]
+    public async Task ChangeFileIsStared(Guid id)
     {
-        var fileDetailsDomain = _mapper.Map<FileDetails>(fileDetailsDto);
 
-        _fileDatabaseService.PatchFileDetails(fileDetailsDomain,
-            fd => fd.IsStared
-            );
+        await _fileDatabaseService.SwitchFileStar(id);
 
         await _fileDatabaseService.SaveAsync();
     }

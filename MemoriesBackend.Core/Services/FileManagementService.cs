@@ -1,5 +1,6 @@
 ﻿using MemoriesBackend.Application.Interfaces;
 using MemoriesBackend.Domain.Entities;
+using MemoriesBackend.Domain.Interfaces.Repositories;
 using MemoriesBackend.Domain.Interfaces.Services;
 using MemoriesBackend.Domain.Interfaces.Transactions;
 using MemoriesBackend.Domain.Models;
@@ -17,6 +18,7 @@ namespace MemoriesBackend.Application.Services
         private readonly IPathService _pathService;
         private readonly IFileUploadProgressDatabaseService _fileUploadProgressDatabaseService;
         private readonly IFileChunkDatabaseService _fileChunkDatabaseService;
+        private readonly IGenericRepository<FileDetails> _fileDetailsRepository;
         private readonly ITransactionHandler _transactionHandler;
 
         public FileManagementService(
@@ -26,7 +28,8 @@ namespace MemoriesBackend.Application.Services
             IPathService pathService,
             IFileChunkDatabaseService fileChunkDatabaseService,
             IFileUploadProgressDatabaseService fileUploadProgressDatabaseService,
-            ITransactionHandler transactionHandler
+            ITransactionHandler transactionHandler,
+            IGenericRepository<FileDetails> fileDetailsRepository
             )
         {
             _fileStorageService = fileStorageService;
@@ -36,6 +39,7 @@ namespace MemoriesBackend.Application.Services
             _fileChunkDatabaseService = fileChunkDatabaseService;
             _fileUploadProgressDatabaseService = fileUploadProgressDatabaseService;
             _transactionHandler = transactionHandler;
+            _fileDetailsRepository = fileDetailsRepository;
         }
 
         public async Task<File> AddFileAsync(IFormFile fileData, Guid folderId)
@@ -70,7 +74,7 @@ namespace MemoriesBackend.Application.Services
             return createdFile;
         }
 
-        public async Task<File?> AddFileUsingChunksAsync(Stream stream, string fileName, int chunkIndex, int totalChunks, Guid folderId, Guid fileId)
+        public async Task<File?> AddFileUsingChunksAsync(IFormFile fileData, string fileName, int chunkIndex, int totalChunks, Guid folderId, Guid fileId)
         {
             File file = null;
 
@@ -83,15 +87,17 @@ namespace MemoriesBackend.Application.Services
 
             var absoluteFolderPath = _pathService.GetAbsolutePath(currentUploadProgress.RelativePath);
 
-            var fileChunkId = await _fileStorageService.UploadFileChunkAsync(stream, absoluteFolderPath, currentUploadProgress.Id);
+            var fileChunkId = await _fileStorageService.UploadFileChunkAsync(fileData, absoluteFolderPath, currentUploadProgress.Id);
 
             var fileChunk = new FileChunk
             {
                 Id = fileChunkId,
                 FileUploadProgressId = fileId,
-                Size = stream.Length,
+                Size = fileData.Length,
                 ChunkIndex = chunkIndex
             };
+
+            currentUploadProgress.Size += fileData.Length;
 
             await _fileChunkDatabaseService.CreateFileChunkAsync(fileChunk);
             await _fileChunkDatabaseService.SaveAsync();
@@ -123,8 +129,6 @@ namespace MemoriesBackend.Application.Services
             else
             {
                 currentUploadProgress.LastModifiedDate = DateTime.UtcNow;
-                currentUploadProgress.Size += stream.Length;
-
                 _fileUploadProgressDatabaseService.UpdateFileUploadProgressAsync(currentUploadProgress);
             }
 
@@ -147,6 +151,33 @@ namespace MemoriesBackend.Application.Services
             await _fileDatabaseService.DeleteFileAsync(fileId);
             _fileStorageService.DeleteFile(absoluteFilePath);
             await _fileDatabaseService.SaveAsync();
+        }
+
+        public async Task RenameFileAsync(Guid fileId, string name)
+        {
+            var fileToRename = await _fileDetailsRepository.GetById(fileId);
+
+            if (fileToRename == null)
+            {
+                throw new ApplicationException($"Failed to rename file with id {fileId} - file not found");
+            }
+
+            var oldExtension = fileToRename.Extension;
+            var newExtension = Path.GetExtension(name);
+
+            if (oldExtension != newExtension)
+            {
+                fileToRename.Extension = newExtension;
+
+                var absoluteFilePath = await _pathService.GetFileAbsolutePathAsync(fileId);
+                await _fileStorageService.ChangeFileExtensionAsync(absoluteFilePath, newExtension);
+            }
+
+            fileToRename.Name = name;
+
+            _fileDetailsRepository.Update(fileToRename);
+
+            await _fileDetailsRepository.Save();
         }
 
         public async Task<FileContentResult> DownloadFileAsync(Guid fileId)

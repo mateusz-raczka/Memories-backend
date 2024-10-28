@@ -149,7 +149,6 @@ namespace MemoriesBackend.Application.Services
             if (!contentTypeProvider.TryGetContentType(fileExtension, out var contentType))
                 contentType = "application/octet-stream";
 
-            // Open the file stream with async flag and proper buffer size for large files.
             var fileStream = new FileStream(absoluteFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 64 * 1024, useAsync: true);
 
             var result = new FileStreamResult(fileStream, contentType)
@@ -161,7 +160,7 @@ namespace MemoriesBackend.Application.Services
             return result;
         }
 
-        public async Task<Guid> UploadFileChunkAsync(Stream stream, string absoluteFolderPath, Guid fileId)
+        public async Task<Guid> UploadFileChunkAsync(IFormFile fileData, string absoluteFolderPath, Guid fileId)
         {
             Guid fileChunkId = Guid.NewGuid();
             var absoluteTempFolderPath = Path.Combine(absoluteFolderPath, $"Temp_{fileId}");
@@ -172,7 +171,7 @@ namespace MemoriesBackend.Application.Services
 
             using (var fileStream = new FileStream(absoluteFileChunkPath, FileMode.Create, FileAccess.Write, FileShare.None))
             {
-                await stream.CopyToAsync(fileStream);
+                await fileData.CopyToAsync(fileStream);
             }
 
             return fileChunkId;
@@ -208,6 +207,23 @@ namespace MemoriesBackend.Application.Services
 
             DeleteTempFolder(absoluteTempFolderPath);
         }
+
+        public async Task ChangeFileExtensionAsync(string absoluteFilePath, string newExtension)
+        {
+            if (string.IsNullOrWhiteSpace(absoluteFilePath))
+                throw new ArgumentException("File path cannot be null or empty", nameof(absoluteFilePath));
+
+            if (!File.Exists(absoluteFilePath))
+                throw new FileNotFoundException("File not found", absoluteFilePath);
+
+            if (!newExtension.StartsWith("."))
+                throw new ApplicationException("File extension must start with: '.'");
+
+            var newFilePath = Path.ChangeExtension(absoluteFilePath, newExtension);
+
+            await Task.Run(() => File.Move(absoluteFilePath, newFilePath, overwrite: true));
+        }
+
 
         private void DeleteTempFolder(string absoluteTempFolderPath)
         {

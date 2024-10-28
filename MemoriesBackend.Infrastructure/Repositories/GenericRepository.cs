@@ -73,11 +73,6 @@ namespace MemoriesBackend.Infrastructure.Repositories
                 return entity;
             }
 
-            if (((IOwned)entity).OwnerId != currentUserId)
-            {
-                throw new UnauthorizedAccessException("You don't have access to this entity");
-            }
-
             return entity;
         }
 

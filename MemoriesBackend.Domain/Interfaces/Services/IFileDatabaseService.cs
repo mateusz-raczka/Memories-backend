@@ -23,6 +23,7 @@ namespace MemoriesBackend.Domain.Interfaces.Services
         Task BatchCreateFilesAsync(IEnumerable<File> files);
         void UpdateFile(File file);
         void PatchFileDetails(FileDetails fileDetails, params Expression<Func<FileDetails, object>>[] updatedProperties);
+        Task SwitchFileStar(Guid fileId);
         Task SaveAsync();
     }
 }

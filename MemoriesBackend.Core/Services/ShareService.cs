@@ -8,11 +8,18 @@ namespace MemoriesBackend.Application.Services
     public class ShareService : IShareService
     {
         private readonly IGenericRepository<ShareFile> _shareFileRepository;
+        private readonly IFileDatabaseService _fileDatabaseService;
         private readonly UserManager<ExtendedIdentityUser> _userManager;
 
-        public ShareService(IGenericRepository<ShareFile> shareFileRepository)
+        public ShareService(
+            IGenericRepository<ShareFile> shareFileRepository,
+            IFileDatabaseService fileDatabaseService,
+            UserManager<ExtendedIdentityUser> userManager
+            )
         {
             _shareFileRepository = shareFileRepository;
+            _fileDatabaseService = fileDatabaseService;
+            _userManager = userManager;
         }
 
         public async Task<ShareFile> ShareFileAsync(ShareFile shareFile)
@@ -20,6 +27,13 @@ namespace MemoriesBackend.Application.Services
             if(shareFile == null)
             {
                 throw new ApplicationException("Failed to share - share data is null");
+            }
+
+            var fileToShare = await _fileDatabaseService.GetFileByIdAsync(shareFile.FileId);
+
+            if(fileToShare == null)
+            {
+                throw new ApplicationException($"Failed to share - there is no file with id: {shareFile.FileId}");
             }
 
             if(shareFile.SharedForUserId != null)

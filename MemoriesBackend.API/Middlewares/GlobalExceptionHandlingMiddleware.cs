@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using Microsoft.Data.SqlClient;
+using System.Net;
 using System.Text.Json;
 
 namespace MemoriesBackend.API.Middlewares
@@ -40,6 +41,7 @@ namespace MemoriesBackend.API.Middlewares
                 ApplicationException _ => new ExceptionResponse(HttpStatusCode.InternalServerError, "Internal server error. Please retry later. Error: " + exception.Message),
                 KeyNotFoundException _ => new ExceptionResponse(HttpStatusCode.NotFound, "The request key not found. Error: " + exception.Message),
                 UnauthorizedAccessException _ => new ExceptionResponse(HttpStatusCode.Unauthorized, "Unauthorized. Error: " + exception.Message),
+                SqlException _ => new ExceptionResponse(HttpStatusCode.InternalServerError, "Internal server error. Please retry later."),
                 _ => new ExceptionResponse(HttpStatusCode.InternalServerError, "Internal server error. Please retry later. Error: " + exception.Message)
             };
 

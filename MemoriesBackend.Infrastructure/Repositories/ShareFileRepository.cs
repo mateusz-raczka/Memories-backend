@@ -2,6 +2,7 @@
 using MemoriesBackend.Domain.Interfaces.Models;
 using MemoriesBackend.Domain.Interfaces.Services;
 using MemoriesBackend.Infrastructure.Contexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace MemoriesBackend.Infrastructure.Repositories;
 
@@ -14,7 +15,21 @@ public class ShareFileRepository : GenericRepository<ShareFile>
 
     public override async Task<ShareFile> GetById(Guid id, bool asNoTracking = true)
     {
-        return new ShareFile();
+        var query = asNoTracking ? _dbSet.AsNoTracking() : _dbSet.AsQueryable();
+
+        var queryWithAppliedOwnershipFilter = ApplyOwnershipFilter(query);
+
+        var shareFile = queryWithAppliedOwnershipFilter
+            .Include(sf => sf.File)
+                .ThenInclude(f => f.FileDetails)
+            .FirstOrDefault(sf => sf.Id == id);
+
+        if (shareFile == null)
+        {
+            return null;
+        }
+
+        return shareFile;
     }
 
     public IQueryable<ShareFile> ApplyOwnershipFilter(IQueryable<ShareFile> query)

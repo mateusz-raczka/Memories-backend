@@ -40,14 +40,10 @@ public class FolderController : ControllerBase
         await _folderDatabaseService.SaveAsync();
     }
 
-    [HttpPatch("Star")]
-    public async Task ChangeFolderIsStared([FromBody] FolderDetailsIsStaredPatchRequest folderDetailsDto)
+    [HttpPatch("Star/{id:Guid}")]
+    public async Task ChangeFolderIsStared(Guid id)
     {
-        var folderDetailsDomain = _mapper.Map<FolderDetails>(folderDetailsDto);
-
-        _folderDatabaseService.PatchFolderDetails(folderDetailsDomain,
-            fd => fd.IsStared
-            );
+        await _folderDatabaseService.SwitchFolderStarAsync(id);
 
         await _folderDatabaseService.SaveAsync();
     }

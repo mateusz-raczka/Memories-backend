@@ -113,6 +113,20 @@ namespace MemoriesBackend.Application.Services
             _fileDetailsRepository.Patch(fileDetails, updatedProperties);
         }
 
+        public async Task SwitchFileStar(Guid fileId)
+        {
+            var fileDetailsToUpdate = await _fileDetailsRepository.GetById(fileId);
+
+            if(fileDetailsToUpdate == null)
+            {
+                throw new ApplicationException("Failed to swich file's star flag - file not found");
+            }
+
+            fileDetailsToUpdate.IsStared = !fileDetailsToUpdate.IsStared;
+
+            _fileDetailsRepository.Update(fileDetailsToUpdate);
+        }
+
         public async Task SaveAsync()
         {
             await _fileRepository.Save();
