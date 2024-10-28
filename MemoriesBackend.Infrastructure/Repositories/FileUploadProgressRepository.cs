@@ -15,7 +15,7 @@ namespace MemoriesBackend.Infrastructure.Repositories
 
         public async Task<FileUploadProgress> GetFileUploadProgressByIdWithRelationsAsync(Guid fileUploadProgressId, bool asNoTracking = true)
         {
-            return await GetQueryable(asNoTracking)
+            return await base.GetQueryable(asNoTracking)
                  .Include(fu => fu.FileChunks)
                  .Where(fu => fu.Id == fileUploadProgressId)
                  .FirstOrDefaultAsync(fu => fu.Id == fileUploadProgressId);

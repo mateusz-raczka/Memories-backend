@@ -22,7 +22,7 @@ namespace MemoriesBackend.Infrastructure.Repositories
             _userContextService = userContextService;
         }
 
-        private IQueryable<TEntity> ApplyOwnershipFilter(IQueryable<TEntity> query)
+        protected virtual IQueryable<TEntity> ApplyOwnershipFilter(IQueryable<TEntity> query)
         {
             if (typeof(IOwned).IsAssignableFrom(typeof(TEntity)))
             {

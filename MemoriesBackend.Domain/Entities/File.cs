@@ -1,5 +1,4 @@
 ﻿using MemoriesBackend.Domain.Interfaces.Models;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MemoriesBackend.Domain.Entities
@@ -18,5 +17,6 @@ namespace MemoriesBackend.Domain.Entities
         public Category? Category { get; set; }
         public FileDetails FileDetails { get; set; }
         public List<FileActivity>? FileActivities { get; set; }
+        public List<ShareFile>? Shared {  get; set; }
     }
 }
