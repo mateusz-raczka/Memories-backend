@@ -23,7 +23,7 @@ namespace MemoriesBackend.Application.Services
                 throw new ArgumentException("Destination folder path cannot be null or empty", nameof(destinationFolderAbsolutePath));
 
             if (!Directory.Exists(sourceFolderAbsolutePath))
-                throw new DirectoryNotFoundException("Source folder not found");
+                return;
 
             if (!Directory.Exists(destinationFolderAbsolutePath))
                 Directory.CreateDirectory(destinationFolderAbsolutePath);
