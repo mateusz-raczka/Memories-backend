@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
-using Memories_backend.Models.Domain;
 using Memories_backend.Models.DTO.File.Response;
 using Memories_backend.Models.DTO.File.Request;
-using Memories_backend.Models.DTO.Tag.Request;
-using Memories_backend.Models.DTO.FileDetails.Response;
-using Memories_backend.Models.DTO.Tag.Response;
 using Memories_backend.Models.DTO.FileDetails.Request;
 
 namespace Memories_backend.AutoMapper.Profiles
@@ -18,6 +14,12 @@ namespace Memories_backend.AutoMapper.Profiles
             CreateMap<Models.Domain.File, FileDtoCreateRequest>().ReverseMap();
             CreateMap<Models.Domain.File, FileDtoCreateResponse>().ReverseMap();
             CreateMap<FileDtoCreateRequest, FileDtoCreateResponse>().ReverseMap();
+            CreateMap<IFormFile, FileDtoCreateRequest>()
+                .ForMember(dest => dest.FileDetails, opt => opt.MapFrom(src => new FileDetailsDtoRequest
+                {
+                    Name = src.FileName,
+                    Size = src.Length
+                }));
         }
     }
 }

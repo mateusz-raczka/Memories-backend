@@ -7,8 +7,7 @@ namespace Memories_backend.Models.DTO.File.Response
     public class FileDtoFetchResponse
     {
         public Guid Id { get; set; }
-        public Guid? FolderId { get; set; }
-        public bool isFolder { get; set; }
+        public Guid FolderId { get; set; }
         public List<TagDtoResponse>? Tags { get; set; }
         public CategoryDtoResponse? Category { get; set; }
         public FileDetailsDtoResponse FileDetails { get; set; }

@@ -8,8 +8,8 @@ namespace Memories_backend.Repositories
 {
     public class SQLRepository<TEntity> : ISQLRepository<TEntity> where TEntity : class
     {
-        private readonly ApplicationDbContext _context;
-        private readonly DbSet<TEntity> _dbSet;
+        protected readonly ApplicationDbContext _context;
+        protected readonly DbSet<TEntity> _dbSet;
 
         public SQLRepository(ApplicationDbContext context)
         {
@@ -20,8 +20,8 @@ namespace Memories_backend.Repositories
         public async Task<IEnumerable<TEntity>> GetAll(
             int? pageNumber = null,
             int? pageSize = null,
-            Expression<Func<TEntity, bool>> filter = null,
-            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null
+            Expression<Func<TEntity, bool>>? filter = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null
             )
         {
             IQueryable<TEntity> query = _dbSet;
@@ -36,33 +36,54 @@ namespace Memories_backend.Repositories
                 query = orderBy(query);
             }
 
-            if(pageNumber != null && pageSize != null)
+            if (pageNumber == null && pageSize == null)
             {
+                return await query.ToListAsync();
+            }
+            else if (pageNumber != null && pageSize != null)
+            {
+                if (pageNumber <= 0 || pageSize <= 0)
+                {
+                    throw new ApplicationException("Page number and page size must be positive integers.");
+                }
+
                 PagedResult<TEntity> pagedResult = await query.GetPageAsync<TEntity>((int)pageNumber, (int)pageSize);
 
                 return pagedResult.Results;
             }
-
-            return query;
+            else
+            {
+                throw new ApplicationException("Both page number and page size must be provided, or neither.");
+            }
         }
 
-        public async virtual Task<TEntity> GetById(Guid id)
+        public virtual async Task<TEntity> GetById(Guid id)
         {
-            TEntity entity = await _dbSet.FindAsync(id);
+            TEntity? entity = await _dbSet.FindAsync(id);
+
+            if(entity == null)
+            {
+                throw new ApplicationException("Failed to fetch - entity was not found");
+            }
 
             return entity;
         }
 
-        public async virtual Task<TEntity> Create(TEntity entity)
+        public virtual async Task<TEntity> Create(TEntity entity)
         {
             await _dbSet.AddAsync(entity);
 
             return entity;
         }
 
-        public async virtual Task Delete(Guid id)
+        public virtual async Task Delete(Guid id)
         {
-            TEntity entityToDelete = await GetById(id);
+            TEntity? entityToDelete = await GetById(id);
+
+            if(entityToDelete == null)
+            {
+                throw new ApplicationException("Failed to delete - entity was not found");
+            }
 
             Delete(entityToDelete);
         }
@@ -84,7 +105,7 @@ namespace Memories_backend.Repositories
             _context.Entry(entityToUpdate).State = EntityState.Modified;
         }
 
-        public async virtual Task Save()
+        public virtual async Task Save()
         {
             await _context.SaveChangesAsync();
         }

@@ -1,12 +1,12 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Memories_backend.Services.Interfaces;
 
 namespace Memories_backend.Middlewares
 {
     public class JwtMiddleware : IMiddleware
     {
-        private readonly JwtSecurityTokenHandlerWrapper _jwtSecurityTokenHandler;
+        private readonly IJwtSecurityTokenService _jwtSecurityTokenHandler;
 
-        public JwtMiddleware(JwtSecurityTokenHandlerWrapper jwtSecurityTokenHandler)
+        public JwtMiddleware(IJwtSecurityTokenService jwtSecurityTokenHandler)
         {
             _jwtSecurityTokenHandler = jwtSecurityTokenHandler;
         }

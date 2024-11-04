@@ -1,12 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using File = Memories_backend.Models.Domain.File;
 using Memories_backend.Models.DTO.File.Response;
 using Memories_backend.Models.DTO.File.Request;
-using AutoMapper;
 using System.Linq.Expressions;
-using Memories_backend.Services;
-using Microsoft.AspNetCore.Authorization;
-using Memories_backend.Models.DTO.Identity.Roles;
+using Memories_backend.Services.Interfaces;
 
 namespace Memories_backend.Controllers
 {
@@ -14,30 +10,39 @@ namespace Memories_backend.Controllers
     [ApiController]
     public class FileController : ControllerBase
     {
-        private readonly IFileService _fileService;
+        private readonly IFileDatabaseService _fileDatabaseService;
+        private readonly IFileManagementService _fileManagementService;
+        private readonly IFileStorageService _fileStorageService;
 
-        public FileController(IFileService fileService)
+        public FileController(
+            IFileDatabaseService fileDatabaseService,
+            IFileManagementService fileManagementService,
+            IFileStorageService fileStorageService
+            )
         {
-            _fileService = fileService;
+            _fileDatabaseService = fileDatabaseService;
+            _fileManagementService = fileManagementService;
+            _fileStorageService = fileStorageService;
         }
 
         [HttpGet]
         public async Task<IEnumerable<FileDtoFetchResponse>> GetAll(
-            int pageNumber = 1,
-            int pageSize = 10,
+            int? pageNumber,
+            int? pageSize,
             string? filterName = null
             )
         {
-            Expression<Func<File, bool>> filter = null;
+            Expression<Func<Models.Domain.File, bool>> filter = null;
 
-            if (filterName != null)
+            if (!string.IsNullOrEmpty(filterName))
             {
                 filter = entity => entity.FileDetails.Name.Contains(filterName);
             }
 
-            Func<IQueryable<File>, IOrderedQueryable<File>> orderBy = query => query.OrderBy(entity => entity.FileDetails.Name);
+            // Hardcoded orderby name
+            Func<IQueryable<Models.Domain.File>, IOrderedQueryable<Models.Domain.File>> orderBy = query => query.OrderBy(entity => entity.FileDetails.Name);
 
-            IEnumerable<FileDtoFetchResponse> response = await _fileService.GetAllFiles(
+            IEnumerable<FileDtoFetchResponse> response = await _fileDatabaseService.GetAllFilesAsync(
                 pageNumber, 
                 pageSize, 
                 filter, 
@@ -50,35 +55,35 @@ namespace Memories_backend.Controllers
         [HttpGet("{id:Guid}")]
         public async Task<FileDtoFetchResponse> GetById(Guid id)
         {
-            FileDtoFetchResponse response = await _fileService.GetFileByIdAsync(id);
+            FileDtoFetchResponse response = await _fileDatabaseService.GetFileByIdAsync(id);
 
             return response;
         }
         
-        [HttpPost]
-        public async Task<FileDtoCreateResponse> Create([FromBody] FileDtoCreateRequest requestBody)
+        [HttpPost("{folderId:Guid}")]
+        public async Task<FileDtoCreateResponse> Add([FromForm] IFormFile fileData, Guid folderId)
         {
-            FileDtoCreateResponse response = await _fileService.CreateFileAsync(requestBody);
+            FileDtoCreateResponse response = await _fileManagementService.AddFileToDatabaseAndStorageAsync(fileData, folderId);
 
             return response;
         }
         
         [HttpPut("{id:Guid}")]
-        public async Task Update(Guid id, [FromBody] FileDtoUpdateRequest updatedFileDto)
+        public async Task Update(Guid id, [FromBody] FileDtoUpdateRequest updateModel)
         {
-            await _fileService.UpdateFileAsync(id, updatedFileDto);
+            await _fileDatabaseService.UpdateFileAsync(id, updateModel);
         }
         
         [HttpDelete("{id:Guid}")]
         public async Task Delete(Guid id)
         {
-            await _fileService.DeleteFileAsync(id);
+            await _fileDatabaseService.DeleteFileAsync(id);
         }
 
-        [HttpDelete]
-        public async Task Delete(File file)
+        [HttpGet("Download/{id:Guid}")]
+        public async Task<FileContentResult> Download(Guid id)
         {
-            await _fileService.DeleteFileAsync(file);
+            return await _fileStorageService.DownloadFileAsync(id);
         }
     }
 }
