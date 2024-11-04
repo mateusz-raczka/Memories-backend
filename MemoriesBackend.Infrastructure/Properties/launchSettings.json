@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "MemoriesBackend.Infrastructure": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DB_SERVER": "209.25.141.76, 1433",
+        "DB_NAME": "memories",
+        "DB_USER": "sa",
+        "DB_PASSWORD": "PicklePie2022!",
+        "JWT_SECRET": "w8HTVYh98VdQ5a9MVrtByeVUO6NjPxrL4SxMZg6uJJpeNDIhFR",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
